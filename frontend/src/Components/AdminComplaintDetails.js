@@ -1,49 +1,53 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import axios from "axios";
 import { useParams } from "react-router-dom";
 
 export default function AdminComplaintDetails() {
     const { id } = useParams();
+
     const [complaint, setComplaint] = useState(null);
     const [investigators, setInvestigators] = useState([]);
     const [selectedOfficer, setSelectedOfficer] = useState("");
     const [solution, setSolution] = useState("");
-    const [statusMessage, setStatusMessage] = useState("");
+    const [message, setMessage] = useState("");
+
+    const fetchComplaint = useCallback(async () => {
+        try {
+            const res = await axios.get(
+                `http://localhost:7000/api/complaint/${id}`
+            );
+            setComplaint(res.data);
+        } catch (err) {
+            console.error("Failed to load complaint:", err);
+        }
+    }, [id]);
+
+    const fetchInvestigators = useCallback(async () => {
+        try {
+            const res = await axios.get(
+                "http://localhost:7000/api/investigators"
+            );
+            setInvestigators(res.data);
+        } catch (err) {
+            console.error("Failed to load investigators:", err);
+        }
+    }, []);
 
     useEffect(() => {
-        const loadComplaint = async () => {
-            try {
-                const res = await axios.get(`http://localhost:7000/api/complaint/complaints/${id}`);
-                setComplaint(res.data);
-            } catch (err) {
-                console.error("Error fetching complaint:", err);
-            }
-        };
+        fetchComplaint();
+        fetchInvestigators();
+    }, [fetchComplaint, fetchInvestigators]);
 
-        const loadInvestigators = async () => {
-            try {
-                const res = await axios.get("http://localhost:7000/api/investigators");
-                setInvestigators(res.data);
-            } catch (err) {
-                console.error("Error fetching investigators:", err);
-            }
-        };
-
-        loadComplaint();
-        loadInvestigators();
-    }, [id]);
-    
     const assignOfficer = async () => {
-        if (!selectedOfficer) {
-            return alert("Please select an investigator");
-        }
+        if (!selectedOfficer) return alert("Select an investigator");
 
         try {
             await axios.put(
-                `http://localhost:7000/api/complaint/complaints/${id}/assign`,
+                `http://localhost:7000/api/complaint/${id}/assign`,
                 { assignedTo: selectedOfficer }
             );
-            setStatusMessage("Investigator assigned successfully!");
+
+            setMessage("Officer assigned successfully!");
             fetchComplaint();
         } catch (err) {
             console.error(err);
@@ -51,16 +55,15 @@ export default function AdminComplaintDetails() {
     };
 
     const addSolutionHandler = async () => {
-        if (!solution.trim()) {
-            return alert("Please enter a solution/remark");
-        }
+        if (!solution.trim()) return alert("Enter the solution");
 
         try {
             await axios.put(
-                `http://localhost:7000/api/complaint/complaints/${id}/solution`,
+                `http://localhost:7000/api/complaint/${id}/solution`,
                 { solution }
             );
-            setStatusMessage("Solution added! Complaint marked Resolved.");
+
+            setMessage("Solution added. Complaint marked resolved.");
             fetchComplaint();
         } catch (err) {
             console.error(err);
@@ -68,51 +71,61 @@ export default function AdminComplaintDetails() {
     };
 
     if (!complaint) {
-        return <h2 style={{ padding: 40 }}>Loading complaint details…</h2>;
+        return (
+            <div style={styles.loadingWrap}>
+                <div style={styles.loader}></div>
+                <p style={{ marginTop: 10 }}>Loading Complaint…</p>
+            </div>
+        );
     }
 
     return (
         <div style={styles.page}>
             <h2 style={styles.heading}>Complaint Details</h2>
 
-            {statusMessage && <p style={styles.success}>{statusMessage}</p>}
+            {message && <div style={styles.alert}>{message}</div>}
 
-            <div style={styles.cardsWrap}>
+            <div style={styles.layout}>
 
-                {/* LEFT — Complaint Info */}
+                {/* LEFT CARD */}
                 <div style={styles.card}>
                     <h3 style={styles.cardTitle}>Complaint Information</h3>
 
-                    <div style={styles.infoRow}>
-                        <span>ID:</span>
-                        <strong>{complaint.complaintId}</strong>
+                    <div style={styles.infoGroup}>
+                        <label>Complaint ID</label>
+                        <p>{complaint.complaintId}</p>
                     </div>
 
-                    <div style={styles.infoRow}>
-                        <span>Type:</span>
-                        <strong>{complaint.complaintType}</strong>
+                    <div style={styles.infoGroup}>
+                        <label>Type</label>
+                        <p>{complaint.complaintType}</p>
                     </div>
 
-                    <div style={styles.infoRow}>
-                        <span>Status:</span>
-                        <span style={{ ...styles.badge, background: "#304FFE" }}>
+                    <div style={styles.infoGroup}>
+                        <label>Status</label>
+                        <span
+                            style={{
+                                ...styles.badge,
+                                background: "#304FFE",
+                            }}
+                        >
                             {complaint.status}
                         </span>
                     </div>
 
-                    <div style={styles.infoRow}>
-                        <span>Date Filed:</span>
-                        <strong>{new Date(complaint.createdAt).toLocaleDateString()}</strong>
+                    <div style={styles.infoGroup}>
+                        <label>Date Filed</label>
+                        <p>{new Date(complaint.createdAt).toLocaleDateString()}</p>
                     </div>
 
-                    <div style={styles.textBlock}>
-                        <span>Description:</span>
-                        <p>{complaint.description}</p>
+                    <div style={styles.infoGroup}>
+                        <label>Description</label>
+                        <p style={styles.desc}>{complaint.description}</p>
                     </div>
 
                     {complaint.file && (
-                        <div style={{ marginTop: "15px" }}>
-                            <span>Attached File:</span>
+                        <div style={styles.infoGroup}>
+                            <label>Attachment</label>
                             <a
                                 href={`http://localhost:7000/uploads/${complaint.file}`}
                                 target="_blank"
@@ -125,19 +138,19 @@ export default function AdminComplaintDetails() {
                     )}
                 </div>
 
-                {/* RIGHT — Assignment Panel */}
+                {/* RIGHT CARD */}
                 <div style={styles.card}>
                     <h3 style={styles.cardTitle}>Assign Investigator</h3>
 
                     <select
-                        style={styles.dropdown}
+                        style={styles.input}
                         value={selectedOfficer}
                         onChange={(e) => setSelectedOfficer(e.target.value)}
                     >
                         <option value="">Select Investigator</option>
-                        {investigators.map((inv) => (
-                            <option key={inv._id} value={inv.email}>
-                                {inv.name} ({inv.department})
+                        {investigators.map((i) => (
+                            <option key={i._id} value={i.email}>
+                                {i.name} — {i.department}
                             </option>
                         ))}
                     </select>
@@ -146,19 +159,19 @@ export default function AdminComplaintDetails() {
                         Assign Officer
                     </button>
 
-                    <h3 style={{ ...styles.cardTitle, marginTop: "30px" }}>
-                        Add Solution / Remarks
+                    <h3 style={{ ...styles.cardTitle, marginTop: 25 }}>
+                        Add Solution
                     </h3>
 
                     <textarea
                         style={styles.textArea}
-                        rows={4}
-                        placeholder="Enter solution or remarks…"
+                        rows="4"
+                        placeholder="Enter solution or remarks"
                         value={solution}
                         onChange={(e) => setSolution(e.target.value)}
                     />
 
-                    <button style={styles.secondaryBtn} onClick={addSolutionHandler}>
+                    <button style={styles.successBtn} onClick={addSolutionHandler}>
                         Submit Solution
                     </button>
                 </div>
@@ -170,114 +183,105 @@ export default function AdminComplaintDetails() {
 const styles = {
     page: {
         padding: "35px",
-        background: "#EEF1F7",
+        background: "#F3F5FA",
         minHeight: "100vh",
         fontFamily: "Inter, sans-serif",
     },
-
     heading: {
-        fontSize: "28px",
+        fontSize: 28,
         fontWeight: "700",
-        marginBottom: "25px",
+        marginBottom: 20,
     },
-
-    success: {
+    alert: {
         background: "#D1F5DA",
-        padding: "12px 16px",
-        borderRadius: "10px",
-        color: "#1B5E20",
+        padding: 15,
+        borderRadius: 10,
+        color: "#145A32",
         fontWeight: "600",
-        marginBottom: "20px",
-        maxWidth: "500px",
+        marginBottom: 25,
     },
-
-    cardsWrap: {
+    layout: {
         display: "flex",
-        gap: "25px",
+        gap: 25,
     },
-
     card: {
         flex: 1,
         background: "#fff",
-        padding: "25px",
-        borderRadius: "16px",
-        boxShadow: "0 8px 25px rgba(0,0,0,0.08)",
+        padding: 25,
+        borderRadius: 16,
+        boxShadow: "0 8px 25px rgba(0,0,0,0.07)",
     },
-
     cardTitle: {
-        fontSize: "20px",
+        fontSize: 20,
         fontWeight: "700",
-        marginBottom: "18px",
+        marginBottom: 18,
     },
-
-    infoRow: {
-        display: "flex",
-        justifyContent: "space-between",
-        padding: "8px 0",
-        fontSize: "15px",
-        borderBottom: "1px solid #EEE",
+    infoGroup: {
+        marginBottom: 14,
     },
-
-    dropdown: {
+    desc: {
+        marginTop: 6,
+        lineHeight: 1.6,
+    },
+    badge: {
+        display: "inline-block",
+        padding: "6px 14px",
+        borderRadius: 8,
+        color: "#fff",
+        fontWeight: "600",
+    },
+    input: {
         width: "100%",
-        padding: "12px",
-        marginBottom: "15px",
-        borderRadius: "12px",
-        border: "1px solid #D1D5E2",
-        fontSize: "15px",
+        padding: "12px 14px",
+        borderRadius: 10,
+        border: "1px solid #CCC",
+        marginBottom: 15,
+        fontSize: 15,
     },
-
-    textBlock: {
-        marginTop: "15px",
-        fontSize: "15px",
-    },
-
     textArea: {
         width: "100%",
-        padding: "12px",
-        borderRadius: "10px",
-        border: "1px solid #D1D5E2",
-        fontSize: "15px",
-        marginBottom: "12px",
+        padding: 12,
+        borderRadius: 10,
+        border: "1px solid #CCC",
+        marginBottom: 12,
         resize: "none",
     },
-
     primaryBtn: {
         width: "100%",
+        padding: 12,
         background: "#304FFE",
+        borderRadius: 10,
         color: "#fff",
-        padding: "12px",
-        borderRadius: "10px",
-        border: "none",
-        fontSize: "15px",
         fontWeight: "600",
+        fontSize: 15,
+        border: "none",
         cursor: "pointer",
     },
-
-    secondaryBtn: {
+    successBtn: {
         width: "100%",
+        padding: 12,
         background: "#00A86B",
+        borderRadius: 10,
         color: "#fff",
-        padding: "12px",
-        borderRadius: "10px",
+        fontWeight: "600",
+        fontSize: 15,
         border: "none",
-        fontSize: "15px",
-        fontWeight: "600",
         cursor: "pointer",
-        marginTop: "5px",
     },
 
-    badge: {
-        padding: "6px 12px",
-        color: "#fff",
-        borderRadius: "6px",
-        fontSize: "13px",
-        fontWeight: "600",
+    /* Loader */
+    loadingWrap: {
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        paddingTop: 100,
     },
-
-    fileLink: {
-        color: "#1E4FFF",
-        fontWeight: "600",
-        textDecoration: "none",
+    loader: {
+        width: 40,
+        height: 40,
+        border: "5px solid #CCC",
+        borderTop: "5px solid #304FFE",
+        borderRadius: "50%",
+        animation: "spin 1s linear infinite",
     },
 };
