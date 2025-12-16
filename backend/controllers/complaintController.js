@@ -80,6 +80,7 @@ export const assignComplaint = async (req, res) => {
         complaint.status = "Assigned";
         complaint.assignedAt = new Date();
 
+        // Reset lifecycle if reassigned
         complaint.openedAt = null;
         complaint.resolvedAt = null;
         complaint.closedAt = null;
@@ -235,6 +236,34 @@ export const investigatorResolveComplaint = async (req, res) => {
         res.json({
             message: "Complaint resolved successfully",
             complaint
+        });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
+
+/* ----------------------------------------------------
+   ⭐ INVESTIGATOR DASHBOARD KPIs (ADDED)
+---------------------------------------------------- */
+
+export const getInvestigatorDashboardStats = async (req, res) => {
+    try {
+        const { email } = req.params;
+
+        const [assigned, open, resolved, closed, total] = await Promise.all([
+            Complaint.countDocuments({ assignedTo: email, status: "Assigned" }),
+            Complaint.countDocuments({ assignedTo: email, status: "Open" }),
+            Complaint.countDocuments({ assignedTo: email, status: "Resolved" }),
+            Complaint.countDocuments({ assignedTo: email, status: "Closed" }),
+            Complaint.countDocuments({ assignedTo: email }),
+        ]);
+
+        res.json({
+            total,
+            assigned,
+            open,
+            resolved,
+            closed,
         });
     } catch (error) {
         res.status(500).json({ error: error.message });
