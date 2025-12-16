@@ -33,23 +33,23 @@ export default function InvestigatorLayout({ children }) {
                             Assigned Cases
                         </NavLink>
 
-                        <NavLink
+                        {/* <NavLink
                             to="/investigator/update-status"
                             style={({ isActive }) =>
                                 isActive ? { ...styles.link, ...styles.active } : styles.link
                             }
                         >
                             Update Status
-                        </NavLink>
+                        </NavLink> */}
 
-                        <NavLink
+                        {/* <NavLink
                             to="/investigator/history"
                             style={({ isActive }) =>
                                 isActive ? { ...styles.link, ...styles.active } : styles.link
                             }
                         >
                             History
-                        </NavLink>
+                        </NavLink> */}
                     </nav>
 
                     {/* Logout button kept inside wrapper */}

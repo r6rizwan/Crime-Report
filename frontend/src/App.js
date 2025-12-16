@@ -23,6 +23,11 @@ import ComplaintDetails from "./Components/ComplaintDetails";
 import AdminComplaints from "./Components/AdminComplaints";
 import AdminComplaintDetails from "./Components/AdminComplaintDetails";
 import ComplaintTracking from "./Components/ComplaintTracking";
+import InvestigatorAssignedComplaints from "./Components/InvestigatorAssignedComplaints";
+import InvestigatorUpdateStatus from "./Components/InvestigatorUpdateStatus";
+import InvestigatorCaseFiles from "./Components/InvestigatorCaseFiles";
+import AdminCaseFiles from "./Components/AdminCaseFiles";
+import UserProfile from "./Components/UserProfile";
 
 
 function App() {
@@ -89,6 +94,16 @@ function App() {
             </ProtectedRoute>
           }
         />
+        <Route
+          path="/profile"
+          element={
+            <ProtectedRoute role="User">
+              <UserLayout>
+                <UserProfile />
+              </UserLayout>
+            </ProtectedRoute>
+          }
+        />
 
 
         {/* ADMIN ROUTES */}
@@ -122,6 +137,16 @@ function App() {
             </ProtectedRoute>
           }
         />
+        <Route
+          path="/admin/case-files/:complaintId"
+          element={
+            <ProtectedRoute role="Admin">
+              <AdminLayout>
+                <AdminCaseFiles />
+              </AdminLayout>
+            </ProtectedRoute>
+          }
+        />
 
 
         {/* INVESTIGATOR ROUTES */}
@@ -135,6 +160,40 @@ function App() {
             </ProtectedRoute>
           }
         />
+
+        <Route
+          path="/investigator/assigned"
+          element={
+            <ProtectedRoute role="Investigator">
+              <InvestigatorLayout>
+                <InvestigatorAssignedComplaints />
+              </InvestigatorLayout>
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/investigator/update-status/:id"
+          element={
+            <ProtectedRoute role="Investigator">
+              <InvestigatorLayout>
+                <InvestigatorUpdateStatus />
+              </InvestigatorLayout>
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/investigator/case-files/:complaintId"
+          element={
+            <ProtectedRoute role="Investigator">
+              <InvestigatorLayout>
+                <InvestigatorCaseFiles />
+              </InvestigatorLayout>
+            </ProtectedRoute>
+          }
+        />
+
 
       </Routes>
     </BrowserRouter>

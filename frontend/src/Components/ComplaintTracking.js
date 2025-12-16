@@ -1,12 +1,23 @@
 import React, { useState } from "react";
 import axios from "axios";
 
-const STEPS = ["Pending", "Assigned", "Resolved"];
+/* ----------------------------------------------------
+   Timeline definition (ORDER MATTERS)
+---------------------------------------------------- */
+const TIMELINE_STEPS = [
+    { key: "createdAt", label: "Filed" },
+    { key: "assignedAt", label: "Assigned" },
+    { key: "openedAt", label: "Opened" },
+    { key: "resolvedAt", label: "Resolved" },
+    { key: "closedAt", label: "Closed" },
+];
 
 const COLORS = {
-    Pending: "#FFA726",
+    Filed: "#FFA726",
     Assigned: "#5C6BC0",
+    Opened: "#0288D1",
     Resolved: "#2E7D32",
+    Closed: "#616161",
 };
 
 export default function ComplaintTracking() {
@@ -16,7 +27,10 @@ export default function ComplaintTracking() {
     const [result, setResult] = useState(null);
 
     const handleSearch = async () => {
-        if (!queryId.trim()) return setError("Please enter a complaint ID");
+        if (!queryId.trim()) {
+            setError("Please enter a complaint ID");
+            return;
+        }
 
         setError("");
         setLoading(true);
@@ -36,21 +50,15 @@ export default function ComplaintTracking() {
         }
     };
 
-    const getStepState = (step, current) => {
-        const sIndex = STEPS.indexOf(step);
-        const cIndex = STEPS.indexOf(current);
-
-        if (sIndex < cIndex) return "completed";
-        if (sIndex === cIndex) return "active";
-        return "pending";
-    };
+    const isStepCompleted = (stepKey) =>
+        result && Boolean(result[stepKey]);
 
     return (
         <div style={styles.page}>
             <div style={styles.container}>
                 <h2 style={styles.heading}>Track Complaint</h2>
 
-                {/* Search Box */}
+                {/* Search */}
                 <div style={styles.searchRow}>
                     <input
                         value={queryId}
@@ -63,7 +71,7 @@ export default function ComplaintTracking() {
                         disabled={loading}
                         onClick={handleSearch}
                     >
-                        {loading ? "Searching..." : "Track"}
+                        {loading ? "Searching…" : "Track"}
                     </button>
                 </div>
 
@@ -71,77 +79,113 @@ export default function ComplaintTracking() {
 
                 {!result && !loading && !error && (
                     <p style={styles.placeholder}>
-                        Enter your complaint ID above to view its status.
+                        Enter your complaint ID to view its progress.
                     </p>
                 )}
 
-                {/* Result Card */}
+                {/* RESULT */}
                 {result && (
                     <div style={styles.card}>
 
                         {/* HEADER */}
                         <div style={styles.header}>
                             <div>
-                                <h3 style={styles.type}>{result.complaintType}</h3>
-                                <p style={styles.id}>ID: {result.complaintId}</p>
+                                <h3 style={styles.type}>
+                                    {result.complaintType}
+                                </h3>
+                                <p style={styles.id}>
+                                    ID: {result.complaintId}
+                                </p>
                             </div>
 
                             <span
                                 style={{
                                     ...styles.status,
-                                    background: COLORS[result.status],
+                                    background:
+                                        COLORS[
+                                        result.status === "Open"
+                                            ? "Opened"
+                                            : result.status
+                                        ],
                                 }}
                             >
                                 {result.status}
                             </span>
                         </div>
 
-                        {/* TOP PRIORITY SECTION */}
+                        {/* BASIC INFO */}
                         <div style={styles.infoBox}>
-                            <p><strong>Filed On:</strong> {new Date(result.createdAt).toLocaleString()}</p>
-                            <p><strong>Assigned Officer:</strong> {result.assignedTo || "Not Assigned"}</p>
-                            <p><strong>Solution:</strong> {result.solution || "No update yet"}</p>
+                            <p>
+                                <strong>Filed On:</strong>{" "}
+                                {new Date(result.createdAt).toLocaleString()}
+                            </p>
+                            <p>
+                                <strong>Assigned Investigator:</strong>{" "}
+                                {result.assignedTo || "Not Assigned"}
+                            </p>
+                            <p>
+                                <strong>Solution:</strong>{" "}
+                                {result.solution || "Not available yet"}
+                            </p>
                         </div>
 
                         {/* TIMELINE */}
                         <div style={styles.timelineSection}>
-                            <p style={styles.timelineHeading}>Progress</p>
+                            <p style={styles.timelineHeading}>
+                                Complaint Progress
+                            </p>
 
                             <div style={styles.timeline}>
-                                {STEPS.map((step, index) => {
-                                    const state = getStepState(step, result.status);
-                                    const color =
-                                        state === "active" || state === "completed"
-                                            ? COLORS[result.status]
-                                            : "#BDBDBD";
+                                {TIMELINE_STEPS.map((step, index) => {
+                                    const completed = isStepCompleted(step.key);
+                                    const labelColor = completed
+                                        ? COLORS[step.label]
+                                        : "#BDBDBD";
 
                                     return (
-                                        <div style={styles.timelineStep} key={step}>
+                                        <div
+                                            key={step.key}
+                                            style={styles.timelineStep}
+                                        >
                                             <div
                                                 style={{
                                                     ...styles.dot,
-                                                    background: color,
-                                                    boxShadow:
-                                                        state === "active"
-                                                            ? `0 0 0 6px ${color}33`
-                                                            : "none",
+                                                    background: labelColor,
+                                                    boxShadow: completed
+                                                        ? `0 0 0 6px ${labelColor}33`
+                                                        : "none",
                                                 }}
                                             />
+
                                             <span
                                                 style={{
                                                     ...styles.timelineLabel,
-                                                    color: state === "pending" ? "#777" : color,
-                                                    fontWeight: state === "active" ? 700 : 500,
+                                                    color: labelColor,
+                                                    fontWeight: completed
+                                                        ? 700
+                                                        : 500,
                                                 }}
                                             >
-                                                {step}
+                                                {step.label}
                                             </span>
 
-                                            {index < STEPS.length - 1 && (
-                                                <div
-                                                    style={{ ...styles.line, background: color }}
-                                                />
+                                            {completed && (
+                                                <div style={styles.time}>
+                                                    {new Date(
+                                                        result[step.key]
+                                                    ).toLocaleString()}
+                                                </div>
                                             )}
+
+                                            {index <
+                                                TIMELINE_STEPS.length - 1 && (
+                                                    <div
+                                                        style={{
+                                                            ...styles.line,
+                                                            background: labelColor,
+                                                        }}
+                                                    />
+                                                )}
                                         </div>
                                     );
                                 })}
@@ -151,14 +195,16 @@ export default function ComplaintTracking() {
                         {/* DESCRIPTION */}
                         <div style={{ marginTop: 30 }}>
                             <p style={styles.label}>Description</p>
-                            <div style={styles.desc}>{result.description}</div>
+                            <div style={styles.desc}>
+                                {result.description}
+                            </div>
                         </div>
 
                         {/* ATTACHMENT */}
                         {result.file && (
                             <div style={{ marginTop: 20 }}>
                                 <a
-                                    href={encodeURI(`http://localhost:7000/uploads/${String(result.file).replace(/\\/g, "/").replace(/^\/+/, "")}`)}
+                                    href={`http://localhost:7000/uploads/${result.file}`}
                                     target="_blank"
                                     rel="noreferrer"
                                     style={styles.link}
@@ -174,9 +220,9 @@ export default function ComplaintTracking() {
     );
 }
 
-//
-// STYLES
-//
+/* ----------------------------------------------------
+   STYLES
+---------------------------------------------------- */
 
 const styles = {
     page: {
@@ -186,146 +232,130 @@ const styles = {
         display: "flex",
         justifyContent: "center",
     },
-
     container: {
         width: "100%",
-        maxWidth: "850px",
+        maxWidth: "900px",
     },
-
     heading: {
-        fontSize: "28px",
+        fontSize: 28,
         fontWeight: 700,
-        marginBottom: "20px",
-        color: "#1A237E",
+        marginBottom: 20,
     },
-
     searchRow: {
         display: "flex",
-        gap: "12px",
+        gap: 12,
     },
-
     input: {
         flex: 1,
-        padding: "12px",
-        borderRadius: "10px",
+        padding: 12,
+        borderRadius: 10,
         border: "1px solid #CDD2E6",
-        fontSize: "15px",
+        fontSize: 15,
     },
-
     btn: {
         padding: "12px 20px",
-        borderRadius: "10px",
+        borderRadius: 10,
         border: "none",
         background: "#304FFE",
         color: "#fff",
         fontWeight: 600,
         cursor: "pointer",
     },
-
     error: {
         color: "#D32F2F",
         marginTop: 10,
         fontWeight: 600,
     },
-
     placeholder: {
         color: "#777",
         marginTop: 15,
     },
-
     card: {
         background: "#fff",
-        padding: "25px",
-        marginTop: "20px",
-        borderRadius: "18px",
+        padding: 25,
+        marginTop: 20,
+        borderRadius: 18,
         boxShadow: "0 10px 26px rgba(0,0,0,0.1)",
     },
-
     header: {
         display: "flex",
         justifyContent: "space-between",
         alignItems: "center",
     },
-
     type: {
         margin: 0,
-        fontSize: "22px",
+        fontSize: 22,
         fontWeight: 700,
     },
-
     id: {
         marginTop: 4,
         color: "#666",
     },
-
     status: {
         padding: "8px 14px",
-        borderRadius: "10px",
+        borderRadius: 10,
         color: "white",
         fontWeight: 600,
     },
-
     infoBox: {
         marginTop: 20,
         lineHeight: 1.7,
-        fontSize: "15px",
-        color: "#333",
         background: "#F8F9FF",
-        padding: "14px",
-        borderRadius: "12px",
+        padding: 14,
+        borderRadius: 12,
         border: "1px solid #E0E3F1",
     },
-
-    timelineSection: { marginTop: 30 },
-
-    timelineHeading: { fontWeight: 700, marginBottom: 14 },
-
+    timelineSection: {
+        marginTop: 30,
+    },
+    timelineHeading: {
+        fontWeight: 700,
+        marginBottom: 14,
+    },
     timeline: {
         display: "flex",
-        alignItems: "center",
-        position: "relative",
+        alignItems: "flex-start",
     },
-
     timelineStep: {
         flex: 1,
         textAlign: "center",
         position: "relative",
     },
-
     dot: {
-        width: "20px",
-        height: "20px",
+        width: 18,
+        height: 18,
         borderRadius: "50%",
         margin: "0 auto",
     },
-
     timelineLabel: {
-        marginTop: 5,
-        fontSize: "13px",
+        marginTop: 6,
+        fontSize: 13,
+        display: "block",
     },
-
+    time: {
+        marginTop: 4,
+        fontSize: 11,
+        color: "#555",
+    },
     line: {
-        height: "3px",
+        height: 3,
         width: "100%",
         position: "absolute",
         left: "50%",
-        marginTop: "-13px",
+        top: 8,
         zIndex: -1,
         opacity: 0.8,
     },
-
     label: {
         fontWeight: 600,
         marginBottom: 8,
     },
-
     desc: {
         background: "#F2F4FF",
-        padding: "12px",
-        borderRadius: "10px",
+        padding: 12,
+        borderRadius: 10,
         border: "1px solid #E0E7FF",
     },
-
     link: {
         color: "#304FFE",
         fontWeight: 600,

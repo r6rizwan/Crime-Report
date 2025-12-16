@@ -1,24 +1,16 @@
 import Complaint from "../models/Complaint.js";
+import CaseActivity from "../models/CaseActivity.js";
 
-// CREATE COMPLAINT (with files)
+/* ----------------------------------------------------
+   CREATE COMPLAINT (USER)
+---------------------------------------------------- */
 export const createComplaint = async (req, res) => {
     try {
-        console.log("BODY:", req.body);
-        console.log("FILE:", req.file);
+        const { complaintId, complaintType, description, email } = req.body;
 
-        const {
-            complaintId,
-            complaintType,
-            description,
-            email
-        } = req.body;
-
-        // multer file path
-        // store only the saved filename (sanitized by multer middleware)
         let fileName = "";
         if (req.file) {
-            // multer's diskStorage filename returns the sanitized filename
-            fileName = req.file.filename || req.file.path || "";
+            fileName = req.file.filename || "";
         }
 
         const complaint = await Complaint.create({
@@ -30,17 +22,28 @@ export const createComplaint = async (req, res) => {
             status: "Pending",
         });
 
+        // 🔹 ACTIVITY LOG
+        await CaseActivity.create({
+            complaintId: complaint._id,
+            action: "Complaint Filed",
+            performedBy: email,
+            role: "User",
+        });
+
         res.status(201).json({
             message: "Complaint filed successfully",
             complaint
         });
-
     } catch (error) {
         res.status(400).json({ error: error.message });
     }
 };
 
-// ADMIN: get all complaints
+/* ----------------------------------------------------
+   ADMIN
+---------------------------------------------------- */
+
+// Get all complaints
 export const getAllComplaints = async (req, res) => {
     try {
         const complaints = await Complaint.find();
@@ -50,7 +53,198 @@ export const getAllComplaints = async (req, res) => {
     }
 };
 
-// USER: get complaints by email
+// Assign / Reassign investigator
+export const assignComplaint = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { assignedTo } = req.body;
+
+        if (!assignedTo) {
+            return res.status(400).json({ error: "Investigator is required" });
+        }
+
+        const complaint = await Complaint.findById(id);
+        if (!complaint) {
+            return res.status(404).json({ error: "Complaint not found" });
+        }
+
+        if (complaint.status === "Closed") {
+            return res.status(400).json({
+                error: "Closed complaints cannot be reassigned"
+            });
+        }
+
+        const previousStatus = complaint.status;
+
+        complaint.assignedTo = assignedTo;
+        complaint.status = "Assigned";
+        complaint.assignedAt = new Date();
+
+        complaint.openedAt = null;
+        complaint.resolvedAt = null;
+        complaint.closedAt = null;
+        complaint.solution = "";
+
+        await complaint.save();
+
+        // 🔹 ACTIVITY LOG
+        await CaseActivity.create({
+            complaintId: complaint._id,
+            action: "Investigator Assigned",
+            performedBy: "Admin",
+            role: "Admin",
+            meta: {
+                assignedTo,
+                fromStatus: previousStatus,
+                toStatus: "Assigned",
+            },
+        });
+
+        res.json({
+            message: "Investigator assigned successfully",
+            complaint
+        });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
+
+// Close complaint (FINAL)
+export const adminCloseComplaint = async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        const complaint = await Complaint.findById(id);
+        if (!complaint) {
+            return res.status(404).json({ error: "Complaint not found" });
+        }
+
+        if (complaint.status !== "Resolved") {
+            return res.status(400).json({
+                error: "Only resolved complaints can be closed"
+            });
+        }
+
+        complaint.status = "Closed";
+        complaint.closedAt = new Date();
+        await complaint.save();
+
+        // 🔹 ACTIVITY LOG
+        await CaseActivity.create({
+            complaintId: complaint._id,
+            action: "Case Closed",
+            performedBy: "Admin",
+            role: "Admin",
+            meta: {
+                toStatus: "Closed",
+            },
+        });
+
+        res.json({
+            message: "Complaint closed successfully",
+            complaint
+        });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
+
+/* ----------------------------------------------------
+   INVESTIGATOR
+---------------------------------------------------- */
+
+// Investigator opens complaint
+export const investigatorOpenComplaint = async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        const complaint = await Complaint.findById(id);
+        if (!complaint) {
+            return res.status(404).json({ error: "Complaint not found" });
+        }
+
+        if (complaint.status !== "Assigned") {
+            return res.status(400).json({
+                error: "Only assigned complaints can be opened"
+            });
+        }
+
+        complaint.status = "Open";
+        complaint.openedAt = new Date();
+        await complaint.save();
+
+        // 🔹 ACTIVITY LOG
+        await CaseActivity.create({
+            complaintId: complaint._id,
+            action: "Case Opened",
+            performedBy: complaint.assignedTo,
+            role: "Investigator",
+            meta: {
+                toStatus: "Open",
+            },
+        });
+
+        res.json({
+            message: "Complaint opened for investigation",
+            complaint
+        });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
+
+// Investigator resolves complaint
+export const investigatorResolveComplaint = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { solution } = req.body;
+
+        if (!solution || !solution.trim()) {
+            return res.status(400).json({
+                error: "Solution is required to resolve complaint"
+            });
+        }
+
+        const complaint = await Complaint.findById(id);
+        if (!complaint) {
+            return res.status(404).json({ error: "Complaint not found" });
+        }
+
+        if (complaint.status !== "Open") {
+            return res.status(400).json({
+                error: "Only open complaints can be resolved"
+            });
+        }
+
+        complaint.solution = solution;
+        complaint.status = "Resolved";
+        complaint.resolvedAt = new Date();
+        await complaint.save();
+
+        // 🔹 ACTIVITY LOG
+        await CaseActivity.create({
+            complaintId: complaint._id,
+            action: "Case Resolved",
+            performedBy: complaint.assignedTo,
+            role: "Investigator",
+            meta: {
+                toStatus: "Resolved",
+            },
+        });
+
+        res.json({
+            message: "Complaint resolved successfully",
+            complaint
+        });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
+
+/* ----------------------------------------------------
+   USER
+---------------------------------------------------- */
+
 export const getUserComplaints = async (req, res) => {
     try {
         const complaints = await Complaint.find({ email: req.params.email });
@@ -64,65 +258,15 @@ export const getComplaintById = async (req, res) => {
     try {
         const complaint = await Complaint.findById(req.params.id);
         res.json(complaint);
-    } catch (error) {
+    } catch {
         res.status(404).json({ error: "Complaint not found" });
     }
 };
 
-// UPDATE STATUS
-export const updateComplaintStatus = async (req, res) => {
-    try {
-        const updated = await Complaint.findByIdAndUpdate(
-            req.params.id,
-            { status: req.body.status },
-            { new: true }
-        );
-        res.json(updated);
-    } catch (error) {
-        res.status(400).json({ error: error.message });
-    }
-};
-
-// ASSIGN INVESTIGATOR
-export const assignComplaint = async (req, res) => {
-    try {
-        const updated = await Complaint.findByIdAndUpdate(
-            req.params.id,
-            { assignedTo: req.body.assignedTo, status: "Assigned" },
-            { new: true }
-        );
-        res.json(updated);
-    } catch (error) {
-        res.status(400).json({ error: error.message });
-    }
-};
-
-// ADD SOLUTION
-export const addSolution = async (req, res) => {
-    try {
-        const updated = await Complaint.findByIdAndUpdate(
-            req.params.id,
-            { solution: req.body.solution, status: "Resolved" },
-            { new: true }
-        );
-        res.json(updated);
-    } catch (error) {
-        res.status(400).json({ error: error.message });
-    }
-};
-
-// TRACK COMPLAINT
 export const trackComplaint = async (req, res) => {
     try {
-        const id  = req.params.id;
-        const userEmail = req.params.email;
-        // console.log("Tracking complaint:", id, "for email:", userEmail);
+        const { id, email } = req.params;
 
-        if (!userEmail) {
-            return res.status(400).json({ error: "Email is required" });
-        }
-
-        // Search complaint by complaintId or _id
         const complaint = await Complaint.findOne({
             $or: [{ complaintId: id }]
         });
@@ -131,26 +275,26 @@ export const trackComplaint = async (req, res) => {
             return res.status(404).json({ error: "Complaint not found" });
         }
 
-        // SECURITY CHECK → Only owner can view
-        if (complaint.email !== userEmail) {
-            return res.status(403).json({ error: "No complaint matching the given ID" });
+        if (complaint.email !== email) {
+            return res.status(403).json({
+                error: "No complaint matching the given ID"
+            });
         }
 
         res.json(complaint);
-    } catch (error) {
+    } catch {
         res.status(500).json({ error: "Server error" });
     }
 };
 
-// Get complaints assigned to an investigator
 export const getComplaintsAssignedToInvestigator = async (req, res) => {
     try {
-        const { email } = req.params;
-
-        const complaints = await Complaint.find({ assignedTo: email });
+        const complaints = await Complaint.find({
+            assignedTo: req.params.email
+        });
 
         res.json(complaints);
-    } catch (err) {
-        res.status(500).json({ error: err.message });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
     }
 };

@@ -4,6 +4,7 @@ import axios from "axios";
 export default function InvestigatorDashboard() {
     const [investigator, setInvestigator] = useState(null);
     const [complaints, setComplaints] = useState([]);
+    const [stats, setStats] = useState(null);
 
     const email = localStorage.getItem("email");
 
@@ -21,6 +22,17 @@ export default function InvestigatorDashboard() {
             }
         };
 
+        const loadStats = async () => {
+            try {
+                const res = await axios.get(
+                    `http://localhost:7000/api/complaint/investigator/${email}/stats`
+                );
+                setStats(res.data);
+            } catch (err) {
+                console.error("Error loading stats:", err);
+            }
+        };
+
         const loadComplaints = async () => {
             try {
                 const res = await axios.get(
@@ -33,20 +45,13 @@ export default function InvestigatorDashboard() {
         };
 
         loadInvestigator();
+        loadStats();
         loadComplaints();
     }, [email]);
 
-    if (!investigator) {
+    if (!investigator || !stats) {
         return <p style={{ textAlign: "center", marginTop: 40 }}>Loading...</p>;
     }
-
-    // Stats
-    const stats = {
-        total: complaints.length,
-        pending: complaints.filter(c => c.status === "Pending").length,
-        inProgress: complaints.filter(c => ["Assigned", "In Progress"].includes(c.status)).length,
-        resolved: complaints.filter(c => c.status === "Resolved").length
-    };
 
     const priorities = complaints.slice(0, 3);
 
@@ -57,9 +62,11 @@ export default function InvestigatorDashboard() {
                 {/* HEADER CARD */}
                 <div style={styles.headerCard}>
                     <div style={{ flex: 1 }}>
-                        <h2 style={styles.headerTitle}>Welcome, {investigator.name}</h2>
+                        <h2 style={styles.headerTitle}>
+                            Welcome, {investigator.name}
+                        </h2>
                         <p style={styles.headerSub}>
-                            {investigator.department} • {investigator.investigatorId}
+                            {investigator.department} • Badge #{investigator.badgeNumber}
                         </p>
                     </div>
 
@@ -72,21 +79,26 @@ export default function InvestigatorDashboard() {
 
                 {/* STATS GRID */}
                 <div style={styles.statsGrid}>
-                    {renderStat("Assigned Complaints", stats.total, "#304FFE")}
-                    {renderStat("Pending", stats.pending, "#FF9800")}
-                    {renderStat("In Progress", stats.inProgress, "#0288D1")}
+                    {renderStat("Total Cases", stats.total, "#304FFE")}
+                    {renderStat("New", stats.assigned, "#3F51B5")}
+                    {renderStat("Open", stats.open, "#0288D1")}
                     {renderStat("Resolved", stats.resolved, "#2E7D32")}
+                    {renderStat("Closed", stats.closed, "#616161")}
                 </div>
 
                 {/* ACTION BUTTONS */}
                 <div style={styles.actionsBar}>
-                    <a href="/investigator/assigned" style={styles.primaryBtn}>View Complaints</a>
-                    <a href="/profile" style={styles.outlineBtn}>Profile</a>
+                    <a href="/investigator/assigned" style={styles.primaryBtn}>
+                        View Complaints
+                    </a>
+                    <a href="/investigator/profile" style={styles.outlineBtn}>
+                        Profile
+                    </a>
                 </div>
 
                 {/* PRIORITY COMPLAINTS */}
                 <div style={styles.block}>
-                    <h3 style={styles.blockTitle}>Today's Priority Complaints</h3>
+                    <h3 style={styles.blockTitle}>Priority Complaints</h3>
 
                     {priorities.length === 0 ? (
                         <p style={styles.noData}>No assigned complaints yet.</p>
@@ -94,7 +106,9 @@ export default function InvestigatorDashboard() {
                         priorities.map((item) => (
                             <div key={item._id} style={styles.priorityItem}>
                                 <div>
-                                    <strong style={{ fontSize: 16 }}>{item.complaintType}</strong>
+                                    <strong style={{ fontSize: 16 }}>
+                                        {item.complaintType}
+                                    </strong>
                                     <p style={styles.dateText}>
                                         {new Date(item.createdAt).toLocaleDateString()}
                                     </p>
@@ -104,10 +118,10 @@ export default function InvestigatorDashboard() {
                                     style={{
                                         ...styles.badge,
                                         background:
-                                            item.status === "Pending" ? "#FF9800" :
                                             item.status === "Assigned" ? "#3F51B5" :
-                                            item.status === "Resolved" ? "#2E7D32" :
-                                            "#616161"
+                                                item.status === "Open" ? "#0288D1" :
+                                                    item.status === "Resolved" ? "#2E7D32" :
+                                                        "#616161"
                                     }}
                                 >
                                     {item.status}
@@ -117,14 +131,15 @@ export default function InvestigatorDashboard() {
                     )}
                 </div>
 
-                {/* ACTIVITY FEED */}
+                {/* ACTIVITY FEED (future-ready) */}
                 <div style={styles.block}>
                     <h3 style={styles.blockTitle}>Recent Activity</h3>
 
                     <div style={styles.activityBox}>
-                        <p style={styles.activityItem}>You logged in recently.</p>
-                        <p style={styles.activityItem}>Complaint records synced.</p>
-                        <p style={styles.activityEmpty}>More activity tracking coming soon...</p>
+                        <p style={styles.activityItem}>Dashboard loaded successfully.</p>
+                        <p style={styles.activityEmpty}>
+                            Activity timeline coming soon…
+                        </p>
                     </div>
                 </div>
 
@@ -133,19 +148,16 @@ export default function InvestigatorDashboard() {
     );
 }
 
-/* Small helper to render stats cleanly */
-const renderStat = (label, value, color) => {
-    return (
-        <div style={styles.statCard}>
-            <h3 style={{ ...styles.statNumber, color }}>{value}</h3>
-            <p style={styles.statLabel}>{label}</p>
-        </div>
-    );
-};
+/* ---------------- Helpers ---------------- */
 
-//
-// STYLES
-//
+const renderStat = (label, value, color) => (
+    <div style={styles.statCard}>
+        <h3 style={{ ...styles.statNumber, color }}>{value}</h3>
+        <p style={styles.statLabel}>{label}</p>
+    </div>
+);
+
+/* ---------------- Styles (UNCHANGED) ---------------- */
 
 const styles = {
     page: {
@@ -155,13 +167,8 @@ const styles = {
         display: "flex",
         justifyContent: "center",
     },
+    container: { width: "100%", maxWidth: "1100px" },
 
-    container: {
-        width: "100%",
-        maxWidth: "1100px",
-    },
-
-    /* Header */
     headerCard: {
         background: "linear-gradient(135deg, #4A6EFF, #304FFE)",
         padding: "28px",
@@ -173,31 +180,16 @@ const styles = {
         marginBottom: "32px",
         boxShadow: "0 12px 32px rgba(0,0,0,0.18)",
     },
+    headerTitle: { fontSize: "28px", fontWeight: "700" },
+    headerSub: { opacity: 0.85, marginTop: 4 },
+    avatar: { width: 90, height: 90, borderRadius: "50%" },
 
-    headerTitle: {
-        fontSize: "28px",
-        fontWeight: "700",
-    },
-
-    headerSub: {
-        opacity: 0.85,
-        marginTop: 4,
-    },
-
-    avatar: {
-        width: 90,
-        height: 90,
-        borderRadius: "50%",
-    },
-
-    /* Stats Grid */
     statsGrid: {
         display: "grid",
-        gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
+        gridTemplateColumns: "repeat(5, 1fr)",
         gap: "22px",
         marginBottom: "38px",
     },
-
     statCard: {
         background: "#fff",
         padding: "22px",
@@ -205,25 +197,10 @@ const styles = {
         textAlign: "center",
         boxShadow: "0 6px 16px rgba(0,0,0,0.10)",
     },
+    statNumber: { fontSize: "30px", fontWeight: "700" },
+    statLabel: { marginTop: 6, color: "#666", fontWeight: "500" },
 
-    statNumber: {
-        fontSize: "30px",
-        fontWeight: "700",
-    },
-
-    statLabel: {
-        marginTop: 6,
-        color: "#666",
-        fontWeight: "500",
-    },
-
-    /* Actions */
-    actionsBar: {
-        display: "flex",
-        gap: "18px",
-        marginBottom: "32px",
-    },
-
+    actionsBar: { display: "flex", gap: "18px", marginBottom: "32px" },
     primaryBtn: {
         background: "#304FFE",
         color: "#fff",
@@ -232,7 +209,6 @@ const styles = {
         textDecoration: "none",
         fontWeight: "600",
     },
-
     outlineBtn: {
         border: "2px solid #304FFE",
         padding: "12px 26px",
@@ -243,7 +219,6 @@ const styles = {
         background: "#fff",
     },
 
-    /* Blocks */
     block: {
         background: "#fff",
         padding: "26px",
@@ -251,12 +226,7 @@ const styles = {
         boxShadow: "0 6px 20px rgba(0,0,0,0.08)",
         marginBottom: "26px",
     },
-
-    blockTitle: {
-        fontSize: "20px",
-        fontWeight: "700",
-        marginBottom: "18px",
-    },
+    blockTitle: { fontSize: "20px", fontWeight: "700", marginBottom: "18px" },
 
     priorityItem: {
         display: "flex",
@@ -264,36 +234,17 @@ const styles = {
         borderBottom: "1px solid #eee",
         padding: "12px 0",
     },
-
-    dateText: {
-        margin: 0,
-        color: "#666",
-        fontSize: 13,
-    },
-
+    dateText: { margin: 0, color: "#666", fontSize: 13 },
     badge: {
         padding: "6px 12px",
         borderRadius: "8px",
         fontWeight: "600",
         color: "#fff",
     },
+    noData: { color: "#777", textAlign: "center" },
 
-    noData: {
-        color: "#777",
-        textAlign: "center",
-    },
-
-    /* Activity Feed */
-    activityBox: {
-        paddingLeft: 6,
-    },
-
-    activityItem: {
-        margin: "8px 0",
-        color: "#444",
-        fontSize: 14,
-    },
-
+    activityBox: { paddingLeft: 6 },
+    activityItem: { margin: "8px 0", color: "#444", fontSize: 14 },
     activityEmpty: {
         marginTop: 8,
         color: "#888",

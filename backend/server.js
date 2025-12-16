@@ -11,6 +11,7 @@ import complaintRoutes from "./routes/complaintRoutes.js";
 import investigatorRoutes from "./routes/investigatorRoutes.js";
 import profileRoutes from "./routes/profileRoutes.js";
 import feedbackRoutes from "./routes/feedbackRoutes.js";
+import caseFileRoutes from "./routes/caseFileRoutes.js";
 
 import investigatorSetupRoute from "./routes/investigatorSetupRoute.js";
 
@@ -62,6 +63,7 @@ app.use("/api/complaint", complaintRoutes);
 app.use("/api/investigators", investigatorRoutes);
 app.use("/api/profile", profileRoutes);
 app.use("/api", feedbackRoutes);
+app.use("/api/case-files", caseFileRoutes);
 
 app.use("/api", investigatorSetupRoute);
 
