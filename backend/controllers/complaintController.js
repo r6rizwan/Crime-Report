@@ -1,9 +1,7 @@
 import Complaint from "../models/Complaint.js";
 import CaseActivity from "../models/CaseActivity.js";
 
-/* ----------------------------------------------------
-   CREATE COMPLAINT (USER)
----------------------------------------------------- */
+// CREATE COMPLAINT (USER)
 export const createComplaint = async (req, res) => {
     try {
         const { complaintId, complaintType, description, email } = req.body;
@@ -243,7 +241,7 @@ export const investigatorResolveComplaint = async (req, res) => {
 };
 
 /* ----------------------------------------------------
-   ⭐ INVESTIGATOR DASHBOARD KPIs (ADDED)
+   INVESTIGATOR DASHBOARD KPIs (ADDED)
 ---------------------------------------------------- */
 
 export const getInvestigatorDashboardStats = async (req, res) => {

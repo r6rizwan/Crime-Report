@@ -1,9 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
 
-/* ----------------------------------------------------
-   Timeline definition (ORDER MATTERS)
----------------------------------------------------- */
 const TIMELINE_STEPS = [
     { key: "createdAt", label: "Filed" },
     { key: "assignedAt", label: "Assigned" },
@@ -204,7 +201,7 @@ export default function ComplaintTracking() {
                         {result.file && (
                             <div style={{ marginTop: 20 }}>
                                 <a
-                                    href={`http://localhost:7000/uploads/${result.file}`}
+                                    href={`http://localhost:7000/uploads/${String(result.file).replace(/\\/g, "/").replace(/^\/+/, "")}`}
                                     target="_blank"
                                     rel="noreferrer"
                                     style={styles.link}

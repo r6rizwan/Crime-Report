@@ -39,6 +39,7 @@ export default function InvestigatorAssignedComplaints() {
     const assigned = complaints.filter(c => c.status === "Assigned");
     const open = complaints.filter(c => c.status === "Open");
     const resolved = complaints.filter(c => c.status === "Resolved");
+    const closed = complaints.filter(c => c.status === "Closed");
 
     return (
         <div style={styles.page}>
@@ -64,12 +65,21 @@ export default function InvestigatorAssignedComplaints() {
             />
 
             <Section
-                title="🟢 Resolved (Waiting for Admin)"
+                title="🟢 Resolved"
                 items={resolved}
                 emptyText="No resolved complaints yet."
                 actionLabel="View"
                 onAction={(id) => navigate(`/investigator/update-status/${id}`)}
-                readOnly
+                // readOnly
+            />
+
+            <Section
+                title="✅ Closed"
+                items={closed}
+                emptyText="No complaints Closed yet."
+                actionLabel="View"
+                onAction={(id) => navigate(`/investigator/update-status/${id}`)}
+                // readOnly
             />
         </div>
     );

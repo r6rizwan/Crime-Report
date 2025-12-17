@@ -33,6 +33,15 @@ export default function InvestigatorLayout({ children }) {
                             Assigned Cases
                         </NavLink>
 
+                        <NavLink
+                            to="/investigator/profile"
+                            style={({ isActive }) =>
+                                isActive ? { ...styles.link, ...styles.active } : styles.link
+                            }
+                        >
+                            Profile
+                        </NavLink>
+
                         {/* <NavLink
                             to="/investigator/update-status"
                             style={({ isActive }) =>

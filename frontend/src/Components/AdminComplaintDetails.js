@@ -225,17 +225,19 @@ export default function AdminComplaintDetails() {
 
                         <div style={{ marginTop: 12 }}>
                             <div style={styles.key}>Files</div>
-                            {caseFile.files.map((f, i) => (
-                                <a
-                                    key={i}
-                                    href={`http://localhost:7000/uploads/${String(f.filename).replace(/\\/g, "/").replace(/^\/+/, "")}`}
-                                    target="_blank"
-                                    rel="noreferrer"
-                                    style={styles.fileLink}
-                                >
-                                    📎 {f.filename}
-                                </a>
-                            ))}
+                            {caseFile.files.length > 0 ?
+                                caseFile.files.map((f, i) => (
+                                    <a
+                                        key={i}
+                                        href={`http://localhost:7000/uploads/${String(f.filename).replace(/\\/g, "/").replace(/^\/+/, "")}`}
+                                        target="_blank"
+                                        rel="noreferrer"
+                                        style={styles.fileLink}
+                                    >
+                                        📎 {f.filename}
+                                    </a>
+                                )) : <p>No case files uploaded yet.</p>
+                            }
                         </div>
                     </>
                 )}
