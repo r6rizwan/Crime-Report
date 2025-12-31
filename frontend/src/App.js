@@ -30,6 +30,8 @@ import AdminCaseFiles from "./Components/AdminCaseFiles";
 import UserProfile from "./Components/UserProfile";
 import AdminInvestigators from "./Components/AdminInvestigators";
 import AdminAddInvestigator from "./Components/AdminAddInvestigator";
+import InvestigatorLogin from "./Components/InvestigatorLogin";
+import InvestigatorProfile from "./Components/InvestigatorProfile";
 
 
 function App() {
@@ -40,6 +42,7 @@ function App() {
         {/* PUBLIC ROUTES */}
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/investigator/login" element={<InvestigatorLogin />} />
         <Route path="/register" element={<Register />} />
         <Route path="/otp" element={<OtpVerify />} />
         <Route path="/set-password" element={<SetPassword />} />
@@ -211,6 +214,17 @@ function App() {
             <ProtectedRoute role="Investigator">
               <InvestigatorLayout>
                 <InvestigatorCaseFiles />
+              </InvestigatorLayout>
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/investigator/profile"
+          element={
+            <ProtectedRoute role="Investigator">
+              <InvestigatorLayout>
+                <InvestigatorProfile />
               </InvestigatorLayout>
             </ProtectedRoute>
           }

@@ -12,26 +12,22 @@ import {
 
 const router = express.Router();
 
-// CREATE investigator
+// CREATE investigator (Admin)
 router.post("/", createInvestigator);
 
-// GET all investigators
+// OTP AUTH (Investigator)
+router.post("/send-otp", sendOtp);
+router.post("/verify-otp", verifyOtp);
+
+// READ
 router.get("/", getInvestigators);
-
-// GET by email (KEEP THIS ABOVE :id)
 router.get("/by-email/:email", getInvestigatorByEmail);
-
-// GET a single investigator
 router.get("/:id", getInvestigatorById);
 
-// UPDATE investigator
+// UPDATE
 router.put("/:id", updateInvestigator);
 
-// DELETE investigator
+// DELETE
 router.delete("/:id", deleteInvestigator);
-
-// OTP AUTH
-router.post("/auth/send-otp", sendOtp);
-router.post("/auth/verify-otp", verifyOtp);
 
 export default router;

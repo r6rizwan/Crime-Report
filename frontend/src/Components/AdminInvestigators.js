@@ -51,7 +51,7 @@ export default function AdminInvestigators() {
 
                 <button
                     style={styles.primaryBtn}
-                    onClick={() => navigate("/admin/investigators/add")}
+                    onClick={() => navigate("/admin/add-investigator")}
                 >
                     + Add Investigator
                 </button>
@@ -61,13 +61,15 @@ export default function AdminInvestigators() {
             <div style={styles.card}>
                 <table style={styles.table}>
                     <thead>
-                        <tr>
-                            <th>Name</th>
-                            <th>Email</th>
-                            <th>Phone</th>
-                            <th>Department</th>
-                            <th>Status</th>
-                            <th style={{ textAlign: "right" }}>Action</th>
+                        <tr style={styles.theadRow}>
+                            <th style={styles.th}>Name</th>
+                            <th style={styles.th}>Email</th>
+                            <th style={styles.th}>Phone</th>
+                            <th style={styles.th}>Department</th>
+                            <th style={styles.th}>Status</th>
+                            <th style={{ ...styles.th, textAlign: "right" }}>
+                                Action
+                            </th>
                         </tr>
                     </thead>
 
@@ -79,19 +81,13 @@ export default function AdminInvestigators() {
                                 </td>
                             </tr>
                         ) : (
-                            investigators.map((inv, index) => (
-                                <tr
-                                    key={inv._id}
-                                    style={{
-                                        background:
-                                            index % 2 === 0 ? "#FAFBFF" : "#FFFFFF",
-                                    }}
-                                >
-                                    <td>{inv.name}</td>
-                                    <td>{inv.email}</td>
-                                    <td>{inv.phone}</td>
-                                    <td>{inv.department}</td>
-                                    <td>
+                            investigators.map((inv) => (
+                                <tr key={inv._id} style={styles.row}>
+                                    <td style={styles.td}>{inv.name}</td>
+                                    <td style={styles.td}>{inv.email}</td>
+                                    <td style={styles.td}>{inv.phone}</td>
+                                    <td style={styles.td}>{inv.department}</td>
+                                    <td style={styles.td}>
                                         <span
                                             style={{
                                                 ...styles.badge,
@@ -104,7 +100,7 @@ export default function AdminInvestigators() {
                                             {inv.status}
                                         </span>
                                     </td>
-                                    <td style={{ textAlign: "right" }}>
+                                    <td style={{ ...styles.td, textAlign: "right" }}>
                                         <button
                                             style={
                                                 inv.status === "Active"
@@ -169,9 +165,9 @@ const styles = {
 
     card: {
         background: "#fff",
-        borderRadius: 16,
-        boxShadow: "0 8px 26px rgba(0,0,0,0.08)",
-        overflow: "hidden",
+        borderRadius: 18,
+        boxShadow: "0 10px 28px rgba(0,0,0,0.08)",
+        padding: "12px 0", // 🔑 side spacing fix
     },
 
     table: {
@@ -179,9 +175,31 @@ const styles = {
         borderCollapse: "collapse",
     },
 
-    th: {},
+    theadRow: {
+        background: "#F5F7FF",
+    },
 
-    td: {},
+    th: {
+        padding: "16px 22px",
+        textAlign: "left",
+        fontSize: 13,
+        fontWeight: 700,
+        textTransform: "uppercase",
+        color: "#555",
+        borderBottom: "1px solid #E0E4FF",
+    },
+
+    td: {
+        padding: "16px 22px",
+        fontSize: 14,
+        color: "#333",
+        borderBottom: "1px solid #F0F0F0",
+        verticalAlign: "middle",
+    },
+
+    row: {
+        transition: "background 0.2s ease",
+    },
 
     badge: {
         color: "#fff",
@@ -190,7 +208,7 @@ const styles = {
         fontWeight: 600,
         fontSize: 13,
         display: "inline-block",
-        minWidth: 80,
+        minWidth: 90,
         textAlign: "center",
     },
 
@@ -198,7 +216,7 @@ const styles = {
         background: "#E8F5E9",
         color: "#2E7D32",
         border: "1px solid #C8E6C9",
-        padding: "6px 14px",
+        padding: "8px 16px",
         borderRadius: 8,
         fontWeight: 600,
         cursor: "pointer",
@@ -208,7 +226,7 @@ const styles = {
         background: "#FCE4EC",
         color: "#C2185B",
         border: "1px solid #F8BBD0",
-        padding: "6px 14px",
+        padding: "8px 16px",
         borderRadius: 8,
         fontWeight: 600,
         cursor: "pointer",
@@ -216,7 +234,7 @@ const styles = {
 
     empty: {
         textAlign: "center",
-        padding: 40,
+        padding: 50,
         color: "#777",
         fontWeight: 600,
     },
@@ -227,6 +245,3 @@ const styles = {
         fontWeight: 600,
     },
 };
-
-/* TABLE HEADER STYLES */
-styles.table && (styles.table.thead = {});

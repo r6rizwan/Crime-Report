@@ -93,8 +93,8 @@ export default function AdminComplaintDetails() {
     return (
         <div style={styles.page}>
 
-            <div style={styles.backRow} onClick={() => navigate("/admin/complaints")}>
-                ← Back to Complaints
+            <div style={styles.backRow} onClick={() => navigate(-1)}>
+                ← Back
             </div>
 
             <h2 style={styles.heading}>Complaint Details</h2>

@@ -38,7 +38,7 @@ export default function InvestigatorUpdateStatus() {
             await axios.put(
                 `http://localhost:7000/api/complaint/${id}/open`
             );
-            navigate("/investigator/assigned");
+            // navigate("/investigator/assigned");
         } catch {
             alert("Failed to open case");
         } finally {
@@ -136,7 +136,7 @@ export default function InvestigatorUpdateStatus() {
                     {complaint.file && (
                         <Section title="Attached Evidence">
                             <a
-                                href={`http://localhost:7000/${complaint.file}`}
+                                href={`http://localhost:7000/uploads/${String(complaint.file).replace(/\\/g, "/").replace(/^\/+/, "")}`}
                                 target="_blank"
                                 rel="noreferrer"
                                 style={styles.link}
