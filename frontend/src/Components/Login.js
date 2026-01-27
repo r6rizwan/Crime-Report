@@ -69,8 +69,8 @@ export default function Login() {
                     <span style={styles.navLink} onClick={() => navigate("/")}>
                         Home
                     </span>
-                    <span style={styles.navLink}>About</span>
-                    <span style={styles.navLink}>Contact</span>
+                    <span style={styles.navLink} onClick={() => navigate("/aboutpage")}>About</span>
+                    <span style={styles.navLink} onClick={() => navigate("/contactpage")}>Contact</span>
 
                     {/* LOGIN DROPDOWN */}
                     <div

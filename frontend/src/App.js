@@ -32,6 +32,8 @@ import AdminInvestigators from "./Components/AdminInvestigators";
 import AdminAddInvestigator from "./Components/AdminAddInvestigator";
 import InvestigatorLogin from "./Components/InvestigatorLogin";
 import InvestigatorProfile from "./Components/InvestigatorProfile";
+import AboutPage from "./Components/AboutPage";
+import ContactPage from "./Components/ContactPage";
 
 
 function App() {
@@ -46,7 +48,8 @@ function App() {
         <Route path="/register" element={<Register />} />
         <Route path="/otp" element={<OtpVerify />} />
         <Route path="/set-password" element={<SetPassword />} />
-
+        <Route path="/aboutpage" element={<AboutPage/>}/>
+        <Route path="/contactpage" element={<ContactPage/>}/>
 
         {/* USER ROUTES */}
         <Route
