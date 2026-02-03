@@ -53,10 +53,17 @@ export default function ComplaintTracking() {
     return (
         <div style={styles.page}>
             <div style={styles.container}>
-                <h2 style={styles.heading}>Track Complaint</h2>
+                <div style={styles.headerTop}>
+                    <div>
+                        <p style={styles.eyebrow}>Tracking</p>
+                        <h2 style={styles.heading}>Track Complaint</h2>
+                        <p style={styles.subtitle}>
+                            Enter your complaint ID to see live progress and updates.
+                        </p>
+                    </div>
+                </div>
 
-                {/* Search */}
-                <div style={styles.searchRow}>
+                <div style={styles.searchCard}>
                     <input
                         value={queryId}
                         placeholder="Enter Complaint ID"
@@ -80,37 +87,24 @@ export default function ComplaintTracking() {
                     </p>
                 )}
 
-                {/* RESULT */}
                 {result && (
                     <div style={styles.card}>
-
-                        {/* HEADER */}
-                        <div style={styles.header}>
+                        <div style={styles.headerRow}>
                             <div>
-                                <h3 style={styles.type}>
-                                    {result.complaintType}
-                                </h3>
-                                <p style={styles.id}>
-                                    ID: {result.complaintId}
-                                </p>
+                                <h3 style={styles.type}>{result.complaintType}</h3>
+                                <p style={styles.id}>ID: {result.complaintId}</p>
                             </div>
-
                             <span
                                 style={{
                                     ...styles.status,
                                     background:
-                                        COLORS[
-                                        result.status === "Open"
-                                            ? "Opened"
-                                            : result.status
-                                        ],
+                                        COLORS[result.status === "Open" ? "Opened" : result.status],
                                 }}
                             >
                                 {result.status}
                             </span>
                         </div>
 
-                        {/* BASIC INFO */}
                         <div style={styles.infoBox}>
                             <p>
                                 <strong>Filed On:</strong>{" "}
@@ -126,11 +120,8 @@ export default function ComplaintTracking() {
                             </p>
                         </div>
 
-                        {/* TIMELINE */}
                         <div style={styles.timelineSection}>
-                            <p style={styles.timelineHeading}>
-                                Complaint Progress
-                            </p>
+                            <p style={styles.timelineHeading}>Complaint Progress</p>
 
                             <div style={styles.timeline}>
                                 {TIMELINE_STEPS.map((step, index) => {
@@ -140,10 +131,7 @@ export default function ComplaintTracking() {
                                         : "#BDBDBD";
 
                                     return (
-                                        <div
-                                            key={step.key}
-                                            style={styles.timelineStep}
-                                        >
+                                        <div key={step.key} style={styles.timelineStep}>
                                             <div
                                                 style={{
                                                     ...styles.dot,
@@ -158,9 +146,7 @@ export default function ComplaintTracking() {
                                                 style={{
                                                     ...styles.timelineLabel,
                                                     color: labelColor,
-                                                    fontWeight: completed
-                                                        ? 700
-                                                        : 500,
+                                                    fontWeight: completed ? 700 : 500,
                                                 }}
                                             >
                                                 {step.label}
@@ -168,36 +154,29 @@ export default function ComplaintTracking() {
 
                                             {completed && (
                                                 <div style={styles.time}>
-                                                    {new Date(
-                                                        result[step.key]
-                                                    ).toLocaleString()}
+                                                    {new Date(result[step.key]).toLocaleString()}
                                                 </div>
                                             )}
 
-                                            {index <
-                                                TIMELINE_STEPS.length - 1 && (
-                                                    <div
-                                                        style={{
-                                                            ...styles.line,
-                                                            background: labelColor,
-                                                        }}
-                                                    />
-                                                )}
+                                            {index < TIMELINE_STEPS.length - 1 && (
+                                                <div
+                                                    style={{
+                                                        ...styles.line,
+                                                        background: labelColor,
+                                                    }}
+                                                />
+                                            )}
                                         </div>
                                     );
                                 })}
                             </div>
                         </div>
 
-                        {/* DESCRIPTION */}
                         <div style={{ marginTop: 30 }}>
                             <p style={styles.label}>Description</p>
-                            <div style={styles.desc}>
-                                {result.description}
-                            </div>
+                            <div style={styles.desc}>{result.description}</div>
                         </div>
 
-                        {/* ATTACHMENT */}
                         {result.file && (
                             <div style={{ marginTop: 20 }}>
                                 <a
@@ -225,7 +204,8 @@ const styles = {
     page: {
         minHeight: "100vh",
         padding: "40px 20px",
-        background: "#F4F6FF",
+        background:
+            "radial-gradient(circle at top, #ffffff 0%, #f6f3ee 40%, #efe9df 100%)",
         display: "flex",
         justifyContent: "center",
     },
@@ -233,10 +213,39 @@ const styles = {
         width: "100%",
         maxWidth: "900px",
     },
+    headerTop: {
+        display: "flex",
+        justifyContent: "space-between",
+        alignItems: "flex-end",
+        gap: 16,
+        flexWrap: "wrap",
+        marginBottom: 18,
+    },
+    eyebrow: {
+        fontSize: 12,
+        textTransform: "uppercase",
+        letterSpacing: "0.24em",
+        color: "var(--mint-600)",
+        fontWeight: 700,
+        marginBottom: 8,
+    },
     heading: {
         fontSize: 28,
         fontWeight: 700,
-        marginBottom: 20,
+        margin: 0,
+    },
+    subtitle: {
+        marginTop: 8,
+        color: "var(--ink-600)",
+    },
+    searchCard: {
+        background: "#fff",
+        padding: 18,
+        borderRadius: 16,
+        boxShadow: "var(--card-shadow)",
+        display: "flex",
+        gap: 12,
+        alignItems: "center",
     },
     searchRow: {
         display: "flex",
@@ -244,16 +253,17 @@ const styles = {
     },
     input: {
         flex: 1,
-        padding: 12,
-        borderRadius: 10,
-        border: "1px solid #CDD2E6",
+        padding: "13px 14px",
+        borderRadius: 12,
+        border: "1px solid rgba(15, 23, 42, 0.15)",
         fontSize: 15,
+        background: "rgba(250, 250, 250, 0.9)",
     },
     btn: {
         padding: "12px 20px",
-        borderRadius: 10,
+        borderRadius: 12,
         border: "none",
-        background: "#304FFE",
+        background: "var(--mint-500)",
         color: "#fff",
         fontWeight: 600,
         cursor: "pointer",
@@ -264,7 +274,7 @@ const styles = {
         fontWeight: 600,
     },
     placeholder: {
-        color: "#777",
+        color: "var(--ink-600)",
         marginTop: 15,
     },
     card: {
@@ -272,12 +282,14 @@ const styles = {
         padding: 25,
         marginTop: 20,
         borderRadius: 18,
-        boxShadow: "0 10px 26px rgba(0,0,0,0.1)",
+        boxShadow: "var(--card-shadow)",
     },
-    header: {
+    headerRow: {
         display: "flex",
         justifyContent: "space-between",
         alignItems: "center",
+        flexWrap: "wrap",
+        gap: 12,
     },
     type: {
         margin: 0,
@@ -286,21 +298,24 @@ const styles = {
     },
     id: {
         marginTop: 4,
-        color: "#666",
+        color: "var(--ink-600)",
     },
     status: {
         padding: "8px 14px",
-        borderRadius: 10,
+        borderRadius: 999,
         color: "white",
         fontWeight: 600,
+        textTransform: "uppercase",
+        letterSpacing: "0.08em",
+        fontSize: 12,
     },
     infoBox: {
         marginTop: 20,
         lineHeight: 1.7,
-        background: "#F8F9FF",
+        background: "rgba(15,23,42,0.04)",
         padding: 14,
         borderRadius: 12,
-        border: "1px solid #E0E3F1",
+        border: "1px solid rgba(15,23,42,0.08)",
     },
     timelineSection: {
         marginTop: 30,
@@ -348,13 +363,13 @@ const styles = {
         marginBottom: 8,
     },
     desc: {
-        background: "#F2F4FF",
+        background: "rgba(15,23,42,0.04)",
         padding: 12,
         borderRadius: 10,
-        border: "1px solid #E0E7FF",
+        border: "1px solid rgba(15,23,42,0.08)",
     },
     link: {
-        color: "#304FFE",
+        color: "var(--mint-600)",
         fontWeight: 600,
         textDecoration: "none",
     },

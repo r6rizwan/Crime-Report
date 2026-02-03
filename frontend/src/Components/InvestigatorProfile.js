@@ -68,9 +68,9 @@ export default function InvestigatorProfile() {
         <div style={styles.page}>
             <div style={styles.container}>
 
-                {/* HEADER */}
-                <div style={styles.headerCard}>
+                <div style={styles.hero}>
                     <div>
+                        <p style={styles.eyebrow}>Investigator Profile</p>
                         <h2 style={styles.name}>{investigator.name}</h2>
                         <p style={styles.sub}>
                             {investigator.department} • {investigator.designation}
@@ -83,10 +83,7 @@ export default function InvestigatorProfile() {
                     </div>
                 </div>
 
-                {/* DETAILS GRID */}
                 <div style={styles.grid}>
-
-                    {/* READ-ONLY INFO */}
                     <div style={styles.card}>
                         <h3 style={styles.cardTitle}>Official Information</h3>
 
@@ -98,7 +95,6 @@ export default function InvestigatorProfile() {
                         />
                     </div>
 
-                    {/* EDITABLE INFO */}
                     <div style={styles.card}>
                         <h3 style={styles.cardTitle}>Personal Details</h3>
 
@@ -153,7 +149,8 @@ const Info = ({ label, value }) => (
 
 const styles = {
     page: {
-        background: "#F4F6FF",
+        background:
+            "radial-gradient(circle at top, #ffffff 0%, #f6f3ee 40%, #efe9df 100%)",
         minHeight: "100vh",
         padding: 30,
     },
@@ -162,23 +159,32 @@ const styles = {
         margin: "0 auto",
     },
 
-    headerCard: {
-        background: "linear-gradient(135deg, #4A6EFF, #304FFE)",
+    hero: {
+        background: "#0f172a",
         padding: 26,
-        borderRadius: 18,
+        borderRadius: 22,
         color: "#fff",
         display: "flex",
         justifyContent: "space-between",
         alignItems: "center",
         marginBottom: 30,
-        boxShadow: "0 10px 30px rgba(0,0,0,0.18)",
+        boxShadow: "0 18px 40px rgba(11,18,32,0.28)",
+        flexWrap: "wrap",
+        gap: 16,
     },
-
+    eyebrow: {
+        fontSize: 12,
+        textTransform: "uppercase",
+        letterSpacing: "0.24em",
+        color: "rgba(255,255,255,0.7)",
+        fontWeight: 700,
+        marginBottom: 10,
+    },
     name: { fontSize: 26, fontWeight: 700 },
-    sub: { opacity: 0.9 },
+    sub: { opacity: 0.8 },
 
     idBox: {
-        background: "rgba(255,255,255,0.2)",
+        background: "rgba(255,255,255,0.08)",
         padding: "10px 16px",
         borderRadius: 12,
         textAlign: "center",
@@ -187,15 +193,15 @@ const styles = {
 
     grid: {
         display: "grid",
-        gridTemplateColumns: "1fr 1fr",
+        gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
         gap: 24,
     },
 
     card: {
         background: "#fff",
         padding: 24,
-        borderRadius: 16,
-        boxShadow: "0 6px 20px rgba(0,0,0,0.08)",
+        borderRadius: 18,
+        boxShadow: "var(--card-shadow)",
     },
 
     cardTitle: {
@@ -208,10 +214,10 @@ const styles = {
         display: "flex",
         justifyContent: "space-between",
         padding: "8px 0",
-        borderBottom: "1px solid #eee",
+        borderBottom: "1px solid rgba(15,23,42,0.08)",
     },
-    infoLabel: { color: "#666", fontWeight: 600 },
-    infoValue: { fontWeight: 600 },
+    infoLabel: { color: "var(--ink-600)", fontWeight: 600 },
+    infoValue: { fontWeight: 600, color: "var(--ink-900)" },
 
     field: {
         display: "flex",
@@ -220,16 +226,16 @@ const styles = {
     },
 
     input: {
-        padding: 12,
-        borderRadius: 10,
-        border: "1px solid #CCC",
+        padding: "12px 14px",
+        borderRadius: 12,
+        border: "1px solid rgba(15,23,42,0.15)",
         marginTop: 6,
     },
 
     textarea: {
-        padding: 12,
-        borderRadius: 10,
-        border: "1px solid #CCC",
+        padding: "12px 14px",
+        borderRadius: 12,
+        border: "1px solid rgba(15,23,42,0.15)",
         marginTop: 6,
         resize: "vertical",
     },
@@ -237,15 +243,15 @@ const styles = {
     message: {
         marginTop: 10,
         fontWeight: 600,
-        color: "#2E7D32",
+        color: "#15803d",
     },
 
     primaryBtn: {
         marginTop: 14,
-        background: "#304FFE",
+        background: "var(--mint-500)",
         color: "#fff",
         padding: "12px",
-        borderRadius: 10,
+        borderRadius: 12,
         border: "none",
         fontWeight: 700,
         cursor: "pointer",

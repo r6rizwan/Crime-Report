@@ -12,6 +12,11 @@ export const createPassword = async (req, res) => {
             return res.status(400).json({ error: "User not verified!" });
         }
 
+        const existingLogin = await Login.findOne({ email });
+        if (existingLogin) {
+            return res.status(409).json({ error: "Password already set for this account" });
+        }
+
         // Create login entry
         const login = await Login.create({
             email,
@@ -20,11 +25,17 @@ export const createPassword = async (req, res) => {
         });
 
         // Create profile also (if not already created)
-        await Profile.create({
-            email,
-            fullName: user.fullName,
-            utype: "User"
-        });
+        await Profile.updateOne(
+            { email },
+            {
+                $setOnInsert: {
+                    email,
+                    fullName: user.fullName,
+                    utype: "User"
+                }
+            },
+            { upsert: true }
+        );
 
         return res.json({
             message: "Password created successfully",

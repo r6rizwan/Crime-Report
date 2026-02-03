@@ -42,40 +42,51 @@ export default function SetPassword() {
 
     return (
         <div style={styles.page}>
-            <div style={styles.card}>
+            <div style={styles.glowA} />
+            <div style={styles.glowB} />
 
-                <h2 style={styles.title}>Set Your Password</h2>
-                <p style={styles.subtitle}>For: {email}</p>
+            <div style={styles.container}>
+                <div style={styles.sideCard}>
+                    <p style={styles.eyebrow}>Secure Access</p>
+                    <h2 style={styles.sideTitle}>Set a strong password.</h2>
+                    <p style={styles.sideText}>
+                        Use at least 8 characters with a mix of letters, numbers,
+                        and symbols for the best protection.
+                    </p>
+                    <div style={styles.sideNote}>Account: {email || "Unverified email"}</div>
+                </div>
 
-                {error && <p style={styles.error}>{error}</p>}
-                {success && <p style={styles.success}>{success}</p>}
+                <div style={styles.card}>
+                    <h2 style={styles.title}>Set Your Password</h2>
+                    <p style={styles.subtitle}>For: {email}</p>
 
-                <form onSubmit={handleSubmit} style={styles.form}>
+                    {error && <p style={styles.error}>{error}</p>}
+                    {success && <p style={styles.success}>{success}</p>}
 
-                    <input
-                        type="password"
-                        style={styles.input}
-                        placeholder="Enter Password"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        required
-                    />
+                    <form onSubmit={handleSubmit} style={styles.form}>
+                        <input
+                            type="password"
+                            style={styles.input}
+                            placeholder="Enter Password"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            required
+                        />
 
-                    <input
-                        type="password"
-                        style={styles.input}
-                        placeholder="Confirm Password"
-                        value={confirmPassword}
-                        onChange={(e) => setConfirmPassword(e.target.value)}
-                        required
-                    />
+                        <input
+                            type="password"
+                            style={styles.input}
+                            placeholder="Confirm Password"
+                            value={confirmPassword}
+                            onChange={(e) => setConfirmPassword(e.target.value)}
+                            required
+                        />
 
-                    <button style={styles.button} type="submit">
-                        Save Password
-                    </button>
-
-                </form>
-
+                        <button style={styles.button} type="submit">
+                            Save Password
+                        </button>
+                    </form>
+                </div>
             </div>
         </div>
     );
@@ -84,28 +95,90 @@ export default function SetPassword() {
 const styles = {
     page: {
         minHeight: "100vh",
-        background: "linear-gradient(135deg, #e0eaff, #f6f9ff)",
+        background:
+            "radial-gradient(circle at top, #ffffff 0%, #f6f3ee 40%, #efe9df 100%)",
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
+        position: "relative",
+        overflow: "hidden",
+        padding: 20,
+    },
+    glowA: {
+        position: "absolute",
+        width: 240,
+        height: 240,
+        borderRadius: "50%",
+        background: "radial-gradient(circle, rgba(26,167,155,0.18), transparent 70%)",
+        top: -90,
+        left: -80,
+    },
+    glowB: {
+        position: "absolute",
+        width: 200,
+        height: 200,
+        borderRadius: "50%",
+        background: "radial-gradient(circle, rgba(58,163,255,0.18), transparent 70%)",
+        bottom: -80,
+        right: -60,
+    },
+    container: {
+        width: "100%",
+        maxWidth: 960,
+        display: "grid",
+        gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))",
+        gap: 24,
+        zIndex: 1,
+    },
+    sideCard: {
+        background: "#0f172a",
+        color: "#fff",
+        padding: "30px",
+        borderRadius: 20,
+        boxShadow: "0 18px 40px rgba(11,18,32,0.28)",
+        animation: "fadeUp 0.8s ease both",
+    },
+    eyebrow: {
+        fontSize: 12,
+        textTransform: "uppercase",
+        letterSpacing: "0.24em",
+        color: "rgba(255,255,255,0.7)",
+        fontWeight: 700,
+        marginBottom: 12,
+    },
+    sideTitle: {
+        fontFamily: '"DM Serif Display", serif',
+        fontSize: 30,
+        margin: 0,
+    },
+    sideText: {
+        marginTop: 14,
+        color: "rgba(255,255,255,0.72)",
+        lineHeight: 1.6,
+    },
+    sideNote: {
+        marginTop: 22,
+        padding: "12px 14px",
+        borderRadius: 12,
+        background: "rgba(255,255,255,0.08)",
+        fontSize: 13,
     },
     card: {
-        width: "400px",
+        width: "100%",
         background: "#fff",
-        padding: "30px",
-        borderRadius: "16px",
-        boxShadow: "0 12px 28px rgba(0,0,0,0.12)",
+        padding: "32px",
+        borderRadius: 20,
+        boxShadow: "var(--card-shadow)",
+        animation: "fadeUp 0.9s ease both",
     },
     title: {
-        textAlign: "center",
-        fontSize: "24px",
-        fontWeight: "700",
+        fontSize: 24,
+        fontWeight: 700,
     },
     subtitle: {
-        textAlign: "center",
-        marginTop: "6px",
-        color: "#555",
-        marginBottom: "20px",
+        marginTop: 6,
+        color: "var(--ink-600)",
+        marginBottom: 20,
     },
     form: {
         display: "flex",
@@ -113,30 +186,28 @@ const styles = {
         gap: "16px",
     },
     input: {
-        padding: "14px",
-        borderRadius: "10px",
-        border: "1px solid #d2dae6",
-        background: "#fafafa",
-        fontSize: "15px",
+        padding: "13px 14px",
+        borderRadius: 12,
+        border: "1px solid rgba(15, 23, 42, 0.15)",
+        background: "rgba(250, 250, 250, 0.9)",
+        fontSize: 15,
     },
     button: {
         padding: "14px",
         border: "none",
-        borderRadius: "10px",
-        background: "#4B6FFF",
+        borderRadius: 12,
+        background: "var(--mint-500)",
         color: "#fff",
-        fontWeight: "600",
+        fontWeight: 600,
         cursor: "pointer",
-        marginTop: "10px",
+        marginTop: 6,
     },
     error: {
         color: "#e63946",
-        textAlign: "center",
         fontWeight: 600,
     },
     success: {
         color: "#2ea44f",
-        textAlign: "center",
         fontWeight: 600,
     },
 };

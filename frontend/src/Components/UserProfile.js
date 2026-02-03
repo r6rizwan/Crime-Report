@@ -69,7 +69,13 @@ export default function UserProfile() {
 
     return (
         <div style={styles.page}>
-            <h2 style={styles.heading}>My Profile</h2>
+            <div style={styles.header}>
+                <div>
+                    <p style={styles.eyebrow}>Account Settings</p>
+                    <h2 style={styles.heading}>My Profile</h2>
+                    <p style={styles.subtitle}>Manage your personal details and preferences.</p>
+                </div>
+            </div>
 
             {message && <div style={styles.alert}>{message}</div>}
 
@@ -219,11 +225,28 @@ const styles = {
         paddingBottom: 60,
     },
 
-    heading: { fontSize: 28, fontWeight: 700, marginBottom: 20 },
+    header: {
+        display: "flex",
+        justifyContent: "space-between",
+        alignItems: "flex-end",
+        flexWrap: "wrap",
+        gap: 12,
+        marginBottom: 20,
+    },
+    eyebrow: {
+        fontSize: 12,
+        textTransform: "uppercase",
+        letterSpacing: "0.24em",
+        color: "var(--mint-600)",
+        fontWeight: 700,
+        marginBottom: 8,
+    },
+    heading: { fontSize: 28, fontWeight: 700, margin: 0 },
+    subtitle: { marginTop: 8, color: "var(--ink-600)" },
 
     grid: {
         display: "grid",
-        gridTemplateColumns: "1fr 1fr",
+        gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
         gap: 24,
     },
 
@@ -231,7 +254,7 @@ const styles = {
         background: "#fff",
         padding: 28,
         borderRadius: 18,
-        boxShadow: "0 6px 22px rgba(0,0,0,0.08)",
+        boxShadow: "var(--card-shadow)",
     },
 
     section: {
@@ -244,36 +267,37 @@ const styles = {
         fontWeight: 600,
         marginBottom: 6,
         display: "block",
+        color: "var(--ink-700)",
     },
 
     input: (editable) => ({
         width: "100%",
-        padding: 12,
-        borderRadius: 10,
-        border: "1px solid #D1D5E2",
-        background: editable ? "#fff" : "#f3f3f3",
+        padding: "12px 14px",
+        borderRadius: 12,
+        border: "1px solid rgba(15,23,42,0.15)",
+        background: editable ? "#fff" : "rgba(15,23,42,0.04)",
     }),
 
     textarea: (editable) => ({
         width: "100%",
-        padding: 12,
-        borderRadius: 10,
-        border: "1px solid #D1D5E2",
-        background: editable ? "#fff" : "#f3f3f3",
+        padding: "12px 14px",
+        borderRadius: 12,
+        border: "1px solid rgba(15,23,42,0.15)",
+        background: editable ? "#fff" : "rgba(15,23,42,0.04)",
         resize: "none",
     }),
 
     readOnly: {
         padding: 12,
-        borderRadius: 10,
-        background: "#f3f3f3",
-        color: "#666",
+        borderRadius: 12,
+        background: "rgba(15,23,42,0.04)",
+        color: "var(--ink-600)",
         fontSize: 14,
     },
 
     info: {
         marginBottom: 8,
-        color: "#333",
+        color: "var(--ink-700)",
     },
 
     divider: {
@@ -289,30 +313,30 @@ const styles = {
     },
 
     primaryBtn: {
-        background: "#304FFE",
+        background: "var(--mint-500)",
         color: "#fff",
         padding: "12px 20px",
-        borderRadius: 10,
+        borderRadius: 12,
         border: "none",
         fontWeight: 700,
         cursor: "pointer",
     },
 
     secondaryBtn: {
-        background: "#E0E7FF",
+        background: "rgba(15,23,42,0.08)",
         padding: "12px 20px",
-        borderRadius: 10,
+        borderRadius: 12,
         border: "none",
         fontWeight: 600,
         cursor: "pointer",
     },
 
     alert: {
-        background: "#E8F5E9",
+        background: "rgba(34,197,94,0.1)",
         padding: 12,
-        borderRadius: 10,
+        borderRadius: 12,
         marginBottom: 16,
-        color: "#2E7D32",
+        color: "#15803d",
         fontWeight: 600,
     },
 

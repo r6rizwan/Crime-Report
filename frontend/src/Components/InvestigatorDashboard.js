@@ -58,91 +58,90 @@ export default function InvestigatorDashboard() {
     return (
         <div style={styles.page}>
             <div style={styles.container}>
-
-                {/* HEADER CARD */}
-                <div style={styles.headerCard}>
-                    <div style={{ flex: 1 }}>
-                        <h2 style={styles.headerTitle}>
-                            Welcome, {investigator.name}
-                        </h2>
+                <div style={styles.hero}>
+                    <div>
+                        <p style={styles.eyebrow}>Investigator Workspace</p>
+                        <h2 style={styles.headerTitle}>Welcome, {investigator.name}</h2>
                         <p style={styles.headerSub}>
-                            {investigator.department} • Badge #{investigator.badgeNumber}
+                            {investigator.department} • {investigator.investigatorId || investigator.email}
+                        </p>
+                        <div style={styles.actionsBar}>
+                            <a href="/investigator/assigned" style={styles.primaryBtn}>
+                                View Complaints
+                            </a>
+                            <a href="/investigator/profile" style={styles.outlineBtn}>
+                                Profile
+                            </a>
+                        </div>
+                    </div>
+                    <div style={styles.heroCard}>
+                        <p style={styles.heroCardLabel}>Active Queue</p>
+                        <h3 style={styles.heroCardTitle}>
+                            {stats.assigned + stats.open} cases in progress
+                        </h3>
+                        <p style={styles.heroCardText}>
+                            Prioritize assigned cases and resolve open investigations quickly.
                         </p>
                     </div>
-
-                    <img
-                        src="https://cdn-icons-png.flaticon.com/512/3033/3033143.png"
-                        alt="investigator"
-                        style={styles.avatar}
-                    />
                 </div>
 
-                {/* STATS GRID */}
                 <div style={styles.statsGrid}>
-                    {renderStat("Total Cases", stats.total, "#304FFE")}
-                    {renderStat("New", stats.assigned, "#3F51B5")}
-                    {renderStat("Open", stats.open, "#0288D1")}
-                    {renderStat("Resolved", stats.resolved, "#2E7D32")}
-                    {renderStat("Closed", stats.closed, "#616161")}
+                    {renderStat("Total Cases", stats.total, "#1aa79b")}
+                    {renderStat("New", stats.assigned, "#f59e0b")}
+                    {renderStat("Open", stats.open, "#3aa3ff")}
+                    {renderStat("Resolved", stats.resolved, "#22c55e")}
+                    {renderStat("Closed", stats.closed, "#64748b")}
                 </div>
 
-                {/* ACTION BUTTONS */}
-                <div style={styles.actionsBar}>
-                    <a href="/investigator/assigned" style={styles.primaryBtn}>
-                        View Complaints
-                    </a>
-                    <a href="/investigator/profile" style={styles.outlineBtn}>
-                        Profile
-                    </a>
-                </div>
+                <div style={styles.contentGrid}>
+                    <div style={styles.block}>
+                        <h3 style={styles.blockTitle}>Priority Complaints</h3>
 
-                {/* PRIORITY COMPLAINTS */}
-                <div style={styles.block}>
-                    <h3 style={styles.blockTitle}>Priority Complaints</h3>
+                        {priorities.length === 0 ? (
+                            <p style={styles.noData}>No assigned complaints yet.</p>
+                        ) : (
+                            priorities.map((item) => (
+                                <div key={item._id} style={styles.priorityItem}>
+                                    <div>
+                                        <strong style={{ fontSize: 16 }}>
+                                            {item.complaintType}
+                                        </strong>
+                                        <p style={styles.dateText}>
+                                            {new Date(item.createdAt).toLocaleDateString()}
+                                        </p>
+                                    </div>
 
-                    {priorities.length === 0 ? (
-                        <p style={styles.noData}>No assigned complaints yet.</p>
-                    ) : (
-                        priorities.map((item) => (
-                            <div key={item._id} style={styles.priorityItem}>
-                                <div>
-                                    <strong style={{ fontSize: 16 }}>
-                                        {item.complaintType}
-                                    </strong>
-                                    <p style={styles.dateText}>
-                                        {new Date(item.createdAt).toLocaleDateString()}
-                                    </p>
+                                    <span
+                                        style={{
+                                            ...styles.badge,
+                                            background:
+                                                item.status === "Assigned"
+                                                    ? "rgba(245, 158, 11, 0.2)"
+                                                    : item.status === "Open"
+                                                    ? "rgba(58, 163, 255, 0.2)"
+                                                    : item.status === "Resolved"
+                                                    ? "rgba(34, 197, 94, 0.2)"
+                                                    : "rgba(100, 116, 139, 0.2)",
+                                        }}
+                                    >
+                                        {item.status}
+                                    </span>
                                 </div>
+                            ))
+                        )}
+                    </div>
 
-                                <span
-                                    style={{
-                                        ...styles.badge,
-                                        background:
-                                            item.status === "Assigned" ? "#3F51B5" :
-                                                item.status === "Open" ? "#0288D1" :
-                                                    item.status === "Resolved" ? "#2E7D32" :
-                                                        "#616161"
-                                    }}
-                                >
-                                    {item.status}
-                                </span>
-                            </div>
-                        ))
-                    )}
-                </div>
+                    <div style={styles.block}>
+                        <h3 style={styles.blockTitle}>Recent Activity</h3>
 
-                {/* ACTIVITY FEED (future-ready) */}
-                <div style={styles.block}>
-                    <h3 style={styles.blockTitle}>Recent Activity</h3>
-
-                    <div style={styles.activityBox}>
-                        <p style={styles.activityItem}>Dashboard loaded successfully.</p>
-                        <p style={styles.activityEmpty}>
-                            Activity timeline coming soon…
-                        </p>
+                        <div style={styles.activityBox}>
+                            <p style={styles.activityItem}>Dashboard loaded successfully.</p>
+                            <p style={styles.activityEmpty}>
+                                Activity timeline coming soon…
+                            </p>
+                        </div>
                     </div>
                 </div>
-
             </div>
         </div>
     );
@@ -152,7 +151,8 @@ export default function InvestigatorDashboard() {
 
 const renderStat = (label, value, color) => (
     <div style={styles.statCard}>
-        <h3 style={{ ...styles.statNumber, color }}>{value}</h3>
+        <div style={{ ...styles.statAccent, background: color }} />
+        <h3 style={styles.statNumber}>{value}</h3>
         <p style={styles.statLabel}>{label}</p>
     </div>
 );
@@ -161,7 +161,8 @@ const renderStat = (label, value, color) => (
 
 const styles = {
     page: {
-        background: "#F4F6FF",
+        background:
+            "radial-gradient(circle at top, #ffffff 0%, #f6f3ee 40%, #efe9df 100%)",
         minHeight: "100vh",
         padding: "28px",
         display: "flex",
@@ -169,85 +170,133 @@ const styles = {
     },
     container: { width: "100%", maxWidth: "1100px" },
 
-    headerCard: {
-        background: "linear-gradient(135deg, #4A6EFF, #304FFE)",
-        padding: "28px",
-        borderRadius: "18px",
+    hero: {
+        display: "grid",
+        gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))",
+        gap: 24,
+        padding: 28,
+        borderRadius: 22,
+        background: "#0f172a",
         color: "#fff",
-        display: "flex",
-        justifyContent: "space-between",
-        alignItems: "center",
-        marginBottom: "32px",
-        boxShadow: "0 12px 32px rgba(0,0,0,0.18)",
+        boxShadow: "0 18px 40px rgba(11,18,32,0.28)",
+        marginBottom: 32,
+    },
+    eyebrow: {
+        fontSize: 12,
+        textTransform: "uppercase",
+        letterSpacing: "0.24em",
+        color: "rgba(255,255,255,0.7)",
+        fontWeight: 700,
+        marginBottom: 10,
     },
     headerTitle: { fontSize: "28px", fontWeight: "700" },
     headerSub: { opacity: 0.85, marginTop: 4 },
-    avatar: { width: 90, height: 90, borderRadius: "50%" },
+    heroCard: {
+        background: "rgba(255,255,255,0.08)",
+        padding: 20,
+        borderRadius: 18,
+        alignSelf: "center",
+    },
+    heroCardLabel: {
+        fontSize: 11,
+        textTransform: "uppercase",
+        letterSpacing: "0.2em",
+        color: "rgba(255,255,255,0.7)",
+    },
+    heroCardTitle: {
+        marginTop: 10,
+        fontSize: 18,
+        fontWeight: 700,
+    },
+    heroCardText: {
+        marginTop: 8,
+        color: "rgba(255,255,255,0.72)",
+        lineHeight: 1.6,
+    },
 
     statsGrid: {
         display: "grid",
-        gridTemplateColumns: "repeat(5, 1fr)",
-        gap: "22px",
-        marginBottom: "38px",
+        gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))",
+        gap: "18px",
+        marginBottom: "32px",
     },
     statCard: {
         background: "#fff",
-        padding: "22px",
-        borderRadius: "14px",
-        textAlign: "center",
-        boxShadow: "0 6px 16px rgba(0,0,0,0.10)",
+        padding: "20px",
+        borderRadius: "16px",
+        boxShadow: "var(--card-shadow)",
     },
-    statNumber: { fontSize: "30px", fontWeight: "700" },
-    statLabel: { marginTop: 6, color: "#666", fontWeight: "500" },
+    statAccent: {
+        width: 34,
+        height: 6,
+        borderRadius: 999,
+        marginBottom: 10,
+    },
+    statNumber: { fontSize: "28px", fontWeight: "700", color: "var(--ink-900)" },
+    statLabel: {
+        marginTop: 8,
+        color: "var(--ink-600)",
+        fontWeight: 600,
+        fontSize: 12,
+        textTransform: "uppercase",
+        letterSpacing: "0.12em",
+    },
 
-    actionsBar: { display: "flex", gap: "18px", marginBottom: "32px" },
+    actionsBar: { display: "flex", gap: "12px", marginTop: 18 },
     primaryBtn: {
-        background: "#304FFE",
+        background: "var(--mint-500)",
         color: "#fff",
-        padding: "12px 26px",
-        borderRadius: "10px",
+        padding: "12px 22px",
+        borderRadius: "12px",
         textDecoration: "none",
         fontWeight: "600",
     },
     outlineBtn: {
-        border: "2px solid #304FFE",
-        padding: "12px 26px",
-        borderRadius: "10px",
-        color: "#304FFE",
+        border: "1px solid rgba(255,255,255,0.3)",
+        padding: "12px 22px",
+        borderRadius: "12px",
+        color: "#fff",
         textDecoration: "none",
         fontWeight: "600",
-        background: "#fff",
+        background: "rgba(255,255,255,0.06)",
     },
 
+    contentGrid: {
+        display: "grid",
+        gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))",
+        gap: 18,
+    },
     block: {
         background: "#fff",
-        padding: "26px",
-        borderRadius: "16px",
-        boxShadow: "0 6px 20px rgba(0,0,0,0.08)",
-        marginBottom: "26px",
+        padding: "24px",
+        borderRadius: "18px",
+        boxShadow: "var(--card-shadow)",
     },
     blockTitle: { fontSize: "20px", fontWeight: "700", marginBottom: "18px" },
 
     priorityItem: {
         display: "flex",
         justifyContent: "space-between",
-        borderBottom: "1px solid #eee",
+        borderBottom: "1px solid rgba(15,23,42,0.08)",
         padding: "12px 0",
     },
-    dateText: { margin: 0, color: "#666", fontSize: 13 },
+    dateText: { margin: 0, color: "var(--ink-600)", fontSize: 13 },
     badge: {
         padding: "6px 12px",
-        borderRadius: "8px",
+        borderRadius: 999,
         fontWeight: "600",
-        color: "#fff",
+        color: "var(--ink-900)",
+        fontSize: 12,
+        textTransform: "uppercase",
+        letterSpacing: "0.08em",
     },
-    noData: { color: "#777", textAlign: "center" },
+    noData: { color: "var(--ink-600)", textAlign: "center" },
 
     activityBox: { paddingLeft: 6 },
-    activityItem: { margin: "8px 0", color: "#444", fontSize: 14 },
+    activityItem: { margin: "8px 0", color: "var(--ink-700)", fontSize: 14 },
     activityEmpty: {
         marginTop: 8,
-        color: "#888",
+        color: "var(--ink-600)",
         fontStyle: "italic",
     },
 };

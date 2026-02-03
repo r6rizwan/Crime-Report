@@ -55,100 +55,97 @@ export default function UserDashboard() {
     return (
         <div style={styles.page}>
             <div style={styles.container}>
-
-                {/* --- WELCOME CARD --- */}
-                <div style={styles.welcomeCard}>
+                <div style={styles.hero}>
                     <div>
-                        <h2 style={styles.welcomeText}>Welcome, {userName}</h2>
+                        <p style={styles.eyebrow}>Citizen Dashboard</p>
+                        <h2 style={styles.welcomeText}>Welcome back, {userName}</h2>
                         <p style={styles.welcomeSub}>
-                            View your complaint insights & recent updates
+                            Track every case, review updates, and file new complaints.
+                        </p>
+                        <div style={styles.heroActions}>
+                            <a href="/file-complaint" style={styles.primaryBtn}>
+                                File a Complaint
+                            </a>
+                            <a href="/complaint-tracking" style={styles.secondaryBtn}>
+                                Track a Case
+                            </a>
+                        </div>
+                    </div>
+                    <div style={styles.heroCard}>
+                        <p style={styles.heroCardLabel}>Security Status</p>
+                        <h3 style={styles.heroCardTitle}>Account Verified</h3>
+                        <p style={styles.heroCardText}>
+                            You will receive email notifications for any updates.
                         </p>
                     </div>
-
-                    <img
-                        src="https://cdn-icons-png.flaticon.com/512/1077/1077012.png"
-                        alt="user"
-                        style={styles.avatar}
-                    />
                 </div>
 
-                {/* --- STATS --- */}
                 <div style={styles.statsRow}>
-                    <div style={styles.statCard}>
-                        <h3 style={styles.statNumber}>{stats.total}</h3>
-                        <p style={styles.statLabel}>Total Complaints</p>
-                    </div>
-
-                    <div style={styles.statCard}>
-                        <h3 style={styles.statNumber}>{stats.pending}</h3>
-                        <p style={styles.statLabel}>Pending</p>
-                    </div>
-
-                    <div style={styles.statCard}>
-                        <h3 style={styles.statNumber}>{stats.assigned}</h3>
-                        <p style={styles.statLabel}>Assigned</p>
-                    </div>
-
-                    <div style={styles.statCard}>
-                        <h3 style={styles.statNumber}>{stats.resolved}</h3>
-                        <p style={styles.statLabel}>Resolved</p>
-                    </div>
+                    {[
+                        { label: "Total Complaints", value: stats.total, accent: "#1aa79b" },
+                        { label: "Pending", value: stats.pending, accent: "#f59e0b" },
+                        { label: "Assigned", value: stats.assigned, accent: "#3aa3ff" },
+                        { label: "Resolved", value: stats.resolved, accent: "#22c55e" },
+                    ].map((item) => (
+                        <div key={item.label} style={styles.statCard}>
+                            <div style={{ ...styles.statAccent, background: item.accent }} />
+                            <h3 style={styles.statNumber}>{item.value}</h3>
+                            <p style={styles.statLabel}>{item.label}</p>
+                        </div>
+                    ))}
                 </div>
 
-                {/* --- FILE COMPLAINT CTA --- */}
-                <div style={styles.ctaCard}>
-                    <div>
+                <div style={styles.contentGrid}>
+                    <div style={styles.recentCard}>
+                        <div style={styles.cardHeader}>
+                            <h3 style={styles.recentTitle}>Recent Complaints</h3>
+                            <a href="/my-complaints" style={styles.linkBtn}>
+                                View All
+                            </a>
+                        </div>
+
+                        {recent.length === 0 ? (
+                            <p style={styles.noData}>No recent complaints found.</p>
+                        ) : (
+                            recent.map((item) => (
+                                <div key={item._id} style={styles.recentItem}>
+                                    <div>
+                                        <strong>{item.complaintType}</strong>
+                                        <p style={styles.metaText}>
+                                            {new Date(item.createdAt).toLocaleDateString()}
+                                        </p>
+                                    </div>
+
+                                    <span
+                                        style={{
+                                            ...styles.badge,
+                                            background:
+                                                item.status === "Pending"
+                                                    ? "#f59e0b"
+                                                    : item.status === "Assigned"
+                                                    ? "#3aa3ff"
+                                                    : item.status === "Resolved"
+                                                    ? "#22c55e"
+                                                    : "#64748b",
+                                        }}
+                                    >
+                                        {item.status}
+                                    </span>
+                                </div>
+                            ))
+                        )}
+                    </div>
+
+                    <div style={styles.ctaCard}>
                         <h3 style={styles.ctaTitle}>Need to report a new issue?</h3>
                         <p style={styles.ctaSub}>
-                            File a complaint and our team will review it promptly.
+                            Provide the complaint details and attach evidence to speed up review.
                         </p>
+                        <a href="/file-complaint" style={styles.ctaBtn}>
+                            Start a New Report
+                        </a>
                     </div>
-
-                    <a href="/file-complaint" style={styles.ctaBtn}>
-                        File a Complaint
-                    </a>
                 </div>
-
-                {/* --- RECENT COMPLAINTS --- */}
-                <div style={styles.recentCard}>
-                    <h3 style={styles.recentTitle}>Recent Complaints</h3>
-
-                    {recent.length === 0 ? (
-                        <p style={styles.noData}>No recent complaints found.</p>
-                    ) : (
-                        recent.map((item) => (
-                            <div key={item._id} style={styles.recentItem}>
-                                <div>
-                                    <strong>{item.complaintType}</strong>
-                                    <p style={{ margin: 0, color: "#666" }}>
-                                        {new Date(item.createdAt).toLocaleDateString()}
-                                    </p>
-                                </div>
-
-                                <span
-                                    style={{
-                                        ...styles.badge,
-                                        background:
-                                            item.status === "Pending"
-                                                ? "#ff9800"
-                                                : item.status === "Assigned"
-                                                    ? "#0277bd"
-                                                    : item.status === "Resolved"
-                                                        ? "#2e7d32"
-                                                        : "#616161",
-                                    }}
-                                >
-                                    {item.status}
-                                </span>
-                            </div>
-                        ))
-                    )}
-
-                    <p style={styles.recentHint}>
-                        View all complaints in <a href="/my-complaints">My Complaints</a>
-                    </p>
-                </div>
-
             </div>
         </div>
     );
@@ -159,8 +156,9 @@ export default function UserDashboard() {
 const styles = {
     page: {
         minHeight: "100vh",
-        background: "#f4f6ff",
-        padding: "30px",
+        background:
+            "radial-gradient(circle at top, #ffffff 0%, #f6f3ee 40%, #efe9df 100%)",
+        padding: "32px",
         display: "flex",
         justifyContent: "center",
     },
@@ -170,135 +168,189 @@ const styles = {
         maxWidth: "1000px",
     },
 
-    /* Welcome */
-    welcomeCard: {
-        display: "flex",
-        justifyContent: "space-between",
-        alignItems: "center",
-        background: "linear-gradient(135deg, #4a6fff, #304ffe)",
-        padding: "28px",
-        borderRadius: "18px",
-        color: "white",
-        marginBottom: "32px",
-        boxShadow: "0 10px 22px rgba(0,0,0,0.15)",
+    hero: {
+        display: "grid",
+        gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))",
+        gap: 24,
+        padding: 28,
+        background: "#0f172a",
+        borderRadius: 24,
+        color: "#fff",
+        boxShadow: "0 18px 42px rgba(11,18,32,0.28)",
+        marginBottom: 32,
+        animation: "fadeUp 0.7s ease both",
     },
-
+    eyebrow: {
+        fontSize: 12,
+        textTransform: "uppercase",
+        letterSpacing: "0.24em",
+        color: "rgba(255,255,255,0.7)",
+        fontWeight: 700,
+        marginBottom: 12,
+    },
     welcomeText: {
-        fontSize: "28px",
-        fontWeight: "700",
-        marginBottom: "4px",
+        fontSize: 28,
+        fontWeight: 700,
+        marginBottom: 6,
     },
 
     welcomeSub: {
-        opacity: 0.85,
-        fontSize: "15px",
+        opacity: 0.8,
+        fontSize: 15,
+        lineHeight: 1.6,
     },
-
-    avatar: {
-        width: "85px",
-        height: "85px",
+    heroActions: {
+        marginTop: 18,
+        display: "flex",
+        gap: 12,
+        flexWrap: "wrap",
     },
+    primaryBtn: {
+        padding: "12px 20px",
+        background: "var(--mint-500)",
+        color: "#fff",
+        borderRadius: 12,
+        textDecoration: "none",
+        fontWeight: 600,
+    },
+    secondaryBtn: {
+        padding: "12px 20px",
+        background: "rgba(255,255,255,0.1)",
+        color: "#fff",
+        borderRadius: 12,
+        textDecoration: "none",
+        fontWeight: 600,
+        border: "1px solid rgba(255,255,255,0.2)",
+    },
+    heroCard: {
+        background: "rgba(255,255,255,0.08)",
+        borderRadius: 18,
+        padding: 20,
+        alignSelf: "center",
+    },
+    heroCardLabel: {
+        fontSize: 11,
+        textTransform: "uppercase",
+        letterSpacing: "0.2em",
+        color: "rgba(255,255,255,0.7)",
+    },
+    heroCardTitle: { margin: "10px 0 6px", fontSize: 18, fontWeight: 700 },
+    heroCardText: { color: "rgba(255,255,255,0.75)", lineHeight: 1.5 },
 
     /* Stats Section */
     statsRow: {
-        display: "flex",
-        gap: "20px",
-        flexWrap: "wrap",
-        marginBottom: "35px",
+        display: "grid",
+        gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
+        gap: 18,
+        marginBottom: 32,
     },
 
     statCard: {
-        flex: 1,
-        minWidth: "180px",
         background: "#fff",
-        padding: "22px",
-        borderRadius: "14px",
-        textAlign: "center",
-        boxShadow: "0 4px 14px rgba(0,0,0,0.08)",
+        padding: 20,
+        borderRadius: 16,
+        boxShadow: "var(--card-shadow)",
+        position: "relative",
     },
 
+    statAccent: {
+        width: 34,
+        height: 6,
+        borderRadius: 999,
+        marginBottom: 12,
+    },
     statNumber: {
-        fontSize: "30px",
-        fontWeight: "700",
-        color: "#304ffe",
+        fontSize: 28,
+        fontWeight: 700,
+        color: "var(--ink-900)",
     },
 
     statLabel: {
-        color: "#555",
-        marginTop: "4px",
-        fontSize: "14px",
+        color: "var(--ink-600)",
+        marginTop: 6,
+        fontSize: 13,
+        textTransform: "uppercase",
+        letterSpacing: "0.12em",
     },
 
-    /* CTA --- File Complaint */
-    ctaCard: {
+    contentGrid: {
+        display: "grid",
+        gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
+        gap: 18,
+    },
+    recentCard: {
         background: "#fff",
-        padding: "24px",
-        borderRadius: "16px",
-        marginBottom: "35px",
-        boxShadow: "0 4px 18px rgba(0,0,0,0.08)",
+        padding: 24,
+        borderRadius: 18,
+        boxShadow: "var(--card-shadow)",
+    },
+    cardHeader: {
         display: "flex",
         justifyContent: "space-between",
         alignItems: "center",
+        marginBottom: 14,
     },
-
-    ctaTitle: {
-        fontSize: "20px",
-        fontWeight: "700",
-    },
-
-    ctaSub: {
-        color: "#666",
-        marginTop: "4px",
-    },
-
-    ctaBtn: {
-        background: "#304ffe",
-        color: "white",
-        padding: "12px 22px",
-        borderRadius: "10px",
-        fontWeight: "600",
-        textDecoration: "none",
-        fontSize: "15px",
-    },
-
-    /* Recent Complaints */
-    recentCard: {
-        background: "#fff",
-        padding: "25px",
-        borderRadius: "16px",
-        boxShadow: "0 4px 18px rgba(0,0,0,0.07)",
-    },
-
     recentTitle: {
-        fontSize: "20px",
-        fontWeight: "700",
-        marginBottom: "15px",
+        fontSize: 20,
+        fontWeight: 700,
+        margin: 0,
+    },
+    linkBtn: {
+        textDecoration: "none",
+        fontWeight: 600,
+        color: "var(--mint-600)",
+        fontSize: 13,
     },
 
     recentItem: {
         display: "flex",
         justifyContent: "space-between",
         padding: "12px 0",
-        borderBottom: "1px solid #eee",
+        borderBottom: "1px solid rgba(15,23,42,0.08)",
         alignItems: "center",
     },
 
     badge: {
         padding: "6px 12px",
-        borderRadius: "8px",
+        borderRadius: 999,
         color: "white",
-        fontWeight: "600",
+        fontWeight: 600,
+        fontSize: 12,
+        textTransform: "uppercase",
+        letterSpacing: "0.08em",
     },
 
     noData: {
-        textAlign: "center",
-        color: "#777",
+        color: "var(--ink-600)",
     },
 
-    recentHint: {
-        marginTop: "12px",
-        textAlign: "center",
-        color: "#666",
-        fontSize: "13px",
+    metaText: {
+        margin: 0,
+        color: "var(--ink-600)",
+        fontSize: 13,
+    },
+
+    ctaCard: {
+        background: "linear-gradient(135deg, #ffffff, #f9fbff)",
+        padding: 24,
+        borderRadius: 18,
+        boxShadow: "var(--card-shadow)",
+        display: "flex",
+        flexDirection: "column",
+        gap: 10,
+        justifyContent: "space-between",
+    },
+    ctaTitle: { fontSize: 20, fontWeight: 700, margin: 0 },
+    ctaSub: { color: "var(--ink-600)", lineHeight: 1.5 },
+    ctaBtn: {
+        marginTop: 6,
+        alignSelf: "flex-start",
+        background: "var(--ink-900)",
+        color: "#fff",
+        padding: "12px 20px",
+        borderRadius: 12,
+        fontWeight: 600,
+        textDecoration: "none",
+        fontSize: 14,
     },
 };

@@ -4,6 +4,7 @@ import { logoutUser } from "../utils/logout";
 export default function UserLayout({ children }) {
     const [menuOpen, setMenuOpen] = useState(false);
     const [profileOpen, setProfileOpen] = useState(false);
+    const [isMobile, setIsMobile] = useState(false);
 
     const profileRef = useRef();
 
@@ -18,6 +19,24 @@ export default function UserLayout({ children }) {
         return () => document.removeEventListener("mousedown", handleClickOutside);
     }, []);
 
+    useEffect(() => {
+        const media = window.matchMedia("(max-width: 860px)");
+        const update = () => setIsMobile(media.matches);
+        update();
+        if (media.addEventListener) {
+            media.addEventListener("change", update);
+        } else {
+            media.addListener(update);
+        }
+        return () => {
+            if (media.removeEventListener) {
+                media.removeEventListener("change", update);
+            } else {
+                media.removeListener(update);
+            }
+        };
+    }, []);
+
     return (
         <div style={styles.wrapper}>
 
@@ -28,48 +47,51 @@ export default function UserLayout({ children }) {
                     <div style={styles.logo}>Crime Report Portal</div>
 
                     {/* Desktop Links */}
-                    <div style={styles.navLinks}>
-                        <a href="/user/dashboard" style={styles.link}>Dashboard</a>
-                        <a href="/complaint-tracking" style={styles.link}>Track</a>
-                        <a href="/file-complaint" style={styles.link}>Report</a>
-                        <a href="/my-complaints" style={styles.link}>My Cases</a>
+                    {!isMobile && (
+                        <div style={styles.navLinks}>
+                            <a href="/user/dashboard" style={styles.link}>Dashboard</a>
+                            <a href="/complaint-tracking" style={styles.link}>Track</a>
+                            <a href="/file-complaint" style={styles.link}>Report</a>
+                            <a href="/my-complaints" style={styles.link}>My Cases</a>
 
-                        {/* PROFILE DROPDOWN */}
-                        <div style={styles.profileWrapper} ref={profileRef}>
-                            <div
-                                style={styles.profileIcon}
-                                onClick={() => setProfileOpen(!profileOpen)}
-                            >
-                                👤
-                            </div>
-
-                            {profileOpen && (
-                                <div style={styles.dropdown}>
-                                    <a href="/profile" style={styles.dropdownItem}>My Profile</a>
-
-                                    <button onClick={logoutUser} style={styles.dropdownLogout}>
-                                        Logout
-                                    </button>
+                            <div style={styles.profileWrapper} ref={profileRef}>
+                                <div
+                                    style={styles.profileIcon}
+                                    onClick={() => setProfileOpen(!profileOpen)}
+                                >
+                                    👤
                                 </div>
-                            )}
+
+                                {profileOpen && (
+                                    <div style={styles.dropdown}>
+                                        <a href="/profile" style={styles.dropdownItem}>My Profile</a>
+
+                                        <button onClick={logoutUser} style={styles.dropdownLogout}>
+                                            Logout
+                                        </button>
+                                    </div>
+                                )}
+                            </div>
                         </div>
-                    </div>
+                    )}
 
                     {/* MOBILE HAMBURGER */}
-                    <div
-                        style={styles.hamburger}
-                        onClick={() => setMenuOpen(!menuOpen)}
-                    >
-                        <span style={styles.bar}></span>
-                        <span style={styles.bar}></span>
-                        <span style={styles.bar}></span>
-                    </div>
+                    {isMobile && (
+                        <div
+                            style={styles.hamburger}
+                            onClick={() => setMenuOpen(!menuOpen)}
+                        >
+                            <span style={styles.bar}></span>
+                            <span style={styles.bar}></span>
+                            <span style={styles.bar}></span>
+                        </div>
+                    )}
 
                 </div>
             </nav>
 
             {/* MOBILE MENU */}
-            {menuOpen && (
+            {menuOpen && isMobile && (
                 <div style={styles.mobileMenu}>
                     <a href="/user/dashboard" style={styles.mobileLink}>Dashboard</a>
                     <a href="/complaint-tracking" style={styles.mobileLink}>Track</a>
@@ -93,16 +115,17 @@ export default function UserLayout({ children }) {
 // UPDATED STYLES
 //
 const styles = {
-    wrapper: { fontFamily: "Inter, sans-serif" },
+    wrapper: { fontFamily: "Space Grotesk, system-ui, sans-serif" },
 
     navbar: {
         position: "fixed",
         top: 0,
         width: "100%",
-        background: "#0E1A33",
+        background: "rgba(255,255,255,0.92)",
+        backdropFilter: "blur(8px)",
         padding: "12px 0",
         zIndex: 200,
-        boxShadow: "0 2px 10px rgba(0,0,0,0.20)",
+        borderBottom: "1px solid rgba(15,23,42,0.08)",
     },
 
     navInner: {
@@ -115,7 +138,7 @@ const styles = {
         width: "100%",
     },
 
-    logo: { fontSize: 20, fontWeight: 700, color: "white" },
+    logo: { fontSize: 20, fontWeight: 700, color: "var(--ink-900)" },
 
     navLinks: {
         display: "flex",
@@ -124,10 +147,10 @@ const styles = {
     },
 
     link: {
-        color: "#c8d5ff",
+        color: "var(--ink-600)",
         textDecoration: "none",
         fontSize: 15,
-        transition: "0.25s",
+        transition: "0.2s ease",
     },
 
     /******** PROFILE ICON ********/
@@ -139,8 +162,8 @@ const styles = {
         width: 38,
         height: 38,
         borderRadius: "50%",
-        background: "#1f2d4f",
-        border: "1px solid rgba(255,255,255,0.2)",
+        background: "rgba(15,23,42,0.08)",
+        border: "1px solid rgba(15,23,42,0.12)",
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
@@ -153,9 +176,9 @@ const styles = {
         top: 48,
         right: 0,
         width: 170,
-        background: "#142646",
+        background: "#0f172a",
         borderRadius: 10,
-        boxShadow: "0 4px 14px rgba(0,0,0,0.25)",
+        boxShadow: "0 14px 32px rgba(11,18,32,0.25)",
         padding: "10px 0",
         animation: "fadeIn 0.2s ease-out",
         zIndex: 300,
@@ -164,7 +187,7 @@ const styles = {
     dropdownItem: {
         display: "block",
         padding: "10px 16px",
-        color: "#d6e2ff",
+        color: "#e2e8f0",
         textDecoration: "none",
         fontSize: 15,
     },
@@ -173,7 +196,7 @@ const styles = {
         width: "100%",
         padding: "10px 16px",
         textAlign: "left",
-        color: "#ff7373",
+        color: "#ff9aa6",
         background: "transparent",
         border: "none",
         fontSize: 15,
@@ -192,7 +215,7 @@ const styles = {
     bar: {
         width: 24,
         height: 3,
-        background: "white",
+        background: "var(--ink-900)",
         borderRadius: 2,
     },
 
@@ -202,19 +225,19 @@ const styles = {
         top: 65,
         right: 0,
         width: 220,
-        background: "#142646",
+        background: "#0f172a",
         padding: 20,
         borderRadius: "0 0 0 14px",
         display: "flex",
         flexDirection: "column",
         gap: 16,
-        boxShadow: "-4px 4px 12px rgba(0,0,0,0.25)",
+        boxShadow: "-6px 8px 20px rgba(11,18,32,0.3)",
         animation: "slideIn 0.25s forwards",
         zIndex: 150,
     },
 
     mobileLink: {
-        color: "#d6e2ff",
+        color: "#e2e8f0",
         textDecoration: "none",
         fontSize: 16,
     },
@@ -222,7 +245,7 @@ const styles = {
     mobileLogoutBtn: {
         marginTop: 10,
         padding: "10px",
-        background: "#ff4f4f",
+        background: "#ff5c6c",
         border: "none",
         borderRadius: 6,
         color: "white",
@@ -230,9 +253,3 @@ const styles = {
         cursor: "pointer",
     },
 };
-
-/* Responsive Behaviour */
-if (window.innerWidth < 768) {
-    styles.navLinks.display = "none";
-    styles.hamburger.display = "flex";
-}

@@ -10,7 +10,10 @@ export default function AdminLayout({ children }) {
             <aside style={styles.sidebar}>
 
                 <div style={styles.sidebarInner}>
-                    <h2 style={styles.brand}>Admin Panel</h2>
+                    <div style={styles.brandBlock}>
+                        <span style={styles.brandEyebrow}>Operations</span>
+                        <h2 style={styles.brand}>Admin Panel</h2>
+                    </div>
 
                     <nav style={styles.nav}>
 
@@ -85,8 +88,8 @@ const styles = {
         left: 0,
         width: 260,
         height: "100vh",
-        background: "#0E1A33",
-        boxShadow: "4px 0 12px rgba(0,0,0,0.25)",
+        background: "linear-gradient(180deg, #0b1220 0%, #111c34 100%)",
+        boxShadow: "6px 0 18px rgba(11,18,32,0.25)",
         zIndex: 100,
         overflow: "hidden",        // ensure sidebar itself doesn't overflow
     },
@@ -100,11 +103,24 @@ const styles = {
         boxSizing: "border-box",
     },
 
+    brandBlock: {
+        padding: "10px 14px 18px",
+        borderRadius: 16,
+        background: "rgba(255,255,255,0.04)",
+        textAlign: "center",
+        marginBottom: 32,
+    },
+    brandEyebrow: {
+        fontSize: 11,
+        textTransform: "uppercase",
+        letterSpacing: "0.28em",
+        color: "rgba(255,255,255,0.5)",
+        fontWeight: 700,
+    },
     brand: {
         fontSize: 22,
         fontWeight: 700,
-        marginBottom: 40,
-        textAlign: "center",
+        margin: "10px 0 0",
         color: "white",
         letterSpacing: 0.5,
     },
@@ -121,21 +137,21 @@ const styles = {
         borderRadius: 10,
         fontSize: 15,
         textDecoration: "none",
-        color: "#c8d5ff",
+        color: "rgba(226,232,240,0.8)",
         transition: "0.25s",
         display: "block",
     },
 
     active: {
-        background: "#1C2F57",
+        background: "rgba(26,167,155,0.2)",
         color: "white",
         fontWeight: 600,
-        boxShadow: "0 2px 10px rgba(0,0,0,0.25)",
+        boxShadow: "0 6px 16px rgba(11,18,32,0.25)",
     },
 
     logout: {
         marginTop: "auto",
-        background: "#ff5f5f",
+        background: "#ff6b7a",
         border: "none",
         padding: "12px",
         borderRadius: 10,
@@ -143,7 +159,7 @@ const styles = {
         fontWeight: 700,
         cursor: "pointer",
         fontSize: 15,
-        boxShadow: "0 2px 10px rgba(0,0,0,0.25)",
+        boxShadow: "0 10px 24px rgba(11,18,32,0.3)",
         transition: "0.25s",
     },
 
@@ -156,7 +172,8 @@ const styles = {
     content: {
         marginLeft: 260,
         padding: "40px",
-        background: "#F5F7FF",
+        background:
+            "radial-gradient(circle at top, #ffffff 0%, #f6f3ee 40%, #efe9df 100%)",
         width: "100%",
         minHeight: "100vh",
     },

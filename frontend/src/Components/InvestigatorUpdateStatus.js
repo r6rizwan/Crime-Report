@@ -71,23 +71,34 @@ export default function InvestigatorUpdateStatus() {
 
     return (
         <div style={styles.page}>
-            {/* Back */}
-            <div
-                style={styles.backRow}
-                onClick={() => navigate("/investigator/assigned")}
-            >
-                ← Back to Complaints
+            <div style={styles.header}>
+                <button
+                    style={styles.backRow}
+                    onClick={() => navigate("/investigator/assigned")}
+                >
+                    ← Back to Complaints
+                </button>
+                <div>
+                    <p style={styles.eyebrow}>Case Actions</p>
+                    <h2 style={styles.heading}>Complaint Details</h2>
+                </div>
+                <span
+                    style={{
+                        ...styles.badge,
+                        background: getStatusColor(complaint.status),
+                    }}
+                >
+                    {complaint.status}
+                </span>
             </div>
 
             <div style={styles.container}>
-
-                <h2 style={styles.heading}>Complaint Details</h2>
 
                 {/* ================= Complaint Details ================= */}
                 <div style={styles.card}>
 
                     {/* Header */}
-                    <div style={styles.header}>
+                    <div style={styles.cardHeader}>
                         <div>
                             <h3>{complaint.complaintType}</h3>
                             <p style={styles.id}>Complaint ID: {complaint.complaintId}</p>
@@ -98,17 +109,8 @@ export default function InvestigatorUpdateStatus() {
                                 to={`/investigator/case-files/${complaint._id}`}
                                 style={styles.caseFilesBtn}
                             >
-                                📁 Case Files & Notes
+                                Case Files & Notes
                             </Link>
-
-                            <span
-                                style={{
-                                    ...styles.badge,
-                                    background: getStatusColor(complaint.status),
-                                }}
-                            >
-                                {complaint.status}
-                            </span>
                         </div>
                     </div>
 
@@ -217,15 +219,15 @@ const Info = ({ label, value }) => (
 const getStatusColor = (status) => {
     switch (status) {
         case "Assigned":
-            return "#3F51B5";
+            return "rgba(245, 158, 11, 0.2)";
         case "Open":
-            return "#0288D1";
+            return "rgba(58, 163, 255, 0.2)";
         case "Resolved":
-            return "#2E7D32";
+            return "rgba(34, 197, 94, 0.2)";
         case "Closed":
-            return "#616161";
+            return "rgba(100, 116, 139, 0.2)";
         default:
-            return "#777";
+            return "rgba(100, 116, 139, 0.2)";
     }
 };
 
@@ -233,15 +235,20 @@ const getStatusColor = (status) => {
 
 const styles = {
     page: {
-        background: "#F3F5FA",
+        background:
+            "radial-gradient(circle at top, #ffffff 0%, #f6f3ee 40%, #efe9df 100%)",
         minHeight: "100vh",
         padding: "40px 20px",
     },
 
     backRow: {
         cursor: "pointer",
-        color: "#304FFE",
+        color: "var(--mint-600)",
         fontWeight: 600,
+        background: "transparent",
+        border: "none",
+        padding: 0,
+        fontSize: 14,
     },
 
     container: {
@@ -252,6 +259,22 @@ const styles = {
     heading: {
         fontSize: 28,
         fontWeight: 700,
+        margin: 0,
+    },
+    eyebrow: {
+        fontSize: 12,
+        textTransform: "uppercase",
+        letterSpacing: "0.24em",
+        color: "var(--mint-600)",
+        fontWeight: 700,
+        marginBottom: 6,
+    },
+    header: {
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "space-between",
+        gap: 16,
+        flexWrap: "wrap",
         marginBottom: 24,
     },
 
@@ -259,15 +282,17 @@ const styles = {
         background: "#fff",
         padding: 28,
         borderRadius: 18,
-        boxShadow: "0 6px 22px rgba(0,0,0,0.08)",
+        boxShadow: "var(--card-shadow)",
         marginBottom: 28,
     },
 
-    header: {
+    cardHeader: {
         display: "flex",
         justifyContent: "space-between",
         alignItems: "center",
         marginBottom: 20,
+        flexWrap: "wrap",
+        gap: 12,
     },
 
     headerActions: {
@@ -277,25 +302,28 @@ const styles = {
     },
 
     caseFilesBtn: {
-        background: "#1C2F57",
+        background: "var(--ink-900)",
         color: "#fff",
-        padding: "6px 14px",
-        borderRadius: 8,
+        padding: "8px 14px",
+        borderRadius: 10,
         fontSize: 14,
         fontWeight: 600,
         textDecoration: "none",
     },
 
     id: {
-        color: "#666",
+        color: "var(--ink-600)",
         marginTop: 4,
     },
 
     badge: {
-        color: "#fff",
+        color: "var(--ink-900)",
         padding: "6px 14px",
-        borderRadius: 10,
+        borderRadius: 999,
         fontWeight: 600,
+        textTransform: "uppercase",
+        letterSpacing: "0.08em",
+        fontSize: 12,
     },
 
     sectionTitle: {
@@ -308,23 +336,24 @@ const styles = {
         fontWeight: 600,
         marginBottom: 6,
         display: "block",
+        color: "var(--ink-700)",
     },
 
     description: {
-        background: "#F3F4FF",
+        background: "rgba(15,23,42,0.04)",
         padding: 14,
-        borderRadius: 10,
-        border: "1px solid #E0E7FF",
+        borderRadius: 12,
+        border: "1px solid rgba(15,23,42,0.08)",
         lineHeight: 1.6,
     },
 
     infoRow: {
         marginBottom: 6,
-        color: "#333",
+        color: "var(--ink-700)",
     },
 
     link: {
-        color: "#304FFE",
+        color: "var(--mint-600)",
         fontWeight: 600,
         textDecoration: "none",
     },
@@ -332,30 +361,30 @@ const styles = {
     textarea: {
         width: "100%",
         padding: 14,
-        borderRadius: 10,
-        border: "1px solid #D1D5E2",
+        borderRadius: 12,
+        border: "1px solid rgba(15,23,42,0.15)",
         marginBottom: 20,
         resize: "vertical",
     },
 
     primaryBtn: {
-        background: "#304FFE",
+        background: "var(--mint-500)",
         color: "#fff",
         border: "none",
         padding: "12px 20px",
-        borderRadius: 10,
+        borderRadius: 12,
         fontWeight: 700,
         cursor: "pointer",
         width: "100%",
     },
 
     readOnly: {
-        background: "#F3F4FF",
+        background: "rgba(15,23,42,0.04)",
         padding: 14,
-        borderRadius: 10,
+        borderRadius: 12,
         textAlign: "center",
         fontWeight: 600,
-        color: "#555",
+        color: "var(--ink-600)",
     },
 
     center: {

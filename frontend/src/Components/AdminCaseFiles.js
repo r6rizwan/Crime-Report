@@ -70,7 +70,7 @@ export default function AdminCaseFiles() {
                     caseFile.files.map((file, index) => (
                         <a
                             key={index}
-                            href={`http://localhost:7000/${file.filename}`}
+                            href={`http://localhost:7000/uploads/${String(file.filename).replace(/\\/g, "/").replace(/^\/+/, "")}`}
                             target="_blank"
                             rel="noreferrer"
                             style={styles.fileLink}

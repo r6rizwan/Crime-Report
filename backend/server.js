@@ -1,6 +1,7 @@
 import express from "express";
 import cors from "cors";
 import path from "path";
+import fs from "fs";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
 
@@ -42,12 +43,19 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Serve uploaded files from /uploads
-app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
-
-
+const uploadsDir = path.join(process.cwd(), "uploads");
+if (!fs.existsSync(uploadsDir)) {
+  fs.mkdirSync(uploadsDir, { recursive: true });
+}
+app.use("/uploads", express.static(uploadsDir));
 
 if (!process.env.MONGO_URI) {
   console.error("❌ MONGO_URI missing in .env");
+  process.exit(1);
+}
+
+if (!process.env.JWT_SECRET) {
+  console.error("❌ JWT_SECRET missing in .env");
   process.exit(1);
 }
 

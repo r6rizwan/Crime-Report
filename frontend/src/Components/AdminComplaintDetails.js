@@ -92,12 +92,30 @@ export default function AdminComplaintDetails() {
 
     return (
         <div style={styles.page}>
-
-            <div style={styles.backRow} onClick={() => navigate(-1)}>
-                ← Back
+            <div style={styles.header}>
+                <button style={styles.backRow} onClick={() => navigate(-1)}>
+                    ← Back
+                </button>
+                <div>
+                    <p style={styles.eyebrow}>Complaint Management</p>
+                    <h2 style={styles.heading}>Complaint Details</h2>
+                </div>
+                <span
+                    style={{
+                        ...styles.badge,
+                        background:
+                            complaint.status === "Pending"
+                                ? "rgba(245, 158, 11, 0.2)"
+                                : complaint.status === "Assigned" || complaint.status === "Open"
+                                ? "rgba(58, 163, 255, 0.2)"
+                                : complaint.status === "Resolved"
+                                ? "rgba(34, 197, 94, 0.2)"
+                                : "rgba(100, 116, 139, 0.2)",
+                    }}
+                >
+                    {complaint.status}
+                </span>
             </div>
-
-            <h2 style={styles.heading}>Complaint Details</h2>
 
             {message && <div style={styles.alert}>{message}</div>}
 
@@ -109,11 +127,6 @@ export default function AdminComplaintDetails() {
 
                     <InfoRow label="Complaint ID" value={complaint.complaintId} />
                     <InfoRow label="Type" value={complaint.complaintType} />
-
-                    <div style={styles.row}>
-                        <span style={styles.key}>Status</span>
-                        <span style={styles.badge}>{complaint.status}</span>
-                    </div>
 
                     <InfoRow
                         label="Date Filed"
@@ -129,7 +142,7 @@ export default function AdminComplaintDetails() {
                         <div style={{ marginTop: 12 }}>
                             <div style={styles.key}>Attachment</div>
                             <a
-                                href={`http://localhost:7000/${complaint.file}`}
+                                href={`http://localhost:7000/uploads/${String(complaint.file).replace(/\\/g, "/").replace(/^\/+/, "")}`}
                                 target="_blank"
                                 rel="noreferrer"
                                 style={styles.fileLink}
@@ -148,7 +161,7 @@ export default function AdminComplaintDetails() {
                         <>
                             <div style={styles.readOnlyBox}>
                                 {assignedInvestigator
-                                    ? `${assignedInvestigator.name} (Badge #${assignedInvestigator.badgeNumber})`
+                                    ? `${assignedInvestigator.name} (${assignedInvestigator.investigatorId || assignedInvestigator.email})`
                                     : complaint.assignedTo}
                             </div>
 
@@ -180,7 +193,7 @@ export default function AdminComplaintDetails() {
                                 <option value="">Select Investigator</option>
                                 {investigators.map((i) => (
                                     <option key={i._id} value={i.email}>
-                                        {i.name} — Badge #{i.badgeNumber}
+                                        {i.name} — {i.investigatorId || i.email}
                                     </option>
                                 ))}
                             </select>
@@ -205,7 +218,7 @@ export default function AdminComplaintDetails() {
             </div>
 
             {/* CASE FILES */}
-            <div style={{ ...styles.card, marginTop: 30 }}>
+                <div style={{ ...styles.card, marginTop: 30 }}>
                 <h3 style={styles.cardTitle}>Case Files</h3>
 
                 {caseFileLoading ? (
@@ -318,43 +331,90 @@ const ConfirmModal = ({ title, text, onCancel, onConfirm }) => (
 /* ---------------- Styles ---------------- */
 
 const styles = {
-    page: { padding: 35, background: "#F3F5FA", minHeight: "100vh" },
-    backRow: { cursor: "pointer", color: "#304FFE", fontWeight: 600 },
-    heading: { fontSize: 28, fontWeight: 700, marginBottom: 20 },
-    alert: { background: "#D1F5DA", padding: 14, borderRadius: 10 },
-    layout: { display: "flex", gap: 25 },
+    page: {
+        padding: 35,
+        background:
+            "radial-gradient(circle at top, #ffffff 0%, #f6f3ee 40%, #efe9df 100%)",
+        minHeight: "100vh",
+    },
+    header: {
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "space-between",
+        gap: 16,
+        flexWrap: "wrap",
+        marginBottom: 20,
+    },
+    backRow: {
+        cursor: "pointer",
+        color: "var(--mint-600)",
+        fontWeight: 600,
+        background: "transparent",
+        border: "none",
+        fontSize: 14,
+    },
+    eyebrow: {
+        fontSize: 12,
+        textTransform: "uppercase",
+        letterSpacing: "0.24em",
+        color: "var(--mint-600)",
+        fontWeight: 700,
+        marginBottom: 6,
+    },
+    heading: { fontSize: 28, fontWeight: 700, margin: 0 },
+    alert: {
+        background: "rgba(34,197,94,0.12)",
+        padding: 14,
+        borderRadius: 12,
+        color: "#15803d",
+        fontWeight: 600,
+    },
+    layout: {
+        display: "grid",
+        gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
+        gap: 22,
+    },
     card: {
         background: "#fff",
         padding: 25,
-        borderRadius: 16,
-        boxShadow: "0 8px 25px rgba(0,0,0,0.07)",
-        flex: 1,
+        borderRadius: 18,
+        boxShadow: "var(--card-shadow)",
     },
     cardTitle: { fontSize: 20, fontWeight: 700, marginBottom: 18 },
     row: { display: "flex", justifyContent: "space-between", marginBottom: 12 },
-    key: { fontWeight: 600, color: "#555" },
-    value: { color: "#111" },
+    key: { fontWeight: 600, color: "var(--ink-600)" },
+    value: { color: "var(--ink-900)", fontWeight: 600 },
     badge: {
-        background: "#304FFE",
-        color: "#fff",
-        padding: "4px 12px",
-        borderRadius: 8,
+        background: "rgba(15,23,42,0.08)",
+        color: "var(--ink-900)",
+        padding: "6px 12px",
+        borderRadius: 999,
         fontWeight: 600,
+        textTransform: "uppercase",
+        letterSpacing: "0.08em",
+        fontSize: 12,
     },
-    desc: { marginTop: 6, lineHeight: 1.6 },
+    desc: {
+        marginTop: 6,
+        lineHeight: 1.6,
+        background: "rgba(15,23,42,0.04)",
+        padding: 12,
+        borderRadius: 12,
+        border: "1px solid rgba(15,23,42,0.08)",
+    },
     input: {
         width: "100%",
-        padding: 12,
-        borderRadius: 10,
-        border: "1px solid #CCC",
+        padding: "12px 14px",
+        borderRadius: 12,
+        border: "1px solid rgba(15,23,42,0.15)",
         marginBottom: 15,
     },
     primaryBtn: {
         width: "100%",
         padding: 12,
-        background: "#304FFE",
+        background: "var(--mint-500)",
         color: "#fff",
-        borderRadius: 10,
+        borderRadius: 12,
         border: "none",
         fontWeight: 600,
         cursor: "pointer",
@@ -362,31 +422,31 @@ const styles = {
     dangerBtn: {
         width: "100%",
         padding: 12,
-        background: "#D32F2F",
+        background: "#ef4444",
         color: "#fff",
-        borderRadius: 10,
+        borderRadius: 12,
         border: "none",
         fontWeight: 700,
         cursor: "pointer",
     },
     secondaryBtn: {
         padding: 12,
-        background: "#E0E7FF",
-        borderRadius: 10,
+        background: "rgba(15,23,42,0.08)",
+        borderRadius: 12,
         border: "none",
         fontWeight: 600,
         cursor: "pointer",
     },
     readOnlyBox: {
-        background: "#F3F4FF",
+        background: "rgba(15,23,42,0.04)",
         padding: 14,
-        borderRadius: 10,
-        border: "1px solid #E0E7FF",
+        borderRadius: 12,
+        border: "1px solid rgba(15,23,42,0.08)",
     },
     fileLink: {
         display: "block",
         marginTop: 6,
-        color: "#304FFE",
+        color: "var(--mint-600)",
         fontWeight: 600,
     },
 
@@ -395,14 +455,14 @@ const styles = {
         display: "flex",
         justifyContent: "space-between",
         padding: "10px 0",
-        borderBottom: "1px solid #EEE",
+        borderBottom: "1px solid rgba(15,23,42,0.08)",
     },
     timelineLabel: {
         fontWeight: 600,
-        color: "#444",
+        color: "var(--ink-600)",
     },
     timelineValue: {
-        color: "#111",
+        color: "var(--ink-900)",
     },
 
     /* Modal */

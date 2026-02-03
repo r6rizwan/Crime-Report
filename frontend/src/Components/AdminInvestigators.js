@@ -43,6 +43,7 @@ export default function AdminInvestigators() {
             {/* HEADER */}
             <div style={styles.headerRow}>
                 <div>
+                    <p style={styles.eyebrow}>Operations</p>
                     <h2 style={styles.title}>Investigators</h2>
                     <p style={styles.subtitle}>
                         Manage investigators and their availability
@@ -93,8 +94,8 @@ export default function AdminInvestigators() {
                                                 ...styles.badge,
                                                 background:
                                                     inv.status === "Active"
-                                                        ? "#2E7D32"
-                                                        : "#9E9E9E",
+                                                        ? "rgba(34, 197, 94, 0.2)"
+                                                        : "rgba(100, 116, 139, 0.2)",
                                             }}
                                         >
                                             {inv.status}
@@ -131,7 +132,8 @@ export default function AdminInvestigators() {
 const styles = {
     page: {
         padding: 30,
-        background: "#F4F6FF",
+        background:
+            "radial-gradient(circle at top, #ffffff 0%, #f6f3ee 40%, #efe9df 100%)",
         minHeight: "100vh",
     },
 
@@ -140,33 +142,43 @@ const styles = {
         justifyContent: "space-between",
         alignItems: "center",
         marginBottom: 25,
+        flexWrap: "wrap",
+        gap: 16,
     },
 
+    eyebrow: {
+        fontSize: 12,
+        textTransform: "uppercase",
+        letterSpacing: "0.24em",
+        color: "var(--mint-600)",
+        fontWeight: 700,
+        marginBottom: 8,
+    },
     title: {
         fontSize: 28,
         fontWeight: 700,
     },
 
     subtitle: {
-        color: "#666",
+        color: "var(--ink-600)",
         marginTop: 4,
     },
 
     primaryBtn: {
-        background: "#304FFE",
+        background: "var(--ink-900)",
         color: "#fff",
         padding: "12px 22px",
-        borderRadius: 10,
+        borderRadius: 12,
         border: "none",
         fontWeight: 600,
         cursor: "pointer",
-        boxShadow: "0 6px 14px rgba(48,79,254,0.3)",
+        boxShadow: "0 10px 24px rgba(11,18,32,0.2)",
     },
 
     card: {
         background: "#fff",
         borderRadius: 18,
-        boxShadow: "0 10px 28px rgba(0,0,0,0.08)",
+        boxShadow: "var(--card-shadow)",
         padding: "12px 0", // 🔑 side spacing fix
     },
 
@@ -176,7 +188,7 @@ const styles = {
     },
 
     theadRow: {
-        background: "#F5F7FF",
+        background: "rgba(15,23,42,0.04)",
     },
 
     th: {
@@ -185,15 +197,15 @@ const styles = {
         fontSize: 13,
         fontWeight: 700,
         textTransform: "uppercase",
-        color: "#555",
-        borderBottom: "1px solid #E0E4FF",
+        color: "var(--ink-600)",
+        borderBottom: "1px solid rgba(15,23,42,0.08)",
     },
 
     td: {
         padding: "16px 22px",
         fontSize: 14,
-        color: "#333",
-        borderBottom: "1px solid #F0F0F0",
+        color: "var(--ink-700)",
+        borderBottom: "1px solid rgba(15,23,42,0.08)",
         verticalAlign: "middle",
     },
 
@@ -202,32 +214,34 @@ const styles = {
     },
 
     badge: {
-        color: "#fff",
+        color: "var(--ink-900)",
         padding: "6px 14px",
         borderRadius: 999,
         fontWeight: 600,
-        fontSize: 13,
+        fontSize: 12,
         display: "inline-block",
         minWidth: 90,
         textAlign: "center",
+        textTransform: "uppercase",
+        letterSpacing: "0.08em",
     },
 
     enableBtn: {
-        background: "#E8F5E9",
-        color: "#2E7D32",
-        border: "1px solid #C8E6C9",
+        background: "rgba(34, 197, 94, 0.16)",
+        color: "#15803d",
+        border: "1px solid rgba(34, 197, 94, 0.28)",
         padding: "8px 16px",
-        borderRadius: 8,
+        borderRadius: 10,
         fontWeight: 600,
         cursor: "pointer",
     },
 
     disableBtn: {
-        background: "#FCE4EC",
-        color: "#C2185B",
-        border: "1px solid #F8BBD0",
+        background: "rgba(248, 113, 113, 0.16)",
+        color: "#b91c1c",
+        border: "1px solid rgba(248, 113, 113, 0.3)",
         padding: "8px 16px",
-        borderRadius: 8,
+        borderRadius: 10,
         fontWeight: 600,
         cursor: "pointer",
     },
@@ -235,7 +249,7 @@ const styles = {
     empty: {
         textAlign: "center",
         padding: 50,
-        color: "#777",
+        color: "var(--ink-600)",
         fontWeight: 600,
     },
 

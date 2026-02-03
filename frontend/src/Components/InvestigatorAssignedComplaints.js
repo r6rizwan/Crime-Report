@@ -43,13 +43,18 @@ export default function InvestigatorAssignedComplaints() {
 
     return (
         <div style={styles.page}>
-            <h2 style={styles.heading}>My Assigned Complaints</h2>
-            <p style={styles.subheading}>
-                Manage and update complaints assigned to you
-            </p>
+            <div style={styles.header}>
+                <div>
+                    <p style={styles.eyebrow}>Assigned Queue</p>
+                    <h2 style={styles.heading}>My Assigned Complaints</h2>
+                    <p style={styles.subheading}>
+                        Manage and update complaints assigned to you
+                    </p>
+                </div>
+            </div>
 
             <Section
-                title="🆕 Newly Assigned"
+                title="Newly Assigned"
                 items={assigned}
                 emptyText="No new assigned complaints."
                 actionLabel="Open Case"
@@ -57,7 +62,7 @@ export default function InvestigatorAssignedComplaints() {
             />
 
             <Section
-                title="🔵 Active Investigations"
+                title="Active Investigations"
                 items={open}
                 emptyText="No open investigations."
                 actionLabel="Continue"
@@ -65,21 +70,19 @@ export default function InvestigatorAssignedComplaints() {
             />
 
             <Section
-                title="🟢 Resolved"
+                title="Resolved"
                 items={resolved}
                 emptyText="No resolved complaints yet."
                 actionLabel="View"
                 onAction={(id) => navigate(`/investigator/update-status/${id}`)}
-                // readOnly
             />
 
             <Section
-                title="✅ Closed"
+                title="Closed"
                 items={closed}
                 emptyText="No complaints Closed yet."
                 actionLabel="View"
                 onAction={(id) => navigate(`/investigator/update-status/${id}`)}
-                // readOnly
             />
         </div>
     );
@@ -89,7 +92,10 @@ export default function InvestigatorAssignedComplaints() {
 
 const Section = ({ title, items, emptyText, actionLabel, onAction, readOnly }) => (
     <div style={styles.section}>
-        <h3 style={styles.sectionTitle}>{title}</h3>
+        <div style={styles.sectionHeader}>
+            <h3 style={styles.sectionTitle}>{title}</h3>
+            <span style={styles.sectionMeta}>{items.length} cases</span>
+        </div>
 
         {items.length === 0 ? (
             <div style={styles.emptyBox}>{emptyText}</div>
@@ -136,13 +142,13 @@ const Section = ({ title, items, emptyText, actionLabel, onAction, readOnly }) =
 const getStatusColor = (status) => {
     switch (status) {
         case "Assigned":
-            return "#3F51B5";
+            return "rgba(245, 158, 11, 0.2)";
         case "Open":
-            return "#0288D1";
+            return "rgba(58, 163, 255, 0.2)";
         case "Resolved":
-            return "#2E7D32";
+            return "rgba(34, 197, 94, 0.2)";
         default:
-            return "#777";
+            return "rgba(100, 116, 139, 0.2)";
     }
 };
 
@@ -154,34 +160,63 @@ const styles = {
         margin: "0 auto",
         padding: "30px 20px",
     },
+    header: {
+        display: "flex",
+        justifyContent: "space-between",
+        alignItems: "flex-end",
+        flexWrap: "wrap",
+        gap: 12,
+        marginBottom: 24,
+    },
+    eyebrow: {
+        fontSize: 12,
+        textTransform: "uppercase",
+        letterSpacing: "0.24em",
+        color: "var(--mint-600)",
+        fontWeight: 700,
+        marginBottom: 8,
+    },
 
     heading: {
         fontSize: 26,
         fontWeight: 700,
-        marginBottom: 6,
+        margin: 0,
     },
 
     subheading: {
-        color: "#555",
-        marginBottom: 30,
+        color: "var(--ink-600)",
+        marginTop: 8,
     },
 
     section: {
-        marginBottom: 35,
+        marginBottom: 28,
     },
 
     sectionTitle: {
-        fontSize: 20,
+        fontSize: 18,
         fontWeight: 700,
-        marginBottom: 14,
+        margin: 0,
+    },
+    sectionHeader: {
+        display: "flex",
+        justifyContent: "space-between",
+        alignItems: "center",
+        marginBottom: 12,
+    },
+    sectionMeta: {
+        fontSize: 12,
+        textTransform: "uppercase",
+        letterSpacing: "0.1em",
+        color: "var(--ink-600)",
+        fontWeight: 600,
     },
 
     emptyBox: {
         background: "#fff",
         padding: 20,
         borderRadius: 12,
-        color: "#777",
-        boxShadow: "0 4px 14px rgba(0,0,0,0.06)",
+        color: "var(--ink-600)",
+        boxShadow: "var(--card-shadow)",
     },
 
     card: {
@@ -192,11 +227,11 @@ const styles = {
         justifyContent: "space-between",
         alignItems: "center",
         marginBottom: 14,
-        boxShadow: "0 4px 18px rgba(0,0,0,0.08)",
+        boxShadow: "var(--card-shadow)",
     },
 
     meta: {
-        color: "#666",
+        color: "var(--ink-600)",
         fontSize: 13,
         marginTop: 4,
     },
@@ -208,18 +243,20 @@ const styles = {
     },
 
     status: {
-        color: "#fff",
+        color: "var(--ink-900)",
         padding: "6px 12px",
-        borderRadius: 8,
-        fontSize: 13,
+        borderRadius: 999,
+        fontSize: 12,
         fontWeight: 600,
+        textTransform: "uppercase",
+        letterSpacing: "0.08em",
     },
 
     actionBtn: {
         border: "none",
         color: "#fff",
         padding: "8px 14px",
-        borderRadius: 8,
+        borderRadius: 10,
         fontWeight: 600,
     },
 

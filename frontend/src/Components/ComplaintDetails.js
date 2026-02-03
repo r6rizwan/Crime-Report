@@ -50,79 +50,66 @@ export default function ComplaintDetails() {
 
     return (
         <div style={styles.page}>
-            <div style={styles.card}>
-                <h2 style={styles.title}>Complaint Details</h2>
-
-                {/* Complaint ID */}
-                <div style={styles.row}>
-                    <span style={styles.label}>Complaint ID:</span>
-                    <span style={styles.value}>{complaint.complaintId}</span>
-                </div>
-
-                {/* Complaint Type */}
-                <div style={styles.row}>
-                    <span style={styles.label}>Type:</span>
-                    <span style={styles.value}>{complaint.complaintType}</span>
-                </div>
-
-                {/* Status */}
-                <div style={styles.row}>
-                    <span style={styles.label}>Status:</span>
+            <div style={styles.container}>
+                <div style={styles.header}>
+                    <div>
+                        <p style={styles.eyebrow}>Complaint Details</p>
+                        <h2 style={styles.title}>{complaint.complaintType}</h2>
+                        <p style={styles.subtitle}>ID: {complaint.complaintId}</p>
+                    </div>
                     <span
                         style={{
                             ...styles.statusBadge,
-                            background: statusColor[complaint.status] || "#444",
+                            background: statusColor[complaint.status] || "#64748b",
                         }}
                     >
                         {complaint.status}
                     </span>
                 </div>
 
-                {/* Description */}
-                <div style={styles.column}>
-                    <span style={styles.label}>Description:</span>
-                    <p style={styles.description}>{complaint.description}</p>
+                <div style={styles.grid}>
+                    <div style={styles.card}>
+                        <h3 style={styles.sectionTitle}>Report Summary</h3>
+                        <div style={styles.row}>
+                            <span style={styles.label}>Filed On</span>
+                            <span style={styles.value}>
+                                {new Date(complaint.createdAt).toLocaleString()}
+                            </span>
+                        </div>
+                        <div style={styles.row}>
+                            <span style={styles.label}>Assigned Officer</span>
+                            <span style={styles.value}>
+                                {complaint.assignedTo || "Not Assigned"}
+                            </span>
+                        </div>
+                        <div style={styles.row}>
+                            <span style={styles.label}>Attachment</span>
+                            {complaint.file ? (
+                                <a
+                                    href={fileUrlEncoded}
+                                    target="_blank"
+                                    rel="noreferrer"
+                                    style={styles.fileLink}
+                                >
+                                    View File
+                                </a>
+                            ) : (
+                                <span style={styles.value}>No file uploaded</span>
+                            )}
+                        </div>
+                    </div>
+
+                    <div style={styles.card}>
+                        <h3 style={styles.sectionTitle}>Description</h3>
+                        <div style={styles.description}>{complaint.description}</div>
+                    </div>
                 </div>
 
-                {/* Attachment */}
-                <div style={styles.row}>
-                    <span style={styles.label}>Attachment:</span>
-                    {complaint.file ? (
-                        <a
-                            href={fileUrlEncoded}
-                            target="_blank"
-                            rel="noreferrer"
-                            style={styles.fileLink}
-                        >
-                            View File
-                        </a>
-                    ) : (
-                        <span style={styles.value}>No file uploaded</span>
-                    )}
-                </div>
-
-                {/* Assigned To */}
-                <div style={styles.row}>
-                    <span style={styles.label}>Assigned Officer:</span>
-                    <span style={styles.value}>
-                        {complaint.assignedTo || "Not Assigned"}
-                    </span>
-                </div>
-
-                {/* Created Date */}
-                <div style={styles.row}>
-                    <span style={styles.label}>Filed On:</span>
-                    <span style={styles.value}>
-                        {new Date(complaint.createdAt).toLocaleString()}
-                    </span>
-                </div>
-
-                {/* Solution */}
-                <div style={styles.column}>
-                    <span style={styles.label}>Solution / Remarks:</span>
-                    <p style={styles.solution}>
+                <div style={styles.card}>
+                    <h3 style={styles.sectionTitle}>Solution / Remarks</h3>
+                    <div style={styles.solution}>
                         {complaint.solution || "No solution provided yet."}
-                    </p>
+                    </div>
                 </div>
             </div>
         </div>
@@ -134,11 +121,18 @@ export default function ComplaintDetails() {
 const styles = {
     page: {
         minHeight: "100vh",
-        padding: "30px",
-        background: "linear-gradient(135deg, #e4edff, #f7faff)",
+        padding: "32px",
+        background:
+            "radial-gradient(circle at top, #ffffff 0%, #f6f3ee 40%, #efe9df 100%)",
         display: "flex",
         justifyContent: "center",
-        fontFamily: "Inter, sans-serif",
+    },
+    container: {
+        width: "100%",
+        maxWidth: 1000,
+        display: "flex",
+        flexDirection: "column",
+        gap: 18,
     },
 
     loading: {
@@ -158,72 +152,101 @@ const styles = {
 
     card: {
         width: "100%",
-        maxWidth: "700px",
         background: "#fff",
-        padding: "30px",
-        borderRadius: "18px",
-        boxShadow: "0px 10px 28px rgba(0,0,0,0.12)",
+        padding: 24,
+        borderRadius: 18,
+        boxShadow: "var(--card-shadow)",
     },
 
     title: {
-        fontSize: "28px",
-        fontWeight: "700",
-        marginBottom: "25px",
-        textAlign: "center",
-        color: "#1a237e",
+        fontSize: 28,
+        fontWeight: 700,
+        margin: 0,
+        color: "var(--ink-900)",
+    },
+    subtitle: {
+        marginTop: 6,
+        color: "var(--ink-600)",
+    },
+    eyebrow: {
+        fontSize: 12,
+        textTransform: "uppercase",
+        letterSpacing: "0.24em",
+        color: "var(--mint-600)",
+        fontWeight: 700,
+        marginBottom: 10,
+    },
+    header: {
+        display: "flex",
+        justifyContent: "space-between",
+        alignItems: "center",
+        gap: 16,
+        flexWrap: "wrap",
+        padding: "20px 24px",
+        borderRadius: 18,
+        background: "#fff",
+        boxShadow: "var(--card-shadow)",
+    },
+    grid: {
+        display: "grid",
+        gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))",
+        gap: 18,
+    },
+    sectionTitle: {
+        margin: 0,
+        fontSize: 16,
+        fontWeight: 700,
     },
 
     row: {
         display: "flex",
         justifyContent: "space-between",
         padding: "10px 0",
-        borderBottom: "1px solid #f1f1f1",
-    },
-
-    column: {
-        marginTop: "18px",
-        marginBottom: "12px",
+        borderBottom: "1px solid rgba(15,23,42,0.08)",
     },
 
     label: {
-        fontWeight: "600",
-        color: "#333",
+        fontWeight: 600,
+        color: "var(--ink-600)",
     },
 
     value: {
-        fontWeight: "500",
-        color: "#444",
+        fontWeight: 600,
+        color: "var(--ink-900)",
     },
 
     description: {
-        marginTop: "8px",
-        lineHeight: "1.6",
-        color: "#444",
-        background: "#f8f9ff",
-        padding: "12px",
-        borderRadius: "10px",
-        border: "1px solid #e0e7ff",
+        marginTop: 12,
+        lineHeight: 1.6,
+        color: "var(--ink-700)",
+        background: "rgba(15,23,42,0.03)",
+        padding: 14,
+        borderRadius: 12,
+        border: "1px solid rgba(15,23,42,0.08)",
     },
 
     solution: {
-        marginTop: "8px",
-        background: "#f1f7f5",
-        padding: "12px",
-        borderRadius: "10px",
-        border: "1px solid #d7eee4",
-        color: "#333",
+        marginTop: 12,
+        background: "rgba(26, 167, 155, 0.08)",
+        padding: 14,
+        borderRadius: 12,
+        border: "1px solid rgba(26, 167, 155, 0.2)",
+        color: "var(--ink-900)",
     },
 
     fileLink: {
-        color: "#304ffe",
-        fontWeight: "600",
+        color: "var(--mint-600)",
+        fontWeight: 600,
         textDecoration: "none",
     },
 
     statusBadge: {
-        padding: "8px 14px",
-        borderRadius: "10px",
-        fontWeight: "700",
+        padding: "8px 16px",
+        borderRadius: 999,
+        fontWeight: 700,
         color: "white",
+        textTransform: "uppercase",
+        letterSpacing: "0.08em",
+        fontSize: 12,
     },
 };

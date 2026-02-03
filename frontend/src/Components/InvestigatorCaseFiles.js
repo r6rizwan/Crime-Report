@@ -75,15 +75,18 @@ export default function InvestigatorCaseFiles() {
 
     return (
         <div style={styles.page}>
-            <h2 style={styles.heading}>📁 Case Files & Investigation Notes</h2>
-
-            <p style={styles.helper}>
-                Visible to <strong>Admin</strong> only. Not visible to users.
-            </p>
+            <div style={styles.header}>
+                <div>
+                    <p style={styles.eyebrow}>Case Files</p>
+                    <h2 style={styles.heading}>Investigation Notes</h2>
+                    <p style={styles.helper}>
+                        Visible to <strong>Admin</strong> only. Not visible to users.
+                    </p>
+                </div>
+            </div>
 
             {message && <div style={styles.success}>{message}</div>}
 
-            {/* Existing Case File */}
             {caseFile && (
                 <div style={styles.card}>
                     <h3>Existing Notes</h3>
@@ -95,7 +98,7 @@ export default function InvestigatorCaseFiles() {
                     <h4 style={{ marginTop: 20 }}>Uploaded Files</h4>
 
                     {caseFile.files?.length === 0 ? (
-                        <p style={{ color: "#777" }}>No files uploaded</p>
+                        <p style={{ color: "var(--ink-600)" }}>No files uploaded</p>
                     ) : (
                         caseFile.files.map((f, i) => (
                             <a
@@ -105,7 +108,7 @@ export default function InvestigatorCaseFiles() {
                                 rel="noreferrer"
                                 style={styles.fileLink}
                             >
-                                📎 {f.filename}
+                                {f.filename}
                             </a>
                         ))
                     )}
@@ -117,7 +120,6 @@ export default function InvestigatorCaseFiles() {
                 </div>
             )}
 
-            {/* Add / Update Section */}
             <div style={styles.card}>
                 <h3>Add / Update Case Notes</h3>
 
@@ -145,7 +147,6 @@ export default function InvestigatorCaseFiles() {
                 </button>
             </div>
 
-            {/* bottom spacing */}
             <div style={{ height: 40 }} />
         </div>
     );
@@ -158,28 +159,44 @@ const styles = {
         margin: "0 auto",
         paddingBottom: 40,
     },
+    header: {
+        display: "flex",
+        justifyContent: "space-between",
+        alignItems: "flex-end",
+        flexWrap: "wrap",
+        gap: 12,
+        marginBottom: 16,
+    },
+    eyebrow: {
+        fontSize: 12,
+        textTransform: "uppercase",
+        letterSpacing: "0.24em",
+        color: "var(--mint-600)",
+        fontWeight: 700,
+        marginBottom: 8,
+    },
     heading: {
         fontSize: 26,
         fontWeight: 700,
-        marginBottom: 6,
+        margin: 0,
     },
     helper: {
-        color: "#555",
-        marginBottom: 20,
+        color: "var(--ink-600)",
+        marginTop: 8,
         fontSize: 14,
     },
     card: {
         background: "#fff",
         padding: 25,
-        borderRadius: 16,
-        boxShadow: "0 4px 18px rgba(0,0,0,0.08)",
+        borderRadius: 18,
+        boxShadow: "var(--card-shadow)",
         marginBottom: 25,
     },
     textarea: {
         width: "100%",
         padding: 12,
-        borderRadius: 10,
-        border: "1px solid #CCC",
+        borderRadius: 12,
+        border: "1px solid rgba(15,23,42,0.15)",
         marginBottom: 15,
         resize: "vertical",
     },
@@ -187,38 +204,38 @@ const styles = {
         marginBottom: 15,
     },
     btn: {
-        background: "#304FFE",
+        background: "var(--mint-500)",
         color: "#fff",
         border: "none",
         padding: "12px 20px",
-        borderRadius: 10,
+        borderRadius: 12,
         fontWeight: 700,
         cursor: "pointer",
     },
     notesBox: {
-        background: "#F3F4FF",
+        background: "rgba(15,23,42,0.04)",
         padding: 12,
-        borderRadius: 10,
-        border: "1px solid #E0E7FF",
+        borderRadius: 12,
+        border: "1px solid rgba(15,23,42,0.08)",
         marginBottom: 10,
     },
     fileLink: {
         display: "block",
         marginTop: 8,
-        color: "#304FFE",
+        color: "var(--mint-600)",
         fontWeight: 600,
         textDecoration: "none",
     },
     meta: {
         marginTop: 12,
         fontSize: 13,
-        color: "#666",
+        color: "var(--ink-600)",
     },
     success: {
-        background: "#D1F5DA",
+        background: "rgba(34,197,94,0.12)",
         padding: 12,
-        borderRadius: 10,
-        color: "#145A32",
+        borderRadius: 12,
+        color: "#15803d",
         fontWeight: 600,
         marginBottom: 20,
     },

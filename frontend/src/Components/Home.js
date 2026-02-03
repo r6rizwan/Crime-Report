@@ -186,7 +186,6 @@ export default function Home() {
     const navigate = useNavigate();
     const [showLoginMenu, setShowLoginMenu] = useState(false);
 
-    // Close dropdown on outside click
     useEffect(() => {
         const closeMenu = () => setShowLoginMenu(false);
         window.addEventListener("click", closeMenu);
@@ -195,317 +194,683 @@ export default function Home() {
 
     return (
         <div style={styles.page}>
+            <div style={styles.bgOrbA} />
+            <div style={styles.bgOrbB} />
 
             {/* NAVBAR */}
             <nav style={styles.navbar}>
                 <div style={styles.navLeft}>
-                    <span style={styles.logo}>Crime Reporting Portal</span>
+                    <span style={styles.logo} onClick={() => navigate("/")}>
+                        Crime Reporting Portal
+                    </span>
+                    <span style={styles.navTag}>Civic Safety Network</span>
                 </div>
 
                 <div style={styles.navRight}>
                     <span style={styles.navLink} onClick={() => navigate("/")}>
                         Home
                     </span>
+                    <span style={styles.navLink} onClick={() => navigate("/aboutpage")}>
+                        About
+                    </span>
+                    <span style={styles.navLink} onClick={() => navigate("/contactpage")}>
+                        Contact
+                    </span>
 
-                    <span style={styles.navLink} onClick={()=> navigate("/aboutpage")}>About</span>
-                    <span style={styles.navLink} onClick={()=> navigate("/contactpage")}>Contact</span>
-
-                    {/* LOGIN DROPDOWN */}
-                    <div
-                        style={styles.dropdown}
-                        onClick={(e) => e.stopPropagation()}
-                    >
+                    <div style={styles.dropdown} onClick={(e) => e.stopPropagation()}>
                         <span
                             style={styles.navLink}
-                            onClick={() =>
-                                setShowLoginMenu((prev) => !prev)
-                            }
+                            onClick={() => setShowLoginMenu((prev) => !prev)}
                         >
                             Login ▾
                         </span>
 
                         {showLoginMenu && (
                             <div style={styles.dropdownMenu}>
-                                <div
-                                    style={styles.dropdownItem}
-                                    onClick={() => navigate("/login")}
-                                >
+                                <div style={styles.dropdownItem} onClick={() => navigate("/login")}>
                                     Citizen Login
                                 </div>
-
                                 <div
                                     style={styles.dropdownItem}
-                                    onClick={() =>
-                                        navigate("/investigator/login")
-                                    }
+                                    onClick={() => navigate("/investigator/login")}
                                 >
                                     Investigator Login
                                 </div>
                             </div>
                         )}
                     </div>
+
+                    <button
+                        style={styles.navCta}
+                        onClick={() => navigate("/register")}
+                    >
+                        Report Now
+                    </button>
                 </div>
             </nav>
 
-            {/* HERO SECTION */}
-            <div style={styles.heroBox}>
-                <h1 style={styles.heroTitle}>Crime Reporting Portal</h1>
-                <p style={styles.heroSubtitle}>
-                    A secure and transparent way for citizens to file and track
-                    complaints.
-                </p>
+            {/* HERO */}
+            <section style={styles.hero}>
+                <div style={styles.heroCopy}>
+                    <p style={styles.eyebrow}>Secure. Transparent. Fast.</p>
+                    <h1 style={styles.heroTitle}>
+                        A safer city starts with one clear report.
+                    </h1>
+                    <p style={styles.heroSubtitle}>
+                        File incidents in minutes, follow every update, and stay informed
+                        as cases move from intake to resolution.
+                    </p>
 
-                <div style={styles.heroButtons}>
-                    <button
-                        style={styles.primaryBtn}
-                        onClick={() => navigate("/register")}
-                    >
-                        File a Complaint
-                    </button>
-
-                    <button
-                        style={styles.secondaryBtn}
-                        onClick={() => navigate("/login")}
-                    >
-                        Citizen Login
-                    </button>
-                </div>
-            </div>
-
-            {/* STATS SECTION */}
-            <div style={styles.statsSection}>
-                <div style={styles.statCard}>
-                    <h2 style={styles.statNumber}>1,248</h2>
-                    <p style={styles.statLabel}>Total Complaints</p>
-                </div>
-
-                <div style={styles.statCard}>
-                    <h2 style={styles.statNumber}>932</h2>
-                    <p style={styles.statLabel}>Resolved</p>
-                </div>
-
-                <div style={styles.statCard}>
-                    <h2 style={styles.statNumber}>286</h2>
-                    <p style={styles.statLabel}>Pending</p>
-                </div>
-
-                <div style={styles.statCard}>
-                    <h2 style={styles.statNumber}>30</h2>
-                    <p style={styles.statLabel}>In Progress</p>
-                </div>
-            </div>
-
-            {/* FEATURES */}
-            <div style={styles.featuresBox}>
-                <h2 style={styles.featureTitle}>Why Use This Portal?</h2>
-
-                <div style={styles.featureList}>
-                    <div style={styles.featureItem}>
-                        ✔ 24/7 Online Complaint Filing
+                    <div style={styles.heroButtons}>
+                        <button style={styles.primaryBtn} onClick={() => navigate("/register")}>
+                            File a Complaint
+                        </button>
+                        <button style={styles.secondaryBtn} onClick={() => navigate("/login")}>
+                            Citizen Login
+                        </button>
                     </div>
-                    <div style={styles.featureItem}>
-                        ✔ Track Complaint Status Anytime
-                    </div>
-                    <div style={styles.featureItem}>
-                        ✔ Fast Investigator Assignment
-                    </div>
-                    <div style={styles.featureItem}>
-                        ✔ Secure & Confidential
-                    </div>
-                    <div style={styles.featureItem}>
-                        ✔ No Need to Visit Police Station
+
+                    <div style={styles.trustRow}>
+                        <div style={styles.trustItem}>
+                            <span style={styles.trustLabel}>Verified Intake</span>
+                            <span style={styles.trustValue}>24/7</span>
+                        </div>
+                        <div style={styles.trustItem}>
+                            <span style={styles.trustLabel}>Avg. Assignment</span>
+                            <span style={styles.trustValue}>2 hrs</span>
+                        </div>
+                        <div style={styles.trustItem}>
+                            <span style={styles.trustLabel}>Cases Resolved</span>
+                            <span style={styles.trustValue}>94%</span>
+                        </div>
                     </div>
                 </div>
-            </div>
+
+                <div style={styles.heroVisual}>
+                    <div style={styles.heroCardPrimary}>
+                        <p style={styles.cardLabel}>Active Case</p>
+                        <h3 style={styles.cardTitle}>Burglary Report</h3>
+                        <p style={styles.cardMeta}>Tracking ID: CMP-08/2026</p>
+                        <div style={styles.progressTrack}>
+                            <div style={styles.progressFill} />
+                        </div>
+                        <div style={styles.cardFooter}>
+                            <span style={styles.statusPill}>Assigned</span>
+                            <span style={styles.cardMeta}>Updated 15m ago</span>
+                        </div>
+                    </div>
+                    <div style={styles.heroCardSecondary}>
+                        <h4 style={styles.miniTitle}>Live Support</h4>
+                        <p style={styles.miniText}>Speak to a coordinator within minutes.</p>
+                        <button
+                            style={styles.ghostBtn}
+                            onClick={() => navigate("/contactpage")}
+                        >
+                            Contact Support
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            {/* HOW IT WORKS */}
+            <section style={styles.section}>
+                <div style={styles.sectionHeader}>
+                    <h2 style={styles.sectionTitle}>How It Works</h2>
+                    <p style={styles.sectionSubtitle}>
+                        A clear, accountable workflow from report to resolution.
+                    </p>
+                </div>
+                <div style={styles.stepsGrid}>
+                    {steps.map((step) => (
+                        <div key={step.title} style={styles.stepCard}>
+                            <div style={{ ...styles.stepIcon, background: step.accent }}>
+                                {step.icon}
+                            </div>
+                            <h3 style={styles.stepTitle}>{step.title}</h3>
+                            <p style={styles.stepText}>{step.text}</p>
+                        </div>
+                    ))}
+                </div>
+            </section>
+
+            {/* CONFIDENCE BAND */}
+            <section style={styles.confidenceBand}>
+                {stats.map((item) => (
+                    <div key={item.label} style={styles.statCard}>
+                        <h3 style={styles.statNumber}>{item.value}</h3>
+                        <p style={styles.statLabel}>{item.label}</p>
+                    </div>
+                ))}
+            </section>
+
+            {/* FEATURE CARDS */}
+            <section style={styles.section}>
+                <div style={styles.sectionHeader}>
+                    <h2 style={styles.sectionTitle}>Why Communities Choose Us</h2>
+                    <p style={styles.sectionSubtitle}>
+                        Built for clarity, accountability, and respect for every report.
+                    </p>
+                </div>
+                <div style={styles.featureGrid}>
+                    {features.map((feature) => (
+                        <div key={feature.title} style={styles.featureCard}>
+                            <h3 style={styles.featureTitle}>{feature.title}</h3>
+                            <p style={styles.featureText}>{feature.text}</p>
+                            <span style={styles.featureTag}>{feature.tag}</span>
+                        </div>
+                    ))}
+                </div>
+            </section>
+
+            {/* CTA */}
+            <section style={styles.ctaSection}>
+                <div>
+                    <h2 style={styles.ctaTitle}>Ready to file a report?</h2>
+                    <p style={styles.ctaText}>
+                        Start a secure complaint in under five minutes and track it end to end.
+                    </p>
+                </div>
+                <button style={styles.ctaBtn} onClick={() => navigate("/register")}>
+                    Start Report
+                </button>
+            </section>
 
             {/* FOOTER */}
             <footer style={styles.footer}>
-                © {new Date().getFullYear()} Crime Reporting Portal • All Rights
-                Reserved
+                © {new Date().getFullYear()} Crime Reporting Portal • All Rights Reserved
             </footer>
         </div>
     );
 }
 
+const stats = [
+    { label: "Total Complaints", value: "1,248" },
+    { label: "Resolved", value: "932" },
+    { label: "Pending", value: "286" },
+    { label: "In Progress", value: "30" },
+];
+
+const steps = [
+    {
+        title: "Submit Securely",
+        text: "Report incidents online with guided prompts and secure uploads.",
+        icon: "1",
+        accent: "rgba(26, 167, 155, 0.12)",
+    },
+    {
+        title: "Get Assigned",
+        text: "Cases route to investigators based on type and location.",
+        icon: "2",
+        accent: "rgba(58, 163, 255, 0.14)",
+    },
+    {
+        title: "Track Progress",
+        text: "Receive timeline updates until the case is closed.",
+        icon: "3",
+        accent: "rgba(245, 158, 11, 0.16)",
+    },
+];
+
+const features = [
+    {
+        title: "Real-Time Status Updates",
+        text: "Know who is assigned, when actions were taken, and what happens next.",
+        tag: "Transparency",
+    },
+    {
+        title: "Confidential by Design",
+        text: "We safeguard your personal data and document uploads end to end.",
+        tag: "Privacy",
+    },
+    {
+        title: "Community Alerting",
+        text: "Spot emerging trends with aggregated insights and safe updates.",
+        tag: "Awareness",
+    },
+];
+
 /* ---------------- STYLES ---------------- */
 
 const styles = {
     page: {
-        background: "linear-gradient(135deg, #e5eeff, #f8faff)",
+        position: "relative",
+        overflow: "hidden",
+        background:
+            "radial-gradient(circle at top, #ffffff 0%, #f6f3ee 40%, #efe9df 100%)",
         minHeight: "100vh",
-        paddingBottom: 40,
+        paddingBottom: 48,
+    },
+    bgOrbA: {
+        position: "absolute",
+        width: 320,
+        height: 320,
+        borderRadius: "50%",
+        background: "radial-gradient(circle, rgba(26,167,155,0.18), transparent 70%)",
+        top: -80,
+        left: -120,
+        filter: "blur(2px)",
+        animation: "floatSlow 10s ease-in-out infinite",
+    },
+    bgOrbB: {
+        position: "absolute",
+        width: 260,
+        height: 260,
+        borderRadius: "50%",
+        background: "radial-gradient(circle, rgba(58,163,255,0.18), transparent 70%)",
+        bottom: 40,
+        right: -80,
+        filter: "blur(2px)",
+        animation: "floatSlow 12s ease-in-out infinite",
     },
 
     /* NAVBAR */
     navbar: {
-        height: 64,
-        background: "#ffffff",
+        height: 72,
+        background: "rgba(255,255,255,0.9)",
+        backdropFilter: "blur(6px)",
         display: "flex",
         justifyContent: "space-between",
         alignItems: "center",
-        padding: "0 32px",
-        boxShadow: "0 4px 12px rgba(0,0,0,0.08)",
+        padding: "0 40px",
+        borderBottom: "1px solid rgba(15, 23, 42, 0.06)",
         position: "sticky",
         top: 0,
         zIndex: 1000,
     },
-
     navLeft: {
         display: "flex",
         alignItems: "center",
+        gap: 14,
     },
-
     logo: {
         fontSize: 20,
-        fontWeight: 800,
-        color: "#304FFE",
+        fontWeight: 700,
+        color: "var(--ink-900)",
         cursor: "pointer",
     },
-
+    navTag: {
+        fontSize: 12,
+        fontWeight: 600,
+        textTransform: "uppercase",
+        letterSpacing: "0.16em",
+        color: "var(--mint-600)",
+    },
     navRight: {
         display: "flex",
         alignItems: "center",
         gap: 22,
     },
-
     navLink: {
         fontWeight: 600,
-        color: "#333",
+        color: "var(--ink-600)",
         cursor: "pointer",
     },
-
-    dropdown: {
-        position: "relative",
+    navCta: {
+        padding: "10px 18px",
+        borderRadius: 999,
+        border: "none",
+        background: "var(--ink-900)",
+        color: "#fff",
+        fontWeight: 600,
+        cursor: "pointer",
     },
-
+    dropdown: { position: "relative" },
     dropdownMenu: {
         position: "absolute",
-        top: 32,
+        top: 34,
         right: 0,
         background: "#fff",
-        borderRadius: 10,
-        boxShadow: "0 10px 24px rgba(0,0,0,0.12)",
-        minWidth: 180,
+        borderRadius: 12,
+        boxShadow: "0 12px 28px rgba(11,18,32,0.18)",
+        minWidth: 190,
         overflow: "hidden",
         zIndex: 2000,
     },
-
     dropdownItem: {
         padding: "12px 16px",
         cursor: "pointer",
         fontWeight: 600,
-        color: "#333",
+        color: "var(--ink-700)",
         borderBottom: "1px solid #f1f1f1",
     },
 
     /* HERO */
-    heroBox: {
-        textAlign: "center",
-        padding: "70px 20px 30px",
+    hero: {
+        maxWidth: 1160,
+        margin: "0 auto",
+        padding: "64px 28px 24px",
+        display: "grid",
+        gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
+        gap: 36,
+        alignItems: "center",
+        position: "relative",
+        zIndex: 2,
     },
-
+    heroCopy: {
+        animation: "fadeUp 0.8s ease both",
+    },
+    eyebrow: {
+        fontSize: 12,
+        textTransform: "uppercase",
+        letterSpacing: "0.24em",
+        color: "var(--mint-600)",
+        fontWeight: 700,
+        marginBottom: 12,
+    },
     heroTitle: {
-        fontSize: 36,
-        fontWeight: 800,
+        fontFamily: '"DM Serif Display", serif',
+        fontSize: 44,
+        lineHeight: 1.05,
+        margin: 0,
+        color: "var(--ink-900)",
     },
-
     heroSubtitle: {
-        marginTop: 10,
-        color: "#555",
+        marginTop: 16,
+        color: "var(--ink-600)",
+        fontSize: 17,
+        lineHeight: 1.6,
+        maxWidth: 520,
     },
-
     heroButtons: {
-        marginTop: 26,
+        marginTop: 24,
         display: "flex",
-        justifyContent: "center",
-        gap: 16,
+        gap: 14,
+        flexWrap: "wrap",
     },
-
     primaryBtn: {
         padding: "12px 22px",
-        background: "#4B6FFF",
+        background: "var(--mint-500)",
         color: "#fff",
-        borderRadius: 8,
+        borderRadius: 12,
         border: "none",
         fontWeight: 600,
         cursor: "pointer",
+        boxShadow: "0 12px 26px rgba(26, 167, 155, 0.28)",
     },
-
     secondaryBtn: {
         padding: "12px 22px",
-        border: "2px solid #4B6FFF",
+        border: "1px solid rgba(15, 23, 42, 0.2)",
+        background: "rgba(255,255,255,0.8)",
+        color: "var(--ink-700)",
+        borderRadius: 12,
+        fontWeight: 600,
+        cursor: "pointer",
+    },
+    trustRow: {
+        marginTop: 24,
+        display: "flex",
+        gap: 18,
+        flexWrap: "wrap",
+    },
+    trustItem: {
+        background: "#fff",
+        borderRadius: 14,
+        padding: "12px 16px",
+        boxShadow: "var(--card-shadow)",
+        minWidth: 140,
+    },
+    trustLabel: {
+        display: "block",
+        fontSize: 12,
+        textTransform: "uppercase",
+        letterSpacing: "0.12em",
+        color: "var(--ink-600)",
+        marginBottom: 6,
+    },
+    trustValue: {
+        fontSize: 18,
+        fontWeight: 700,
+        color: "var(--ink-900)",
+    },
+    heroVisual: {
+        display: "grid",
+        gap: 18,
+        justifyItems: "center",
+    },
+    heroCardPrimary: {
+        width: "100%",
+        maxWidth: 360,
+        background: "#fff",
+        borderRadius: 20,
+        padding: 22,
+        boxShadow: "var(--card-shadow)",
+        animation: "glowPulse 6s ease-in-out infinite",
+    },
+    cardLabel: {
+        fontSize: 12,
+        textTransform: "uppercase",
+        letterSpacing: "0.2em",
+        color: "var(--ink-600)",
+        marginBottom: 6,
+    },
+    cardTitle: {
+        margin: 0,
+        fontSize: 20,
+        fontWeight: 700,
+        color: "var(--ink-900)",
+    },
+    cardMeta: {
+        marginTop: 6,
+        fontSize: 13,
+        color: "var(--ink-600)",
+    },
+    progressTrack: {
+        marginTop: 16,
+        height: 8,
+        borderRadius: 999,
+        background: "rgba(15,23,42,0.08)",
+        overflow: "hidden",
+    },
+    progressFill: {
+        width: "62%",
+        height: "100%",
+        background: "linear-gradient(90deg, var(--mint-500), #6ee7d8)",
+    },
+    cardFooter: {
+        marginTop: 16,
+        display: "flex",
+        justifyContent: "space-between",
+        alignItems: "center",
+    },
+    statusPill: {
+        padding: "6px 12px",
+        borderRadius: 999,
+        background: "rgba(26, 167, 155, 0.12)",
+        color: "var(--mint-600)",
+        fontWeight: 600,
+        fontSize: 12,
+        textTransform: "uppercase",
+        letterSpacing: "0.08em",
+    },
+    heroCardSecondary: {
+        width: "100%",
+        maxWidth: 320,
+        background: "rgba(11,18,32,0.92)",
+        borderRadius: 18,
+        padding: 20,
+        color: "#fff",
+        boxShadow: "0 18px 40px rgba(11,18,32,0.3)",
+        animation: "fadeUp 1s ease both",
+    },
+    miniTitle: {
+        margin: 0,
+        fontSize: 18,
+        fontWeight: 700,
+    },
+    miniText: {
+        marginTop: 10,
+        fontSize: 14,
+        color: "rgba(255,255,255,0.72)",
+    },
+    ghostBtn: {
+        marginTop: 16,
+        padding: "10px 16px",
+        borderRadius: 10,
+        border: "1px solid rgba(255,255,255,0.3)",
         background: "transparent",
-        color: "#4B6FFF",
-        borderRadius: 8,
+        color: "#fff",
         fontWeight: 600,
         cursor: "pointer",
     },
 
-    /* STATS */
-    statsSection: {
-        marginTop: 40,
+    /* SECTION */
+    section: {
+        maxWidth: 1140,
+        margin: "0 auto",
+        padding: "60px 28px 20px",
+    },
+    sectionHeader: {
         display: "flex",
-        justifyContent: "center",
-        gap: 20,
-        flexWrap: "wrap",
-        padding: "0 20px",
+        flexDirection: "column",
+        gap: 10,
+        marginBottom: 24,
+    },
+    sectionTitle: {
+        fontFamily: '"DM Serif Display", serif',
+        fontSize: 32,
+        margin: 0,
+    },
+    sectionSubtitle: {
+        color: "var(--ink-600)",
+        fontSize: 16,
+        maxWidth: 560,
     },
 
-    statCard: {
-        width: 180,
+    stepsGrid: {
+        display: "grid",
+        gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
+        gap: 18,
+    },
+    stepCard: {
         background: "#fff",
-        padding: 22,
+        borderRadius: 18,
+        padding: 20,
+        boxShadow: "var(--card-shadow)",
+        minHeight: 170,
+    },
+    stepIcon: {
+        width: 44,
+        height: 44,
         borderRadius: 14,
-        textAlign: "center",
-        boxShadow: "0 10px 22px rgba(0,0,0,0.08)",
-    },
-
-    statNumber: {
-        fontSize: 28,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
         fontWeight: 700,
-        color: "#304FFE",
+        color: "var(--ink-900)",
+        marginBottom: 16,
     },
-
-    statLabel: {
-        marginTop: 6,
+    stepTitle: {
+        margin: 0,
+        fontSize: 18,
+    },
+    stepText: {
+        marginTop: 10,
+        color: "var(--ink-600)",
+        lineHeight: 1.5,
         fontSize: 14,
-        color: "#555",
     },
 
-    /* FEATURES */
-    featuresBox: {
-        maxWidth: 720,
-        margin: "50px auto",
+    confidenceBand: {
+        maxWidth: 1140,
+        margin: "20px auto 0",
+        padding: "0 28px",
+        display: "grid",
+        gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))",
+        gap: 16,
+    },
+    statCard: {
         background: "#fff",
-        padding: "30px",
         borderRadius: 16,
-        boxShadow: "0 8px 24px rgba(0,0,0,0.08)",
-    },
-
-    featureTitle: {
+        padding: 18,
         textAlign: "center",
-        fontSize: 22,
+        boxShadow: "var(--card-shadow)",
+    },
+    statNumber: {
+        margin: 0,
+        fontSize: 24,
         fontWeight: 700,
-        marginBottom: 20,
+        color: "var(--mint-600)",
+    },
+    statLabel: {
+        marginTop: 8,
+        fontSize: 12,
+        textTransform: "uppercase",
+        letterSpacing: "0.12em",
+        color: "var(--ink-600)",
     },
 
-    featureList: {
+    featureGrid: {
+        display: "grid",
+        gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
+        gap: 18,
+    },
+    featureCard: {
+        background: "#fff",
+        borderRadius: 18,
+        padding: 22,
+        boxShadow: "var(--card-shadow)",
         display: "flex",
         flexDirection: "column",
         gap: 12,
+        minHeight: 190,
+    },
+    featureTitle: {
+        margin: 0,
+        fontSize: 18,
+        fontWeight: 700,
+    },
+    featureText: {
+        margin: 0,
+        color: "var(--ink-600)",
+        lineHeight: 1.5,
+        fontSize: 14,
+    },
+    featureTag: {
+        alignSelf: "flex-start",
+        padding: "6px 12px",
+        borderRadius: 999,
+        background: "rgba(15,23,42,0.08)",
+        fontSize: 12,
+        fontWeight: 600,
+        color: "var(--ink-600)",
     },
 
-    featureItem: {
-        padding: 12,
-        background: "#f4f7ff",
-        borderRadius: 10,
-        fontWeight: 500,
+    ctaSection: {
+        maxWidth: 1100,
+        margin: "70px auto 0",
+        padding: "32px 28px",
+        background: "linear-gradient(135deg, #0f172a, #1f2a44)",
+        borderRadius: 24,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "space-between",
+        gap: 20,
+        color: "#fff",
+    },
+    ctaTitle: {
+        margin: 0,
+        fontFamily: '"DM Serif Display", serif',
+        fontSize: 28,
+    },
+    ctaText: {
+        marginTop: 10,
+        color: "rgba(255,255,255,0.75)",
+        maxWidth: 520,
+    },
+    ctaBtn: {
+        padding: "12px 22px",
+        borderRadius: 999,
+        border: "none",
+        background: "var(--sun-500)",
+        color: "#1f1400",
+        fontWeight: 700,
+        cursor: "pointer",
     },
 
     footer: {
         textAlign: "center",
-        marginTop: 40,
-        fontSize: 14,
-        color: "#666",
+        marginTop: 48,
+        fontSize: 13,
+        color: "var(--ink-600)",
     },
 };

@@ -936,7 +936,8 @@ import { useNavigate } from "react-router-dom";
 /* ---------------- KPI CARD ---------------- */
 const StatCard = ({ label, value, color }) => (
     <div style={styles.statCard}>
-        <h2 style={{ ...styles.statNumber, color }}>{value}</h2>
+        <div style={{ ...styles.statAccent, background: color }} />
+        <h2 style={styles.statNumber}>{value}</h2>
         <p style={styles.statLabel}>{label}</p>
     </div>
 );
@@ -1009,24 +1010,36 @@ export default function AdminDashboard() {
         <div style={styles.page}>
             <div style={styles.container}>
 
-                {/* HEADER */}
-                <div style={styles.headerRow}>
-                    <h1 style={styles.heading}>Admin Dashboard</h1>
-                    <p style={styles.subheading}>
-                        System overview and operational insights
-                    </p>
+                <div style={styles.hero}>
+                    <div>
+                        <p style={styles.eyebrow}>Admin Control Center</p>
+                        <h1 style={styles.heading}>Operations Dashboard</h1>
+                        <p style={styles.subheading}>
+                            Live complaint intake, investigator workload, and system activity.
+                        </p>
+                    </div>
+                    <div style={styles.heroCard}>
+                        <p style={styles.heroCardLabel}>Today</p>
+                        <h3 style={styles.heroCardTitle}>
+                            {stats.newCases} new cases awaiting action
+                        </h3>
+                        <button
+                            style={styles.heroBtn}
+                            onClick={() => navigate("/admin/complaints")}
+                        >
+                            Review Queue
+                        </button>
+                    </div>
                 </div>
 
-                {/* KPI ROW */}
                 <div style={styles.statsGrid}>
-                    <StatCard label="Total Cases" value={stats.total} color="#304FFE" />
-                    <StatCard label="New Cases" value={stats.newCases} color="#FB8C00" />
-                    <StatCard label="Assigned / Open" value={stats.assigned} color="#1E88E5" />
-                    <StatCard label="Resolved" value={stats.resolved} color="#2E7D32" />
-                    <StatCard label="Closed" value={stats.closed} color="#616161" />
+                    <StatCard label="Total Cases" value={stats.total} color="#1aa79b" />
+                    <StatCard label="New Cases" value={stats.newCases} color="#f59e0b" />
+                    <StatCard label="Assigned / Open" value={stats.assigned} color="#3aa3ff" />
+                    <StatCard label="Resolved" value={stats.resolved} color="#22c55e" />
+                    <StatCard label="Closed" value={stats.closed} color="#64748b" />
                 </div>
 
-                {/* RECENT COMPLAINTS */}
                 <div style={styles.section}>
                     <div style={styles.sectionHeader}>
                         <h3 style={styles.sectionTitle}>Recent Complaints</h3>
@@ -1054,11 +1067,23 @@ export default function AdminDashboard() {
                                 <tr key={c._id} style={styles.row}>
                                     <td style={styles.td}>{c.complaintId}</td>
                                     <td style={styles.td}>{c.complaintType}</td>
-                                    <td style={styles.td}>
-                                        <span style={styles.statusBadge}>
-                                            {c.status}
-                                        </span>
-                                    </td>
+                    <td style={styles.td}>
+                        <span
+                            style={{
+                                ...styles.statusBadge,
+                                background:
+                                    c.status === "Pending"
+                                        ? "rgba(245, 158, 11, 0.2)"
+                                        : c.status === "Assigned" || c.status === "Open"
+                                        ? "rgba(58, 163, 255, 0.2)"
+                                        : c.status === "Resolved"
+                                        ? "rgba(34, 197, 94, 0.2)"
+                                        : "rgba(100, 116, 139, 0.2)",
+                            }}
+                        >
+                            {c.status}
+                        </span>
+                    </td>
                                     <td style={styles.td}>{c.assignedTo || "—"}</td>
                                     <td style={styles.td}>
                                         {new Date(c.createdAt).toLocaleDateString("en-IN")}
@@ -1079,7 +1104,6 @@ export default function AdminDashboard() {
                     </table>
                 </div>
 
-                {/* INVESTIGATOR LOAD */}
                 <div style={styles.section}>
                     <h3 style={styles.sectionTitle}>Investigator Workload</h3>
 
@@ -1105,7 +1129,6 @@ export default function AdminDashboard() {
                     </table>
                 </div>
 
-                {/* ACTIVITY */}
                 <div style={styles.section}>
                     <h3 style={styles.sectionTitle}>Recent System Activity</h3>
 
@@ -1134,7 +1157,8 @@ export default function AdminDashboard() {
 
 const styles = {
     page: {
-        background: "#F4F6FF",
+        background:
+            "radial-gradient(circle at top, #ffffff 0%, #f6f3ee 40%, #efe9df 100%)",
         minHeight: "100vh",
         padding: 30,
     },
@@ -1143,8 +1167,24 @@ const styles = {
         margin: "0 auto",
     },
 
-    headerRow: {
+    hero: {
+        display: "grid",
+        gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))",
+        gap: 20,
+        padding: 26,
+        borderRadius: 22,
+        background: "#0f172a",
+        color: "#fff",
+        boxShadow: "0 18px 40px rgba(11,18,32,0.28)",
         marginBottom: 28,
+    },
+    eyebrow: {
+        fontSize: 12,
+        textTransform: "uppercase",
+        letterSpacing: "0.24em",
+        color: "rgba(255,255,255,0.7)",
+        fontWeight: 700,
+        marginBottom: 10,
     },
 
     heading: {
@@ -1153,42 +1193,78 @@ const styles = {
     },
 
     subheading: {
-        color: "#666",
-        marginTop: 4,
+        color: "rgba(255,255,255,0.72)",
+        marginTop: 6,
+    },
+    heroCard: {
+        background: "rgba(255,255,255,0.08)",
+        borderRadius: 18,
+        padding: 20,
+        alignSelf: "center",
+    },
+    heroCardLabel: {
+        fontSize: 11,
+        textTransform: "uppercase",
+        letterSpacing: "0.2em",
+        color: "rgba(255,255,255,0.7)",
+    },
+    heroCardTitle: {
+        marginTop: 10,
+        fontSize: 18,
+        fontWeight: 700,
+    },
+    heroBtn: {
+        marginTop: 16,
+        padding: "10px 16px",
+        borderRadius: 12,
+        border: "none",
+        background: "var(--mint-500)",
+        color: "#fff",
+        fontWeight: 600,
+        cursor: "pointer",
     },
 
     statsGrid: {
         display: "grid",
-        gridTemplateColumns: "repeat(5, 1fr)",
-        gap: 20,
-        marginBottom: 36,
+        gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))",
+        gap: 18,
+        marginBottom: 32,
     },
 
     statCard: {
         background: "#fff",
-        padding: 22,
+        padding: 20,
         borderRadius: 16,
-        textAlign: "center",
-        boxShadow: "0 8px 24px rgba(0,0,0,0.08)",
+        boxShadow: "var(--card-shadow)",
+    },
+    statAccent: {
+        width: 34,
+        height: 6,
+        borderRadius: 999,
+        marginBottom: 10,
     },
 
     statNumber: {
-        fontSize: 30,
+        fontSize: 28,
         fontWeight: 700,
+        color: "var(--ink-900)",
     },
 
     statLabel: {
-        marginTop: 6,
-        color: "#666",
+        marginTop: 8,
+        color: "var(--ink-600)",
         fontWeight: 600,
+        fontSize: 12,
+        textTransform: "uppercase",
+        letterSpacing: "0.12em",
     },
 
     section: {
         background: "#fff",
         padding: 24,
         borderRadius: 18,
-        marginBottom: 30,
-        boxShadow: "0 8px 26px rgba(0,0,0,0.08)",
+        marginBottom: 26,
+        boxShadow: "var(--card-shadow)",
     },
 
     sectionHeader: {
@@ -1206,7 +1282,7 @@ const styles = {
     linkBtn: {
         background: "transparent",
         border: "none",
-        color: "#304FFE",
+        color: "var(--mint-600)",
         fontWeight: 600,
         cursor: "pointer",
     },
@@ -1217,7 +1293,7 @@ const styles = {
     },
 
     theadRow: {
-        background: "#F5F7FF",
+        background: "rgba(15,23,42,0.04)",
     },
 
     th: {
@@ -1225,14 +1301,14 @@ const styles = {
         textAlign: "left",
         fontSize: 13,
         fontWeight: 700,
-        color: "#555",
+        color: "var(--ink-600)",
         textTransform: "uppercase",
-        borderBottom: "1px solid #E2E5FF",
+        borderBottom: "1px solid rgba(15,23,42,0.08)",
     },
 
     td: {
         padding: "14px 18px",
-        borderBottom: "1px solid #F0F0F0",
+        borderBottom: "1px solid rgba(15,23,42,0.08)",
         fontSize: 14,
     },
 
@@ -1242,18 +1318,20 @@ const styles = {
 
     statusBadge: {
         padding: "6px 12px",
-        background: "#E8ECFF",
-        borderRadius: 8,
+        background: "rgba(15,23,42,0.08)",
+        borderRadius: 999,
         fontWeight: 600,
-        fontSize: 13,
+        fontSize: 12,
+        textTransform: "uppercase",
+        letterSpacing: "0.08em",
     },
 
     primaryBtn: {
-        background: "#304FFE",
+        background: "var(--ink-900)",
         color: "#fff",
         border: "none",
         padding: "8px 14px",
-        borderRadius: 8,
+        borderRadius: 10,
         fontWeight: 600,
         cursor: "pointer",
     },
@@ -1266,18 +1344,18 @@ const styles = {
 
     timelineItem: {
         padding: "10px 0",
-        borderBottom: "1px solid #EEE",
+        borderBottom: "1px solid rgba(15,23,42,0.08)",
     },
 
     meta: {
         display: "block",
         fontSize: 12,
-        color: "#666",
+        color: "var(--ink-600)",
         marginTop: 4,
     },
 
     empty: {
-        color: "#777",
+        color: "var(--ink-600)",
         fontWeight: 600,
     },
 };

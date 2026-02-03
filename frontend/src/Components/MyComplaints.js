@@ -45,7 +45,18 @@ export default function MyComplaints() {
     return (
         <div style={styles.page}>
             <div style={styles.wrapper}>
-                <h2 style={styles.title}>My Complaints</h2>
+                <div style={styles.header}>
+                    <div>
+                        <p style={styles.eyebrow}>Citizen Records</p>
+                        <h2 style={styles.title}>My Complaints</h2>
+                        <p style={styles.subtitle}>
+                            Review your reports, assignments, and latest status updates.
+                        </p>
+                    </div>
+                    <a href="/file-complaint" style={styles.primaryBtn}>
+                        File New Complaint
+                    </a>
+                </div>
 
                 {complaints.length === 0 ? (
                     <p style={styles.noData}>No complaints filed yet.</p>
@@ -53,36 +64,35 @@ export default function MyComplaints() {
                     <div style={styles.grid}>
                         {complaints.map((c) => (
                             <div key={c._id} style={styles.card}>
-                                {/* TITLE + STATUS */}
                                 <div style={styles.headerRow}>
                                     <span style={styles.complaintId}>{c.complaintId}</span>
-
                                     <span
                                         style={{
                                             ...styles.statusBadge,
-                                            background: statusColor[c.status] || "#555",
+                                            background: statusColor[c.status] || "#64748b",
                                         }}
                                     >
                                         {c.status}
                                     </span>
                                 </div>
 
-                                {/* TYPE */}
                                 <p style={styles.type}>{c.complaintType}</p>
 
-                                {/* DATE */}
-                                <p style={styles.infoText}>
-                                    <strong>Date:</strong>{" "}
-                                    {new Date(c.createdAt).toLocaleDateString()}
-                                </p>
+                                <div style={styles.metaRow}>
+                                    <div>
+                                        <p style={styles.metaLabel}>Filed</p>
+                                        <p style={styles.metaValue}>
+                                            {new Date(c.createdAt).toLocaleDateString()}
+                                        </p>
+                                    </div>
+                                    <div>
+                                        <p style={styles.metaLabel}>Assigned To</p>
+                                        <p style={styles.metaValue}>
+                                            {c.assignedTo || "Not Assigned"}
+                                        </p>
+                                    </div>
+                                </div>
 
-                                {/* ASSIGNED */}
-                                <p style={styles.infoText}>
-                                    <strong>Assigned To:</strong>{" "}
-                                    {c.assignedTo || "Not Assigned"}
-                                </p>
-
-                                {/* VIEW BUTTON */}
                                 <button
                                     style={styles.viewBtn}
                                     onClick={() =>
@@ -105,7 +115,8 @@ const styles = {
     page: {
         minHeight: "100vh",
         padding: "40px 20px",
-        background: "linear-gradient(135deg, #e0eaff, #f6f9ff)",
+        background:
+            "radial-gradient(circle at top, #ffffff 0%, #f6f3ee 40%, #efe9df 100%)",
         display: "flex",
         justifyContent: "center",
     },
@@ -115,18 +126,47 @@ const styles = {
         maxWidth: "1100px",
     },
 
+    header: {
+        display: "flex",
+        justifyContent: "space-between",
+        alignItems: "center",
+        flexWrap: "wrap",
+        gap: 16,
+        marginBottom: 24,
+    },
+    eyebrow: {
+        fontSize: 12,
+        textTransform: "uppercase",
+        letterSpacing: "0.24em",
+        color: "var(--mint-600)",
+        fontWeight: 700,
+        marginBottom: 10,
+    },
     title: {
-        fontSize: "30px",
-        fontWeight: "700",
-        marginBottom: "25px",
-        color: "#1a1a1a",
+        fontSize: 30,
+        fontWeight: 700,
+        margin: 0,
+        color: "var(--ink-900)",
+    },
+    subtitle: {
+        marginTop: 8,
+        color: "var(--ink-600)",
+        maxWidth: 520,
+    },
+    primaryBtn: {
+        background: "var(--ink-900)",
+        color: "#fff",
+        padding: "12px 20px",
+        borderRadius: 12,
+        textDecoration: "none",
+        fontWeight: 600,
     },
 
     noData: {
         textAlign: "center",
-        fontSize: "18px",
-        color: "#555",
-        marginTop: "20px",
+        fontSize: 16,
+        color: "var(--ink-600)",
+        marginTop: 20,
     },
 
     grid: {
@@ -139,8 +179,8 @@ const styles = {
         background: "#ffffff",
         padding: "20px",
         borderRadius: "16px",
-        boxShadow: "0 6px 20px rgba(0,0,0,0.08)",
-        border: "1px solid #e1e7ff",
+        boxShadow: "var(--card-shadow)",
+        border: "1px solid rgba(15,23,42,0.06)",
         display: "flex",
         flexDirection: "column",
     },
@@ -152,39 +192,55 @@ const styles = {
     },
 
     complaintId: {
-        fontWeight: "700",
-        fontSize: "16px",
+        fontWeight: 700,
+        fontSize: 14,
+        color: "var(--ink-600)",
     },
 
     statusBadge: {
         padding: "6px 12px",
-        borderRadius: "10px",
-        fontSize: "13px",
-        fontWeight: "600",
+        borderRadius: 999,
+        fontSize: 12,
+        fontWeight: 600,
         color: "white",
+        textTransform: "uppercase",
+        letterSpacing: "0.08em",
     },
 
     type: {
-        fontSize: "17px",
-        fontWeight: "600",
-        marginBottom: "12px",
+        fontSize: 18,
+        fontWeight: 700,
+        marginBottom: 14,
     },
-
-    infoText: {
-        fontSize: "14px",
-        marginBottom: "6px",
-        color: "#333",
+    metaRow: {
+        display: "grid",
+        gridTemplateColumns: "repeat(auto-fit, minmax(140px, 1fr))",
+        gap: 12,
+        marginBottom: 16,
+    },
+    metaLabel: {
+        fontSize: 12,
+        textTransform: "uppercase",
+        letterSpacing: "0.1em",
+        color: "var(--ink-600)",
+        margin: 0,
+    },
+    metaValue: {
+        margin: "6px 0 0",
+        color: "var(--ink-900)",
+        fontWeight: 600,
+        fontSize: 13,
     },
 
     viewBtn: {
         marginTop: "15px",
         padding: "10px",
-        background: "#304FFE",
+        background: "var(--mint-500)",
         color: "white",
         border: "none",
-        borderRadius: "10px",
-        fontWeight: "600",
+        borderRadius: 10,
+        fontWeight: 600,
         cursor: "pointer",
-        fontSize: "15px",
+        fontSize: 14,
     },
 };
