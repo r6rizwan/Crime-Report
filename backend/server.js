@@ -5,18 +5,17 @@ import fs from "fs";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
 
-import registerRoutes from "./routes/registerRoutes.js";
-import loginRoutes from "./routes/loginRoutes.js";
-import passwordRoutes from "./routes/passwordRoutes.js";
-import complaintRoutes from "./routes/complaintRoutes.js";
-import investigatorRoutes from "./routes/investigatorRoutes.js";
-import profileRoutes from "./routes/profileRoutes.js";
-import feedbackRoutes from "./routes/feedbackRoutes.js";
-import caseFileRoutes from "./routes/caseFileRoutes.js";
-import adminRoutes from "./routes/adminRoutes.js";
-import caseActivityRoutes from "./routes/caseActivityRoutes.js";
-import investigatorSetupRoute from "./routes/investigatorSetupRoute.js";
-import superAdminRoutes from "./routes/superAdminRoutes.js";
+import registerRoutes from "./routes/auth/registerRoutes.js";
+import loginRoutes from "./routes/auth/loginRoutes.js";
+import passwordRoutes from "./routes/auth/passwordRoutes.js";
+import complaintRoutes from "./routes/core/complaintRoutes.js";
+import investigatorRoutes from "./routes/investigator/investigatorRoutes.js";
+import profileRoutes from "./routes/user/profileRoutes.js";
+import feedbackRoutes from "./routes/user/feedbackRoutes.js";
+import caseFileRoutes from "./routes/core/caseFileRoutes.js";
+import adminRoutes from "./routes/admin/adminRoutes.js";
+import caseActivityRoutes from "./routes/core/caseActivityRoutes.js";
+import superAdminRoutes from "./routes/auth/superAdminRoutes.js";
 
 
 dotenv.config();
@@ -79,6 +78,7 @@ mongoose
   .catch((err) => console.error("❌ DB ERROR:", err));
 
 
+// Route grouping is by module/domain, while role access is enforced inside each route.
 app.use("/api", registerRoutes);
 app.use("/api", loginRoutes);
 app.use("/api", passwordRoutes);
@@ -89,7 +89,6 @@ app.use("/api", feedbackRoutes);
 app.use("/api/case-files", caseFileRoutes);
 app.use("/api", adminRoutes);
 app.use("/api/case-activity", caseActivityRoutes);
-app.use("/api", investigatorSetupRoute);
 app.use("/api", superAdminRoutes);
 
 

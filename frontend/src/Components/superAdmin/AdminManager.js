@@ -18,6 +18,10 @@ export default function AdminManager() {
     const [resetAdminId, setResetAdminId] = useState("");
     const [resetPassword, setResetPassword] = useState("");
     const [resetSaving, setResetSaving] = useState(false);
+    const [wipeOpen, setWipeOpen] = useState(false);
+    const [wipeText, setWipeText] = useState("");
+    const [wipeSaving, setWipeSaving] = useState(false);
+    const [wipeMessage, setWipeMessage] = useState("");
 
     const loadAdmins = async () => {
         try {
@@ -42,6 +46,12 @@ export default function AdminManager() {
         loadAdmins();
         // eslint-disable-next-line
     }, []);
+
+    useEffect(() => {
+        if (!wipeMessage) return;
+        const timer = setTimeout(() => setWipeMessage(""), 3000);
+        return () => clearTimeout(timer);
+    }, [wipeMessage]);
 
     const handleCreate = async (e) => {
         e.preventDefault();
@@ -106,6 +116,32 @@ export default function AdminManager() {
         }
     };
 
+    const handleWipeSystem = async () => {
+        if (wipeSaving) return;
+        if (wipeText !== "ERASE ALL DATA") {
+            setError('Type exactly "ERASE ALL DATA" to continue.');
+            return;
+        }
+
+        setError("");
+        setWipeSaving(true);
+        try {
+            const res = await api.post(
+                "/api/super-admin/reset-system",
+                { confirmText: wipeText, removeUploads: true },
+                { headers: superAdminAuthHeader() }
+            );
+            setWipeMessage(res.data?.message || "System data erased successfully");
+            setWipeOpen(false);
+            setWipeText("");
+            await loadAdmins();
+        } catch (err) {
+            setError(err.response?.data?.error || "Failed to erase data");
+        } finally {
+            setWipeSaving(false);
+        }
+    };
+
     if (loading) {
         return <p style={styles.center}>Loading admins…</p>;
     }
@@ -120,9 +156,19 @@ export default function AdminManager() {
                         Create and manage admin credentials for the system.
                     </p>
                 </div>
+                <button
+                    style={styles.logoutBtn}
+                    onClick={() => {
+                        clearSuperAdminToken();
+                        navigate("/super-admin/login");
+                    }}
+                >
+                    Logout
+                </button>
             </div>
 
             {error && <div style={styles.error}>{error}</div>}
+            {wipeMessage && <div style={styles.success}>{wipeMessage}</div>}
 
             <div style={styles.grid}>
                 <div style={styles.card}>
@@ -183,6 +229,27 @@ export default function AdminManager() {
                         </div>
                     )}
                 </div>
+
+                <div style={{ ...styles.card, ...styles.dangerCard }}>
+                    <h3 style={styles.cardTitle}>Danger Zone</h3>
+                    <p style={styles.modalText}>
+                        Erase all app data for a clean start. This removes complaints,
+                        investigators, users, profiles, OTP data, feedback, and uploaded files.
+                    </p>
+                    <p style={styles.modalText}>
+                        Admin accounts and Super Admin credentials are kept.
+                    </p>
+                    <button
+                        style={styles.dangerPrimaryBtn}
+                        onClick={() => {
+                            setError("");
+                            setWipeText("");
+                            setWipeOpen(true);
+                        }}
+                    >
+                        Erase Data
+                    </button>
+                </div>
             </div>
 
             {resetOpen && (
@@ -217,6 +284,41 @@ export default function AdminManager() {
                     </div>
                 </div>
             )}
+
+            {wipeOpen && (
+                <div style={styles.modalOverlay}>
+                    <div style={styles.modal}>
+                        <h3 style={styles.modalTitle}>Erase All Data</h3>
+                        <p style={styles.modalText}>
+                            This action is irreversible.
+                            Type <strong>ERASE ALL DATA</strong> to confirm.
+                        </p>
+                        <input
+                            type="text"
+                            placeholder='Type: ERASE ALL DATA'
+                            value={wipeText}
+                            onChange={(e) => setWipeText(e.target.value)}
+                            style={styles.modalInput}
+                        />
+                        <div style={styles.modalActions}>
+                            <button
+                                style={styles.secondaryBtn}
+                                onClick={() => setWipeOpen(false)}
+                                disabled={wipeSaving}
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                style={styles.dangerPrimaryBtn}
+                                onClick={handleWipeSystem}
+                                disabled={wipeSaving || wipeText !== "ERASE ALL DATA"}
+                            >
+                                {wipeSaving ? "Erasing..." : "Confirm Erase"}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }
@@ -229,6 +331,11 @@ const styles = {
             "radial-gradient(circle at top, #ffffff 0%, #f6f3ee 40%, #efe9df 100%)",
     },
     header: {
+        display: "flex",
+        justifyContent: "space-between",
+        alignItems: "flex-start",
+        gap: 12,
+        flexWrap: "wrap",
         marginBottom: 20,
     },
     eyebrow: {
@@ -241,6 +348,15 @@ const styles = {
     },
     title: { fontSize: 28, fontWeight: 700, marginBottom: 6 },
     subtitle: { color: "var(--ink-600)" },
+    logoutBtn: {
+        background: "rgba(248, 113, 113, 0.16)",
+        color: "#b91c1c",
+        border: "1px solid rgba(248, 113, 113, 0.3)",
+        borderRadius: 10,
+        padding: "10px 14px",
+        fontWeight: 700,
+        cursor: "pointer",
+    },
     grid: {
         display: "grid",
         gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
@@ -310,6 +426,26 @@ const styles = {
         borderRadius: 12,
         marginBottom: 16,
         fontWeight: 600,
+    },
+    success: {
+        background: "rgba(34,197,94,0.15)",
+        color: "#166534",
+        padding: 12,
+        borderRadius: 12,
+        marginBottom: 16,
+        fontWeight: 600,
+    },
+    dangerCard: {
+        border: "1px solid rgba(248, 113, 113, 0.28)",
+    },
+    dangerPrimaryBtn: {
+        background: "#b91c1c",
+        color: "#fff",
+        border: "none",
+        borderRadius: 12,
+        padding: "12px 16px",
+        fontWeight: 700,
+        cursor: "pointer",
     },
     modalOverlay: {
         position: "fixed",

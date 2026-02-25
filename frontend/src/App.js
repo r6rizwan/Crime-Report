@@ -2,14 +2,14 @@ import React from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import './App.css';
 
-import Home from "./Components/Home";
-import Register from "./Components/Register";
-import OtpVerify from "./Components/OtpVerify";
-import Login from "./Components/Login";
-import SetPassword from "./Components/SetPassword";
-import ForgotPassword from "./Components/ForgotPassword";
-import OtpScreen from "./Components/OtpScreen";
-import ResetPassword from "./Components/ResetPassword";
+import Home from "./Components/public/Home";
+import Register from "./Components/auth/Register";
+import OtpVerify from "./Components/auth/OtpVerify";
+import Login from "./Components/auth/Login";
+import SetPassword from "./Components/auth/SetPassword";
+import ForgotPassword from "./Components/auth/ForgotPassword";
+import OtpScreen from "./Components/auth/OtpScreen";
+import ResetPassword from "./Components/auth/ResetPassword";
 
 import UserLayout from "./Layouts/UserLayout";
 import AdminLayout from "./Layouts/AdminLayout";
@@ -17,26 +17,25 @@ import InvestigatorLayout from "./Layouts/InvestigatorLayout";
 import ProtectedRoute from "./ProtectedRoute";
 
 // Dashboards for each role
-import UserDashboard from "./Components/UserDashboard";
-import AdminDashboard from "./Components/AdminDashboard";
-import InvestigatorDashboard from "./Components/InvestigatorDashboard";
-import FileComplaint from "./Components/FileComplaint";
-import MyComplaints from "./Components/MyComplaints";
-import ComplaintDetails from "./Components/ComplaintDetails";
-import AdminComplaints from "./Components/AdminComplaints";
-import AdminComplaintDetails from "./Components/AdminComplaintDetails";
-import ComplaintTracking from "./Components/ComplaintTracking";
-import InvestigatorAssignedComplaints from "./Components/InvestigatorAssignedComplaints";
-import InvestigatorUpdateStatus from "./Components/InvestigatorUpdateStatus";
-import InvestigatorCaseFiles from "./Components/InvestigatorCaseFiles";
-import AdminCaseFiles from "./Components/AdminCaseFiles";
-import UserProfile from "./Components/UserProfile";
-import AdminInvestigators from "./Components/AdminInvestigators";
-import AdminAddInvestigator from "./Components/AdminAddInvestigator";
-import InvestigatorLogin from "./Components/InvestigatorLogin";
-import InvestigatorProfile from "./Components/InvestigatorProfile";
-import AboutPage from "./Components/AboutPage";
-import ContactPage from "./Components/ContactPage";
+import UserDashboard from "./Components/user/UserDashboard";
+import AdminDashboard from "./Components/admin/AdminDashboard";
+import InvestigatorDashboard from "./Components/investigator/InvestigatorDashboard";
+import FileComplaint from "./Components/user/FileComplaint";
+import MyComplaints from "./Components/user/MyComplaints";
+import ComplaintDetails from "./Components/user/ComplaintDetails";
+import AdminComplaints from "./Components/admin/AdminComplaints";
+import AdminComplaintDetails from "./Components/admin/AdminComplaintDetails";
+import ComplaintTracking from "./Components/user/ComplaintTracking";
+import InvestigatorAssignedComplaints from "./Components/investigator/InvestigatorAssignedComplaints";
+import InvestigatorUpdateStatus from "./Components/investigator/InvestigatorUpdateStatus";
+import InvestigatorCaseFiles from "./Components/investigator/InvestigatorCaseFiles";
+import AdminCaseFiles from "./Components/admin/AdminCaseFiles";
+import UserProfile from "./Components/user/UserProfile";
+import AdminInvestigators from "./Components/admin/AdminInvestigators";
+import AdminAddInvestigator from "./Components/admin/AdminAddInvestigator";
+import InvestigatorProfile from "./Components/investigator/InvestigatorProfile";
+import AboutPage from "./Components/public/AboutPage";
+import ContactPage from "./Components/public/ContactPage";
 import SuperAdminLogin from "./Components/superAdmin/SuperAdminLogin";
 import AdminManager from "./Components/superAdmin/AdminManager";
 
@@ -49,7 +48,6 @@ function App() {
         {/* PUBLIC ROUTES */}
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
-        <Route path="/investigator/login" element={<InvestigatorLogin />} />
         <Route path="/register" element={<Register />} />
         <Route path="/otp" element={<OtpVerify />} />
         <Route path="/set-password" element={<SetPassword />} />

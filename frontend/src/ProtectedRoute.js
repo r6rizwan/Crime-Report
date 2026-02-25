@@ -18,9 +18,8 @@ export default function ProtectedRoute({ children, role }) {
 function getLoginRoute(role) {
     switch (role) {
         case "Admin":
-            return "/login";
         case "Investigator":
-            return "/investigator/login";
+            return "/login";
         default:
             return "/login"; // User
     }

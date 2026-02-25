@@ -1,8 +1,14 @@
 import React from "react";
-import { NavLink } from "react-router-dom";
+import { NavLink, useLocation } from "react-router-dom";
 import { logoutUser } from "../utils/logout";
 
 export default function InvestigatorLayout({ children }) {
+    const location = useLocation();
+    const isAssignedSection =
+        location.pathname.startsWith("/investigator/assigned") ||
+        location.pathname.startsWith("/investigator/update-status/") ||
+        location.pathname.startsWith("/investigator/case-files/");
+
     return (
         <div style={styles.container}>
 
@@ -29,9 +35,7 @@ export default function InvestigatorLayout({ children }) {
 
                         <NavLink
                             to="/investigator/assigned"
-                            style={({ isActive }) =>
-                                isActive ? { ...styles.link, ...styles.active } : styles.link
-                            }
+                            style={isAssignedSection ? { ...styles.link, ...styles.active } : styles.link}
                         >
                             Assigned Cases
                         </NavLink>

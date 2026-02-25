@@ -5,7 +5,11 @@ const investigatorSchema = new mongoose.Schema(
         investigatorId: { type: String, required: true, unique: true },
         name: { type: String, required: true },
         email: { type: String, required: true, unique: true },
-        phone: { type: String, required: true },
+        phone: {
+            type: String,
+            required: true,
+            match: [/^[0-9]{10}$/, "Phone number must be exactly 10 digits"],
+        },
         address: { type: String },
 
         department: { type: String, default: "Cyber Crime Unit" },
@@ -15,6 +19,11 @@ const investigatorSchema = new mongoose.Schema(
             type: String,
             enum: ["Active", "Inactive"],
             default: "Active"
+        },
+
+        isEmailVerified: {
+            type: Boolean,
+            default: false,
         },
 
         // 🔐 OTP AUTH (TEMP)

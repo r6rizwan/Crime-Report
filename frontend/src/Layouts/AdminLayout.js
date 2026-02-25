@@ -1,8 +1,16 @@
 import React from "react";
-import { NavLink } from "react-router-dom";
+import { NavLink, useLocation } from "react-router-dom";
 import { logoutUser } from "../utils/logout";
 
 export default function AdminLayout({ children }) {
+    const location = useLocation();
+    const isComplaintsSection =
+        location.pathname.startsWith("/admin/complaints");
+    const isInvestigatorsSection =
+        location.pathname.startsWith("/admin/investigators");
+    const isAddInvestigatorPage =
+        location.pathname.startsWith("/admin/add-investigator");
+
     return (
         <div style={styles.container}>
 
@@ -28,27 +36,21 @@ export default function AdminLayout({ children }) {
 
                         <NavLink
                             to="/admin/complaints"
-                            style={({ isActive }) =>
-                                isActive ? { ...styles.link, ...styles.active } : styles.link
-                            }
+                            style={isComplaintsSection ? { ...styles.link, ...styles.active } : styles.link}
                         >
                             All Complaints
                         </NavLink>
 
                         <NavLink
                             to="/admin/investigators"
-                            style={({ isActive }) =>
-                                isActive ? { ...styles.link, ...styles.active } : styles.link
-                            }
+                            style={isInvestigatorsSection ? { ...styles.link, ...styles.active } : styles.link}
                         >
                             Investigators
                         </NavLink>
 
                         <NavLink
                             to="/admin/add-investigator"
-                            style={({ isActive }) =>
-                                isActive ? { ...styles.link, ...styles.active } : styles.link
-                            }
+                            style={isAddInvestigatorPage ? { ...styles.link, ...styles.active } : styles.link}
                         >
                             Add Investigator
                         </NavLink>

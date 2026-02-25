@@ -19,7 +19,7 @@ This repository contains two apps:
 - Manage profile
 
 ### Investigator
-- OTP-based login
+- Unified login using email (first-time setup includes OTP verification + password creation)
 - View assigned cases
 - Open and resolve cases
 - Add investigation notes and evidence
@@ -53,6 +53,24 @@ Crime-Report/
   backend/
   frontend/
 ```
+
+Detailed backend module map:
+- `backend/ARCHITECTURE.md`
+
+Frontend component grouping:
+- `frontend/src/Components/public`
+- `frontend/src/Components/auth`
+- `frontend/src/Components/user`
+- `frontend/src/Components/admin`
+- `frontend/src/Components/investigator`
+- `frontend/src/Components/superAdmin`
+
+Backend route/controller grouping:
+- `backend/controllers/auth`, `backend/routes/auth`
+- `backend/controllers/admin`, `backend/routes/admin`
+- `backend/controllers/investigator`, `backend/routes/investigator`
+- `backend/controllers/user`, `backend/routes/user`
+- `backend/controllers/core`, `backend/routes/core`
 
 ## Getting Started
 
@@ -103,6 +121,7 @@ npm start
 ```
 
 The frontend runs at `http://localhost:3000` and proxies API requests to `http://localhost:7000`.
+By default the app uses `http://localhost:7000` from `frontend/src/utils/api.js`. You can override it with `REACT_APP_API_URL`.
 
 ## Environment Variables
 
