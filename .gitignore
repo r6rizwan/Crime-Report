@@ -19,3 +19,7 @@ backend/uploads/
 
 # OS
 .DS_Store
+
+# local-only dev notes (not for repo)
+MUST_FIX.md
+POST_DEMO.md
