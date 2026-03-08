@@ -84,6 +84,12 @@ export default function Login() {
                 return;
             }
 
+            if (nextStep === "notFound") {
+                setStep(INITIAL_STEP);
+                setError("Email not found. Please register first.");
+                return;
+            }
+
             setStep("password");
         } catch (err) {
             setError(err.response?.data?.error || "Unable to verify email");

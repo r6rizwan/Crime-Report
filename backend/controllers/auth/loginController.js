@@ -107,8 +107,7 @@ export const getLoginEmailStatus = async (req, res) => {
             return res.json({ nextStep: "verifyUserOtp" });
         }
 
-        // Generic response to reduce account enumeration.
-        return res.json({ nextStep: "password" });
+        return res.json({ nextStep: "notFound" });
     } catch (error) {
         return res.status(500).json({ error: error.message });
     }
