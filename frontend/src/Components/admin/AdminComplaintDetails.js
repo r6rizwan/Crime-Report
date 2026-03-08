@@ -16,6 +16,7 @@ export default function AdminComplaintDetails() {
     const [assigning, setAssigning] = useState(false);
     const [closing, setClosing] = useState(false);
     const [message, setMessage] = useState("");
+    const [errorMessage, setErrorMessage] = useState("");
 
     const [caseFile, setCaseFile] = useState(null);
     const [caseFileLoading, setCaseFileLoading] = useState(true);
@@ -75,7 +76,11 @@ export default function AdminComplaintDetails() {
 
     const assignOfficer = async () => {
         if (assigning) return;
-        if (!selectedOfficer) return alert("Select an investigator");
+        if (!selectedOfficer) {
+            setErrorMessage("Select an investigator");
+            setTimeout(() => setErrorMessage(""), 2600);
+            return;
+        }
 
         try {
             setAssigning(true);
@@ -85,12 +90,14 @@ export default function AdminComplaintDetails() {
             );
 
             setMessage("Investigator assigned successfully");
+            setErrorMessage("");
             setChangingOfficer(false);
             setSelectedOfficer("");
             fetchComplaint();
             setTimeout(() => setMessage(""), 3000);
         } catch (err) {
-            alert(err.response?.data?.error || "Failed to assign investigator");
+            setErrorMessage(err.response?.data?.error || "Failed to assign investigator");
+            setTimeout(() => setErrorMessage(""), 2600);
         } finally {
             setAssigning(false);
         }
@@ -105,11 +112,13 @@ export default function AdminComplaintDetails() {
             );
 
             setMessage("Complaint closed successfully");
+            setErrorMessage("");
             setShowCloseConfirm(false);
             fetchComplaint();
             setTimeout(() => setMessage(""), 3000);
         } catch (err) {
-            alert(err.response?.data?.error || "Failed to close complaint");
+            setErrorMessage(err.response?.data?.error || "Failed to close complaint");
+            setTimeout(() => setErrorMessage(""), 2600);
         } finally {
             setClosing(false);
         }
@@ -147,6 +156,7 @@ export default function AdminComplaintDetails() {
             </div>
 
             {message && <div style={styles.alert}>{message}</div>}
+            {errorMessage && <div style={styles.errorAlert}>{errorMessage}</div>}
 
             <div style={styles.layout}>
 
@@ -409,6 +419,14 @@ const styles = {
         padding: 14,
         borderRadius: 12,
         color: "#15803d",
+        fontWeight: 600,
+    },
+    errorAlert: {
+        marginTop: 10,
+        background: "rgba(248,113,113,0.15)",
+        padding: 14,
+        borderRadius: 12,
+        color: "#b91c1c",
         fontWeight: 600,
     },
     layout: {

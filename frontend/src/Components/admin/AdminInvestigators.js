@@ -15,6 +15,12 @@ export default function AdminInvestigators() {
     const [transferError, setTransferError] = useState("");
     const [transferring, setTransferring] = useState(false);
     const [statusUpdatingId, setStatusUpdatingId] = useState("");
+    const [notice, setNotice] = useState("");
+
+    const showNotice = (msg) => {
+        setNotice(msg);
+        setTimeout(() => setNotice(""), 2600);
+    };
 
     const loadInvestigators = async () => {
         try {
@@ -80,7 +86,7 @@ export default function AdminInvestigators() {
             await toggleStatus(inv._id, inv.status); // Disable directly
         } catch (err) {
             console.error("Failed to check pending cases", err);
-            alert("Failed to check pending cases");
+            showNotice("Failed to check pending cases");
         } finally {
             setStatusUpdatingId("");
         }
@@ -101,7 +107,7 @@ export default function AdminInvestigators() {
 
     const deleteInvestigator = async (id, name, status) => {
         if (status === "Active") {
-            alert("Disable investigator before deleting.");
+            showNotice("Disable investigator before deleting.");
             return;
         }
 
@@ -124,7 +130,7 @@ export default function AdminInvestigators() {
 
     const handleDeleteAction = async (inv) => {
         if (inv.status === "Active") {
-            alert("Disable investigator before deleting.");
+            showNotice("Disable investigator before deleting.");
             return;
         }
 
@@ -136,7 +142,7 @@ export default function AdminInvestigators() {
             return openDeleteDialog(inv);
         } catch (err) {
             console.error("Failed to check pending cases", err);
-            alert("Failed to check pending cases");
+            showNotice("Failed to check pending cases");
         }
     };
 
@@ -191,6 +197,7 @@ export default function AdminInvestigators() {
             </div>
 
             {/* TABLE CARD */}
+            {notice && <div style={styles.notice}>{notice}</div>}
             <div style={styles.card}>
                 <table style={styles.table}>
                     <thead>
@@ -396,6 +403,14 @@ const styles = {
     subtitle: {
         color: "var(--ink-600)",
         marginTop: 4,
+    },
+    notice: {
+        marginBottom: 14,
+        background: "rgba(248,113,113,0.15)",
+        color: "#b91c1c",
+        padding: 12,
+        borderRadius: 12,
+        fontWeight: 600,
     },
 
     primaryBtn: {

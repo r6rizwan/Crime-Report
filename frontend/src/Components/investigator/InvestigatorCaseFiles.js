@@ -12,6 +12,7 @@ export default function InvestigatorCaseFiles() {
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
     const [message, setMessage] = useState("");
+    const [error, setError] = useState("");
 
     useEffect(() => {
         fetchCaseFiles();
@@ -35,12 +36,14 @@ export default function InvestigatorCaseFiles() {
     const handleSubmit = async () => {
         if (saving) return;
         if (!notes.trim() && files.length === 0) {
-            alert("Please add notes or upload files");
+            setError("Please add notes or upload files");
+            setTimeout(() => setError(""), 2600);
             return;
         }
 
         setSaving(true);
         setMessage("");
+        setError("");
 
         const formData = new FormData();
         formData.append("notes", notes);
@@ -60,11 +63,13 @@ export default function InvestigatorCaseFiles() {
             setCaseFile(res.data.caseFile);
             setFiles([]);
             setMessage("Case files saved successfully");
+            setError("");
 
             // auto-hide success message
             setTimeout(() => setMessage(""), 3000);
         } catch (err) {
-            alert(err.response?.data?.error || "Failed to save case files");
+            setError(err.response?.data?.error || "Failed to save case files");
+            setTimeout(() => setError(""), 2600);
         } finally {
             setSaving(false);
         }
@@ -87,6 +92,7 @@ export default function InvestigatorCaseFiles() {
             </div>
 
             {message && <div style={styles.success}>{message}</div>}
+            {error && <div style={styles.error}>{error}</div>}
 
             {caseFile && (
                 <div style={styles.card}>
@@ -237,6 +243,14 @@ const styles = {
         padding: 12,
         borderRadius: 12,
         color: "#15803d",
+        fontWeight: 600,
+        marginBottom: 20,
+    },
+    error: {
+        background: "rgba(248,113,113,0.15)",
+        padding: 12,
+        borderRadius: 12,
+        color: "#b91c1c",
         fontWeight: 600,
         marginBottom: 20,
     },

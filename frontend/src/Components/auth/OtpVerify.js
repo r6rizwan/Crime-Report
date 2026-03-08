@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import api from "../../utils/api";
+import OtpInput6 from "./OtpInput6";
 
 export default function OtpVerify() {
   const query = new URLSearchParams(window.location.search);
@@ -42,6 +43,10 @@ export default function OtpVerify() {
     if (verifying) return;
     setError("");
     setSuccess("");
+    if (!/^\d{6}$/.test(otp)) {
+      setError("Enter a valid 6-digit OTP");
+      return;
+    }
 
     try {
       setVerifying(true);
@@ -96,13 +101,7 @@ export default function OtpVerify() {
               required
             />
 
-            <input
-              style={styles.input}
-              placeholder="Enter OTP"
-              value={otp}
-              onChange={(e) => setOtp(e.target.value)}
-              required
-            />
+            <OtpInput6 value={otp} onChange={setOtp} disabled={verifying} />
 
             <button style={styles.button} type="submit" disabled={verifying}>
               {verifying ? "Verifying..." : "Verify OTP"}

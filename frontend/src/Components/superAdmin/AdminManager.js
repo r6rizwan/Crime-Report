@@ -22,6 +22,9 @@ export default function AdminManager() {
     const [wipeText, setWipeText] = useState("");
     const [wipeSaving, setWipeSaving] = useState(false);
     const [wipeMessage, setWipeMessage] = useState("");
+    const [deleteOpen, setDeleteOpen] = useState(false);
+    const [deleteAdminId, setDeleteAdminId] = useState("");
+    const [deleteSaving, setDeleteSaving] = useState(false);
 
     const loadAdmins = async () => {
         try {
@@ -74,17 +77,27 @@ export default function AdminManager() {
         }
     };
 
-    const handleDelete = async (id) => {
-        if (!window.confirm("Delete this admin?")) return;
+    const openDeleteModal = (id) => {
+        setDeleteAdminId(id);
+        setDeleteOpen(true);
+    };
+
+    const handleDelete = async () => {
+        if (!deleteAdminId || deleteSaving) return;
         setError("");
         try {
+            setDeleteSaving(true);
             await api.delete(
-                `/api/super-admin/admin/${id}`,
+                `/api/super-admin/admin/${deleteAdminId}`,
                 { headers: superAdminAuthHeader() }
             );
+            setDeleteOpen(false);
+            setDeleteAdminId("");
             await loadAdmins();
         } catch (err) {
             setError(err.response?.data?.error || "Failed to delete admin");
+        } finally {
+            setDeleteSaving(false);
         }
     };
 
@@ -219,7 +232,7 @@ export default function AdminManager() {
                                         </button>
                                         <button
                                             style={styles.dangerBtn}
-                                            onClick={() => handleDelete(a._id)}
+                                            onClick={() => openDeleteModal(a._id)}
                                         >
                                             Delete
                                         </button>
@@ -314,6 +327,36 @@ export default function AdminManager() {
                                 disabled={wipeSaving || wipeText !== "ERASE ALL DATA"}
                             >
                                 {wipeSaving ? "Erasing..." : "Confirm Erase"}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {deleteOpen && (
+                <div style={styles.modalOverlay}>
+                    <div style={styles.modal}>
+                        <h3 style={styles.modalTitle}>Delete Admin</h3>
+                        <p style={styles.modalText}>
+                            Are you sure you want to delete this admin account?
+                        </p>
+                        <div style={styles.modalActions}>
+                            <button
+                                style={styles.secondaryBtn}
+                                onClick={() => {
+                                    setDeleteOpen(false);
+                                    setDeleteAdminId("");
+                                }}
+                                disabled={deleteSaving}
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                style={styles.dangerPrimaryBtn}
+                                onClick={handleDelete}
+                                disabled={deleteSaving}
+                            >
+                                {deleteSaving ? "Deleting..." : "Delete"}
                             </button>
                         </div>
                     </div>

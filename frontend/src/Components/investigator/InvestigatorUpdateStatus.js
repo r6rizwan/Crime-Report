@@ -12,6 +12,12 @@ export default function InvestigatorUpdateStatus() {
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
     const [error, setError] = useState("");
+    const [toast, setToast] = useState("");
+
+    const showToast = (msg) => {
+        setToast(msg);
+        setTimeout(() => setToast(""), 2600);
+    };
 
     useEffect(() => {
         const fetchComplaint = async () => {
@@ -45,7 +51,7 @@ export default function InvestigatorUpdateStatus() {
             );
             setComplaint((prev) => ({ ...prev, status: "Open" }));
         } catch {
-            alert("Failed to open case");
+            showToast("Failed to open case");
         } finally {
             setSaving(false);
         }
@@ -54,7 +60,7 @@ export default function InvestigatorUpdateStatus() {
     const resolveCase = async () => {
         if (saving) return;
         if (!solution.trim()) {
-            alert("Solution is required to resolve the case");
+            showToast("Solution is required to resolve the case");
             return;
         }
 
@@ -66,7 +72,7 @@ export default function InvestigatorUpdateStatus() {
             );
             navigate("/investigator/assigned");
         } catch {
-            alert("Failed to resolve case");
+            showToast("Failed to resolve case");
         } finally {
             setSaving(false);
         }
@@ -99,6 +105,7 @@ export default function InvestigatorUpdateStatus() {
             </div>
 
             <div style={styles.container}>
+                {toast && <div style={styles.toastError}>{toast}</div>}
 
                 {/* ================= Complaint Details ================= */}
                 <div style={styles.card}>
@@ -406,6 +413,14 @@ const styles = {
         textAlign: "center",
         marginTop: 40,
         color: "#D32F2F",
+        fontWeight: 600,
+    },
+    toastError: {
+        marginBottom: 14,
+        background: "rgba(248,113,113,0.15)",
+        color: "#b91c1c",
+        padding: 12,
+        borderRadius: 12,
         fontWeight: 600,
     },
 };

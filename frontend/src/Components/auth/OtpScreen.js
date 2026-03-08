@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import api from "../../utils/api";
 import { useNavigate } from "react-router-dom";
+import OtpInput6 from "./OtpInput6";
 
 export default function OtpScreen() {
   const navigate = useNavigate();
@@ -14,6 +15,11 @@ export default function OtpScreen() {
     if (loading) return;
     setError("");
     setLoading(true);
+    if (!/^\d{6}$/.test(otp)) {
+      setError("Enter a valid 6-digit OTP");
+      setLoading(false);
+      return;
+    }
 
     try {
       const res = await api.post("/api/verifyotp", { email, otp });
@@ -61,14 +67,7 @@ export default function OtpScreen() {
           {error && <div style={styles.error}>{error}</div>}
 
           <form onSubmit={handleVerify} style={styles.form}>
-            <input
-              type="text"
-              value={otp}
-              onChange={(e) => setOtp(e.target.value)}
-              placeholder="Enter OTP"
-              style={styles.input}
-              required
-            />
+            <OtpInput6 value={otp} onChange={setOtp} disabled={loading} />
             <button type="submit" style={styles.button} disabled={loading}>
               {loading ? "Verifying..." : "Verify OTP"}
             </button>
@@ -174,12 +173,6 @@ const styles = {
   title: { fontSize: 24, fontWeight: 700, marginBottom: 6 },
   subtitle: { color: "var(--ink-600)", marginBottom: 18 },
   form: { display: "flex", flexDirection: "column", gap: 12 },
-  input: {
-    padding: "12px 14px",
-    borderRadius: 12,
-    border: "1px solid rgba(15,23,42,0.15)",
-    background: "rgba(250, 250, 250, 0.9)",
-  },
   button: {
     padding: "12px 14px",
     borderRadius: 12,

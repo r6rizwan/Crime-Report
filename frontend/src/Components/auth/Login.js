@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import api from "../../utils/api";
 import { useNavigate } from "react-router-dom";
+import OtpInput6 from "./OtpInput6";
 
 const INITIAL_STEP = "email"; // email | password | verifyEmail | setupPassword
 
@@ -157,8 +158,8 @@ export default function Login() {
         if (loading) return;
         resetMessages();
 
-        if (!otp) {
-            setError("OTP is required");
+        if (!/^\d{6}$/.test(otp)) {
+            setError("Enter a valid 6-digit OTP");
             return;
         }
 
@@ -305,13 +306,7 @@ export default function Login() {
 
                             {otpSent && (
                                 <>
-                                    <input
-                                        type="text"
-                                        style={styles.input}
-                                        placeholder="Enter OTP"
-                                        value={otp}
-                                        onChange={(e) => setOtp(e.target.value)}
-                                    />
+                                    <OtpInput6 value={otp} onChange={setOtp} disabled={loading} />
                                     <button onClick={handleVerifyEmailOtp} style={styles.button} disabled={loading}>
                                         {loading ? "Verifying..." : "Verify Email"}
                                     </button>
