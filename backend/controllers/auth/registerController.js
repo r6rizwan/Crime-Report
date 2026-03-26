@@ -65,7 +65,7 @@ export const registerUser = async (req, res) => {
             });
         }
 
-        const subject = "Your Crime Report OTP";
+        const subject = "Your CivilEye OTP";
         const text = `Your OTP is ${otp}. It expires in 10 minutes.`;
         const html = `<p>Your OTP is <strong>${otp}</strong>. It expires in 10 minutes.</p>`;
 
@@ -136,7 +136,7 @@ export const resendRegisterOtp = async (req, res) => {
         user.otpExpires = new Date(Date.now() + 10 * 60 * 1000);
         await user.save();
 
-        const subject = "Your Crime Report OTP";
+        const subject = "Your CivilEye OTP";
         const text = `Your OTP is ${otp}. It expires in 10 minutes.`;
         const html = `<p>Your OTP is <strong>${otp}</strong>. It expires in 10 minutes.</p>`;
         await sendEmail({ to: email, subject, text, html });

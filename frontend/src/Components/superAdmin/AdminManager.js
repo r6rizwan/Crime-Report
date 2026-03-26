@@ -5,6 +5,7 @@ import {
     superAdminAuthHeader,
 } from "../../utils/superAdminAuth";
 import { useNavigate } from "react-router-dom";
+import LogoutConfirmDialog from "../common/LogoutConfirmDialog";
 
 export default function AdminManager() {
     const navigate = useNavigate();
@@ -25,6 +26,7 @@ export default function AdminManager() {
     const [deleteOpen, setDeleteOpen] = useState(false);
     const [deleteAdminId, setDeleteAdminId] = useState("");
     const [deleteSaving, setDeleteSaving] = useState(false);
+    const [logoutOpen, setLogoutOpen] = useState(false);
 
     const loadAdmins = async () => {
         try {
@@ -155,6 +157,11 @@ export default function AdminManager() {
         }
     };
 
+    const handleLogout = () => {
+        clearSuperAdminToken();
+        navigate("/super-admin/login");
+    };
+
     if (loading) {
         return <p style={styles.center}>Loading admins…</p>;
     }
@@ -171,10 +178,7 @@ export default function AdminManager() {
                 </div>
                 <button
                     style={styles.logoutBtn}
-                    onClick={() => {
-                        clearSuperAdminToken();
-                        navigate("/super-admin/login");
-                    }}
+                    onClick={() => setLogoutOpen(true)}
                 >
                     Logout
                 </button>
@@ -362,6 +366,13 @@ export default function AdminManager() {
                     </div>
                 </div>
             )}
+
+            <LogoutConfirmDialog
+                open={logoutOpen}
+                message="Are you sure you want to log out of the super admin panel?"
+                onCancel={() => setLogoutOpen(false)}
+                onConfirm={handleLogout}
+            />
         </div>
     );
 }

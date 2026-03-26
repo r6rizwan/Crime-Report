@@ -17,7 +17,7 @@ export default function Home() {
             <nav style={styles.navbar}>
                 <div style={styles.navLeft}>
                     <span style={styles.logo} onClick={() => navigate("/")}>
-                        Crime Reporting Portal
+                        CivilEye
                     </span>
                     <span style={styles.navTag}>Civic Safety Network</span>
                 </div>
@@ -179,7 +179,7 @@ export default function Home() {
 
             {/* FOOTER */}
             <footer style={styles.footer}>
-                © {new Date().getFullYear()} Crime Reporting Portal • All Rights Reserved
+                © {new Date().getFullYear()} CivilEye • Crime Reporting Portal • All Rights Reserved
             </footer>
         </div>
     );

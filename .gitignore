@@ -4,6 +4,8 @@ node_modules/
 # env files
 .env
 .env.*
+HANDOFF_NOTES.txt
+!.env.example
 
 # logs
 npm-debug.log*

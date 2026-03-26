@@ -35,7 +35,7 @@ export default function ForgotPassword() {
 
       <nav style={styles.navbar}>
         <div style={styles.navLeft}>
-          <span style={styles.logo} onClick={() => navigate("/")}>Crime Reporting Portal</span>
+          <span style={styles.logo} onClick={() => navigate("/")}>CivilEye</span>
           <span style={styles.navTag}>Account Recovery</span>
         </div>
         <div style={styles.navRight}>

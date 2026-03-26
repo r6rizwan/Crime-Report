@@ -233,7 +233,7 @@ export default function Login() {
             <nav style={styles.navbar}>
                 <div style={styles.navLeft}>
                     <span style={styles.logo} onClick={() => navigate("/")}>
-                        Crime Reporting Portal
+                        CivilEye
                     </span>
                     <span style={styles.navTag}>Unified Access</span>
                 </div>

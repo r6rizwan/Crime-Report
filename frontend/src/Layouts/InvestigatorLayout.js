@@ -1,9 +1,11 @@
-import React from "react";
+import React, { useState } from "react";
 import { NavLink, useLocation } from "react-router-dom";
 import { logoutUser } from "../utils/logout";
+import LogoutConfirmDialog from "../Components/common/LogoutConfirmDialog";
 
 export default function InvestigatorLayout({ children }) {
     const location = useLocation();
+    const [logoutOpen, setLogoutOpen] = useState(false);
     const isAssignedSection =
         location.pathname.startsWith("/investigator/assigned") ||
         location.pathname.startsWith("/investigator/update-status/") ||
@@ -69,7 +71,7 @@ export default function InvestigatorLayout({ children }) {
                     </nav>
 
                     {/* Logout button kept inside wrapper */}
-                    <button onClick={logoutUser} style={styles.logout}>
+                    <button onClick={() => setLogoutOpen(true)} style={styles.logout}>
                         Logout
                     </button>
 
@@ -78,6 +80,12 @@ export default function InvestigatorLayout({ children }) {
 
             {/* Main Content */}
             <main style={styles.content}>{children}</main>
+
+            <LogoutConfirmDialog
+                open={logoutOpen}
+                onCancel={() => setLogoutOpen(false)}
+                onConfirm={logoutUser}
+            />
         </div>
     );
 }

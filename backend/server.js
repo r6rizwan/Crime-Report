@@ -22,19 +22,13 @@ dotenv.config();
 
 const app = express();
 
-const allowedOrigins = (process.env.CORS_ORIGIN || "http://localhost:3000")
-  .split(",")
-  .map((origin) => origin.trim())
-  .filter(Boolean);
+// Support the new handoff variable name while staying backward-compatible
+// with older local environments that still use CORS_ORIGIN.
+const allowedOrigin = process.env.ALLOWED_ORIGIN || process.env.CORS_ORIGIN;
 
 app.use(
   cors({
-    origin: (origin, callback) => {
-      // Allow non-browser requests or same-origin
-      if (!origin) return callback(null, true);
-      if (allowedOrigins.includes(origin)) return callback(null, true);
-      return callback(new Error("CORS: origin not allowed"));
-    },
+    origin: allowedOrigin,
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: [
@@ -67,6 +61,11 @@ if (!process.env.JWT_SECRET) {
   process.exit(1);
 }
 
+if (!allowedOrigin) {
+  console.error("❌ ALLOWED_ORIGIN missing in .env (or legacy CORS_ORIGIN)");
+  process.exit(1);
+}
+
 if (!process.env.SUPER_ADMIN_EMAIL || !process.env.SUPER_ADMIN_PASSWORD || !process.env.SUPER_ADMIN_JWT_SECRET) {
   console.error("❌ SUPER_ADMIN_EMAIL / SUPER_ADMIN_PASSWORD / SUPER_ADMIN_JWT_SECRET missing in .env");
   process.exit(1);
@@ -95,8 +94,8 @@ app.use("/api", superAdminRoutes);
 app.get("/", (req, res) => res.send("API Working"));
 
 
-const PORT = process.env.PORT || 7000;
+const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () =>
-  console.log(`🚀 Server running on http://localhost:${PORT}`)
+  console.log(`🚀 Server running on port ${PORT}`)
 );

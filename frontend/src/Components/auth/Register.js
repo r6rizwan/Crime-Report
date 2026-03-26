@@ -84,7 +84,7 @@ export default function Register() {
             <nav style={styles.navbar}>
                 <div style={styles.navLeft}>
                     <span style={styles.logo} onClick={() => navigate("/")}>
-                        Crime Reporting Portal
+                        CivilEye
                     </span>
                     <span style={styles.navTag}>Citizen Registration</span>
                 </div>
@@ -113,7 +113,7 @@ export default function Register() {
 
                 <div style={styles.card}>
                     <h2 style={styles.title}>Create Your Account</h2>
-                    <p style={styles.subtitle}>Join the Crime Report Portal</p>
+                    <p style={styles.subtitle}>Join the Crime Reporting Portal</p>
 
                     {error && <p style={styles.error}>{error}</p>}
                     {success && <p style={styles.success}>{success}</p>}

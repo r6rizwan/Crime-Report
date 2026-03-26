@@ -65,7 +65,7 @@ export const createInvestigator = async (req, res) => {
         });
 
         // Notify investigator to set first password using Forgot Password flow
-        const subject = "Welcome to Crime Report Portal";
+        const subject = "Welcome to CivilEye";
         const text = `Welcome ${name}. Your investigator profile has been created. Visit the login page with your registered email (${email}) to verify your email and set your password.`;
         const html = `
             <p>Welcome <strong>${name}</strong>,</p>

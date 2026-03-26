@@ -10,7 +10,7 @@ export default function AboutPage() {
       <nav style={styles.navbar}>
         <div style={styles.navLeft}>
           <span style={styles.logo} onClick={() => navigate("/")}>
-            Crime Reporting Portal
+            CivilEye
           </span>
           <span style={styles.navTag}>About the Program</span>
         </div>
@@ -102,7 +102,7 @@ export default function AboutPage() {
       </section>
 
       <footer style={styles.footer}>
-        © 2026 Crime Report Portal. All rights reserved.
+        © 2026 CivilEye • Crime Reporting Portal. All rights reserved.
       </footer>
     </div>
   );

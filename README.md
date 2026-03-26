@@ -1,6 +1,8 @@
-# Crime Report Portal
+# CivilEye
 
-A full-stack web application for secure crime reporting, case tracking, and role-based case management. The system supports citizens filing complaints, investigators managing assignments, and admins overseeing the workflow.
+Crime Reporting Portal
+
+A full-stack web application for secure crime reporting, case tracking, and role-based case management. CivilEye supports citizens filing complaints, investigators managing assignments, and admins overseeing the workflow.
 
 ## Overview
 
@@ -90,20 +92,20 @@ npm install
 
 Create a `.env` file in `backend/`:
 
-```
+``` 
 MONGO_URI=your_mongodb_connection_string
+PORT=5000
 JWT_SECRET=your_jwt_secret
+ALLOWED_ORIGIN=http://localhost:3000
 SUPER_ADMIN_EMAIL=superadmin@example.com
 SUPER_ADMIN_PASSWORD=your_super_admin_password
 SUPER_ADMIN_JWT_SECRET=your_super_admin_jwt_secret
-CORS_ORIGIN=http://localhost:3000
 SMTP_HOST=smtp.example.com
 SMTP_PORT=587
 SMTP_USER=your_smtp_user
 SMTP_PASS=your_smtp_password
 SMTP_FROM=no-reply@crimereport.com
 SMTP_SECURE=false
-PORT=7000
 ```
 
 Run the backend:
@@ -114,31 +116,42 @@ npm run dev
 
 ### 3. Frontend setup
 
+Create a `.env` file in `frontend/`:
+
+```
+REACT_APP_API_URL=http://localhost:5000
+```
+
+Then run:
+
 ```
 cd ../frontend
 npm install
 npm start
 ```
 
-The frontend runs at `http://localhost:3000` and proxies API requests to `http://localhost:7000`.
-By default the app uses `http://localhost:7000` from `frontend/src/utils/api.js`. You can override it with `REACT_APP_API_URL`.
+The frontend runs at `http://localhost:3000`.
+API requests use `REACT_APP_API_URL` from [frontend/src/utils/api.js](/Users/rizwan/Documents/GitHub/Crime-Report/frontend/src/utils/api.js).
 
 ## Environment Variables
 
 Backend (`backend/.env`):
 - `MONGO_URI` - MongoDB connection string
+- `PORT` - API port
 - `JWT_SECRET` - JWT signing secret
+- `ALLOWED_ORIGIN` - allowed frontend origin for CORS
 - `SUPER_ADMIN_EMAIL` - super admin login email (source of truth)
 - `SUPER_ADMIN_PASSWORD` - super admin login password (source of truth)
 - `SUPER_ADMIN_JWT_SECRET` - JWT signing secret for super admin tokens
-- `CORS_ORIGIN` - allowed frontend origins (comma-separated)
 - `SMTP_HOST` - SMTP host for OTP email
 - `SMTP_PORT` - SMTP port (587 or 465)
 - `SMTP_USER` - SMTP username
 - `SMTP_PASS` - SMTP password
 - `SMTP_FROM` - From address for OTP emails
 - `SMTP_SECURE` - true/false for SMTPS
-- `PORT` - API port (default 7000)
+
+Frontend (`frontend/.env`):
+- `REACT_APP_API_URL` - backend base URL for API requests
 
 ## File Uploads
 

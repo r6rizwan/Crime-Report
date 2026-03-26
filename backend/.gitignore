@@ -4,6 +4,7 @@
  # environment files
  .env
  .env.*
+ !.env.example
 
  # logs
  npm-debug.log*
@@ -15,4 +16,3 @@
 
  # uploads and generated data
  /uploads
-

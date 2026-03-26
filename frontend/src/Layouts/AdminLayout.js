@@ -1,9 +1,11 @@
-import React from "react";
+import React, { useState } from "react";
 import { NavLink, useLocation } from "react-router-dom";
 import { logoutUser } from "../utils/logout";
+import LogoutConfirmDialog from "../Components/common/LogoutConfirmDialog";
 
 export default function AdminLayout({ children }) {
     const location = useLocation();
+    const [logoutOpen, setLogoutOpen] = useState(false);
     const isComplaintsSection =
         location.pathname.startsWith("/admin/complaints");
     const isInvestigatorsSection =
@@ -56,7 +58,7 @@ export default function AdminLayout({ children }) {
                         </NavLink>
                     </nav>
 
-                    <button onClick={logoutUser} style={styles.logout}>
+                    <button onClick={() => setLogoutOpen(true)} style={styles.logout}>
                         Logout
                     </button>
                 </div>
@@ -64,6 +66,12 @@ export default function AdminLayout({ children }) {
 
             {/* CONTENT */}
             <main style={styles.content}>{children}</main>
+
+            <LogoutConfirmDialog
+                open={logoutOpen}
+                onCancel={() => setLogoutOpen(false)}
+                onConfirm={logoutUser}
+            />
         </div>
     );
 }

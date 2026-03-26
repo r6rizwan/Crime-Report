@@ -1,12 +1,21 @@
 import React, { useState, useEffect, useRef } from "react";
+import { NavLink, useLocation } from "react-router-dom";
 import { logoutUser } from "../utils/logout";
+import LogoutConfirmDialog from "../Components/common/LogoutConfirmDialog";
 
 export default function UserLayout({ children }) {
     const [menuOpen, setMenuOpen] = useState(false);
     const [profileOpen, setProfileOpen] = useState(false);
     const [isMobile, setIsMobile] = useState(false);
+    const [logoutOpen, setLogoutOpen] = useState(false);
+    const location = useLocation();
 
     const profileRef = useRef();
+    const isTrackSection = location.pathname.startsWith("/complaint-tracking");
+    const isReportSection = location.pathname.startsWith("/file-complaint");
+    const isMyCasesSection =
+        location.pathname.startsWith("/my-complaints") ||
+        location.pathname.startsWith("/complaint/");
 
     // Close dropdown when clicking outside
     useEffect(() => {
@@ -37,6 +46,12 @@ export default function UserLayout({ children }) {
         };
     }, []);
 
+    const openLogoutDialog = () => {
+        setProfileOpen(false);
+        setMenuOpen(false);
+        setLogoutOpen(true);
+    };
+
     return (
         <div style={styles.wrapper}>
 
@@ -44,15 +59,37 @@ export default function UserLayout({ children }) {
             <nav style={styles.navbar}>
                 <div style={styles.navInner}> {/* ⭐ CENTERED CONTENT */}
 
-                    <div style={styles.logo}>Crime Report Portal</div>
+                    <div style={styles.logo}>CivilEye</div>
 
                     {/* Desktop Links */}
                     {!isMobile && (
                         <div style={styles.navLinks}>
-                            <a href="/user/dashboard" style={styles.link}>Dashboard</a>
-                            <a href="/complaint-tracking" style={styles.link}>Track</a>
-                            <a href="/file-complaint" style={styles.link}>Report</a>
-                            <a href="/my-complaints" style={styles.link}>My Cases</a>
+                            <NavLink
+                                to="/user/dashboard"
+                                style={({ isActive }) =>
+                                    isActive ? { ...styles.link, ...styles.activeLink } : styles.link
+                                }
+                            >
+                                Dashboard
+                            </NavLink>
+                            <NavLink
+                                to="/complaint-tracking"
+                                style={isTrackSection ? { ...styles.link, ...styles.activeLink } : styles.link}
+                            >
+                                Track
+                            </NavLink>
+                            <NavLink
+                                to="/file-complaint"
+                                style={isReportSection ? { ...styles.link, ...styles.activeLink } : styles.link}
+                            >
+                                Report
+                            </NavLink>
+                            <NavLink
+                                to="/my-complaints"
+                                style={isMyCasesSection ? { ...styles.link, ...styles.activeLink } : styles.link}
+                            >
+                                My Cases
+                            </NavLink>
 
                             <div style={styles.profileWrapper} ref={profileRef}>
                                 <div
@@ -66,7 +103,7 @@ export default function UserLayout({ children }) {
                                     <div style={styles.dropdown}>
                                         <a href="/profile" style={styles.dropdownItem}>My Profile</a>
 
-                                        <button onClick={logoutUser} style={styles.dropdownLogout}>
+                                        <button onClick={openLogoutDialog} style={styles.dropdownLogout}>
                                             Logout
                                         </button>
                                     </div>
@@ -93,13 +130,42 @@ export default function UserLayout({ children }) {
             {/* MOBILE MENU */}
             {menuOpen && isMobile && (
                 <div style={styles.mobileMenu}>
-                    <a href="/user/dashboard" style={styles.mobileLink}>Dashboard</a>
-                    <a href="/complaint-tracking" style={styles.mobileLink}>Track</a>
-                    <a href="/file-complaint" style={styles.mobileLink}>Report</a>
-                    <a href="/my-complaints" style={styles.mobileLink}>My Cases</a>
-                    <a href="/profile" style={styles.mobileLink}>Profile</a>
+                    <NavLink
+                        to="/user/dashboard"
+                        style={({ isActive }) =>
+                            isActive ? { ...styles.mobileLink, ...styles.mobileActiveLink } : styles.mobileLink
+                        }
+                    >
+                        Dashboard
+                    </NavLink>
+                    <NavLink
+                        to="/complaint-tracking"
+                        style={isTrackSection ? { ...styles.mobileLink, ...styles.mobileActiveLink } : styles.mobileLink}
+                    >
+                        Track
+                    </NavLink>
+                    <NavLink
+                        to="/file-complaint"
+                        style={isReportSection ? { ...styles.mobileLink, ...styles.mobileActiveLink } : styles.mobileLink}
+                    >
+                        Report
+                    </NavLink>
+                    <NavLink
+                        to="/my-complaints"
+                        style={isMyCasesSection ? { ...styles.mobileLink, ...styles.mobileActiveLink } : styles.mobileLink}
+                    >
+                        My Cases
+                    </NavLink>
+                    <NavLink
+                        to="/profile"
+                        style={({ isActive }) =>
+                            isActive ? { ...styles.mobileLink, ...styles.mobileActiveLink } : styles.mobileLink
+                        }
+                    >
+                        Profile
+                    </NavLink>
 
-                    <button onClick={logoutUser} style={styles.mobileLogoutBtn}>
+                    <button onClick={openLogoutDialog} style={styles.mobileLogoutBtn}>
                         Logout
                     </button>
                 </div>
@@ -107,6 +173,12 @@ export default function UserLayout({ children }) {
 
             {/* CONTENT */}
             <main style={{ marginTop: 90 }}>{children}</main>
+
+            <LogoutConfirmDialog
+                open={logoutOpen}
+                onCancel={() => setLogoutOpen(false)}
+                onConfirm={logoutUser}
+            />
         </div>
     );
 }
@@ -151,6 +223,15 @@ const styles = {
         textDecoration: "none",
         fontSize: 15,
         transition: "0.2s ease",
+        paddingBottom: 8,
+        borderBottom: "2px solid transparent",
+        fontWeight: 500,
+    },
+
+    activeLink: {
+        color: "var(--ink-900)",
+        borderBottom: "2px solid var(--mint-500)",
+        fontWeight: 700,
     },
 
     /******** PROFILE ICON ********/
@@ -204,6 +285,24 @@ const styles = {
         fontWeight: 600,
     },
 
+    mobileLink: {
+        display: "block",
+        padding: "12px 14px",
+        borderRadius: 12,
+        textDecoration: "none",
+        color: "var(--ink-700)",
+        fontWeight: 600,
+        background: "rgba(255,255,255,0.55)",
+        border: "1px solid rgba(15,23,42,0.08)",
+    },
+
+    mobileActiveLink: {
+        color: "var(--ink-900)",
+        background: "rgba(26,167,155,0.12)",
+        border: "1px solid rgba(26,167,155,0.28)",
+        boxShadow: "0 8px 20px rgba(26,167,155,0.08)",
+    },
+
     /******** HAMBURGER ********/
     hamburger: {
         display: "none",
@@ -224,30 +323,26 @@ const styles = {
         position: "fixed",
         top: 65,
         right: 0,
-        width: 220,
-        background: "#0f172a",
+        width: 240,
+        background: "linear-gradient(180deg, #ffffff 0%, #f8f5ef 100%)",
         padding: 20,
-        borderRadius: "0 0 0 14px",
+        borderRadius: "0 0 0 18px",
         display: "flex",
         flexDirection: "column",
-        gap: 16,
-        boxShadow: "-6px 8px 20px rgba(11,18,32,0.3)",
+        gap: 12,
+        boxShadow: "-10px 14px 28px rgba(11,18,32,0.18)",
+        borderLeft: "1px solid rgba(15,23,42,0.08)",
+        borderBottom: "1px solid rgba(15,23,42,0.08)",
         animation: "slideIn 0.25s forwards",
         zIndex: 150,
     },
 
-    mobileLink: {
-        color: "#e2e8f0",
-        textDecoration: "none",
-        fontSize: 16,
-    },
-
     mobileLogoutBtn: {
         marginTop: 10,
-        padding: "10px",
+        padding: "12px",
         background: "#ff5c6c",
         border: "none",
-        borderRadius: 6,
+        borderRadius: 12,
         color: "white",
         fontWeight: 700,
         cursor: "pointer",
