@@ -54,8 +54,8 @@ function App() {
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/otp-verify" element={<OtpScreen />} />
         <Route path="/reset-password" element={<ResetPassword />} />
-        <Route path="/aboutpage" element={<AboutPage/>}/>
-        <Route path="/contactpage" element={<ContactPage/>}/>
+        <Route path="/aboutpage" element={<AboutPage />} />
+        <Route path="/contactpage" element={<ContactPage />} />
         <Route path="/super-admin/login" element={<SuperAdminLogin />} />
         <Route path="/super-admin/admins" element={<AdminManager />} />
 

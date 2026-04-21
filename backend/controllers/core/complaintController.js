@@ -3,13 +3,14 @@ import CaseActivity from "../../models/CaseActivity.js";
 import Counter from "../../models/Counter.js";
 import Register from "../../models/Register.js";
 import Profile from "../../models/Profile.js";
+import { getAITriage } from "../../services/groqTriageService.js";
 
 /* ----------------------------------------------------
    CREATE COMPLAINT (USER)
 ---------------------------------------------------- */
 export const createComplaint = async (req, res) => {
     try {
-        const { complaintType, description, email } = req.body;
+        const { complaintType, description, email, aiUserAccepted } = req.body;
 
         if (req.user?.role === "User") {
             const userEmail = (req.user.email || "").toLowerCase();
@@ -48,6 +49,29 @@ export const createComplaint = async (req, res) => {
             status: "Pending",
         });
 
+        try {
+            const aiResult = await getAITriage(description);
+            if (aiResult) {
+                const parsedUserAccepted =
+                    aiUserAccepted === "true"
+                        ? true
+                        : aiUserAccepted === "false"
+                            ? false
+                            : null;
+
+                complaint.aiSuggestion = {
+                    suggestedCategory: aiResult.suggestedCategory,
+                    suggestedPriority: aiResult.suggestedPriority,
+                    reasoning: aiResult.reasoning,
+                    usedAI: true,
+                    userAccepted: parsedUserAccepted,
+                };
+                await complaint.save();
+            }
+        } catch {
+            // AI triage must never block complaint creation.
+        }
+
         // 🔹 ACTIVITY LOG
         await CaseActivity.create({
             complaintId: complaint._id,
@@ -66,6 +90,58 @@ export const createComplaint = async (req, res) => {
 
     } catch (error) {
         res.status(500).json({ error: error.message });
+    }
+};
+
+export const triageComplaint = async (req, res) => {
+    try {
+        const { description } = req.body;
+
+        if (!description || description.trim().length < 10) {
+            return res.status(400).json({ error: "Description too short for triage" });
+        }
+
+        const result = await getAITriage(description.trim());
+
+        if (!result) {
+            return res.status(503).json({ error: "AI triage unavailable" });
+        }
+
+        return res.status(200).json(result);
+    } catch (error) {
+        return res.status(500).json({ error: error.message });
+    }
+};
+
+export const updateAIFeedback = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { accepted } = req.body;
+
+        if (typeof accepted !== "boolean") {
+            return res.status(400).json({ error: "accepted must be a boolean" });
+        }
+
+        const complaint = await Complaint.findById(id);
+
+        if (!complaint) {
+            return res.status(404).json({ error: "Complaint not found" });
+        }
+
+        if ((complaint.email || "").toLowerCase() !== (req.user?.email || "").toLowerCase()) {
+            return res.status(403).json({ error: "Forbidden" });
+        }
+
+        if (!complaint.aiSuggestion) {
+            complaint.aiSuggestion = {};
+        }
+
+        complaint.aiSuggestion.userAccepted = accepted;
+        await complaint.save();
+
+        return res.json(complaint);
+    } catch (error) {
+        return res.status(500).json({ error: error.message });
     }
 };
 

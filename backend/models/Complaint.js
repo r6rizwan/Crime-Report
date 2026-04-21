@@ -102,6 +102,24 @@ const complaintSchema = new mongoose.Schema(
             default: ""
         },
 
+        aiSuggestion: {
+            suggestedCategory: { type: String, default: null },
+            suggestedPriority: {
+                type: String,
+                enum: ["Low", "Medium", "High", "Critical"],
+                default: null
+            },
+            reasoning: { type: String, default: null },
+            userAccepted: { type: Boolean, default: null },
+            usedAI: { type: Boolean, default: false }
+        },
+
+        investigationUpdate: {
+            status: { type: String, default: null },
+            note: { type: String, default: null },
+            updatedAt: { type: Date, default: null }
+        },
+
         /* ---------------- META ---------------- */
 
         createdAt: {

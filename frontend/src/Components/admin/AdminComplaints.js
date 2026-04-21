@@ -2,6 +2,12 @@ import React, { useEffect, useMemo, useState } from "react";
 import api from "../../utils/api";
 
 const ITEMS_PER_PAGE = 10;
+const PRIORITY_ORDER = {
+    Critical: 4,
+    High: 3,
+    Medium: 2,
+    Low: 1,
+};
 
 export default function AdminComplaints() {
     const [complaints, setComplaints] = useState([]);
@@ -43,13 +49,22 @@ export default function AdminComplaints() {
                 ? new Date(b.createdAt) - new Date(a.createdAt)
                 : new Date(a.createdAt) - new Date(b.createdAt);
 
+        const priorityAwareSorter = (a, b) => {
+            const priorityDiff =
+                (PRIORITY_ORDER[b.aiSuggestion?.suggestedPriority] || 0) -
+                (PRIORITY_ORDER[a.aiSuggestion?.suggestedPriority] || 0);
+
+            if (priorityDiff !== 0) return priorityDiff;
+            return sorter(a, b);
+        };
+
         const pending = filtered
             .filter((c) => c.status === "Pending")
-            .sort(sorter);
+            .sort(priorityAwareSorter);
 
         const others = filtered
             .filter((c) => c.status !== "Pending")
-            .sort(sorter);
+            .sort(priorityAwareSorter);
 
         return [...pending, ...others];
     }, [complaints, search, filter, sortOrder]);
@@ -75,7 +90,7 @@ export default function AdminComplaints() {
                     <p style={styles.eyebrow}>Operations</p>
                     <h2 style={styles.title}>All Complaints</h2>
                     <p style={styles.subtitle}>
-                        Pending cases are always shown at the top
+                        Pending cases stay at the top, and AI-priority cases are surfaced first within each group
                     </p>
                 </div>
             </div>
@@ -143,24 +158,43 @@ export default function AdminComplaints() {
                             paginatedComplaints.map((c) => (
                                 <tr key={c._id}>
                                     <td style={styles.td}>{c.complaintId}</td>
-                                    <td style={styles.td}>{c.complaintType}</td>
+                                    <td style={styles.td}>
+                                        <div style={styles.typeCell}>
+                                            <span>{c.complaintType}</span>
+                                            {c.aiSuggestion?.suggestedPriority && (
+                                                <span
+                                                    style={{
+                                                        ...styles.priorityChip,
+                                                        ...getPriorityStyles(c.aiSuggestion.suggestedPriority),
+                                                    }}
+                                                >
+                                                    {c.aiSuggestion.suggestedPriority}
+                                                </span>
+                                            )}
+                                        </div>
+                                    </td>
                                     <td style={styles.td}>{c.email}</td>
                                     <td style={styles.td}>
-                                        <span
-                                            style={{
-                                                ...styles.badge,
-                                                background:
-                                                    c.status === "Pending"
-                                                        ? "rgba(245, 158, 11, 0.2)"
-                                                        : c.status === "Assigned" || c.status === "Open"
-                                                        ? "rgba(58, 163, 255, 0.2)"
-                                                        : c.status === "Resolved"
-                                                        ? "rgba(34, 197, 94, 0.2)"
-                                                        : "rgba(100, 116, 139, 0.2)",
-                                            }}
-                                        >
-                                            {c.status}
-                                        </span>
+                                        <div style={styles.statusCell}>
+                                            <span
+                                                style={{
+                                                    ...styles.badge,
+                                                    background:
+                                                        c.status === "Pending"
+                                                            ? "rgba(245, 158, 11, 0.2)"
+                                                            : c.status === "Assigned" || c.status === "Open"
+                                                            ? "rgba(58, 163, 255, 0.2)"
+                                                            : c.status === "Resolved"
+                                                            ? "rgba(34, 197, 94, 0.2)"
+                                                            : "rgba(100, 116, 139, 0.2)",
+                                                }}
+                                            >
+                                                {c.status}
+                                            </span>
+                                            {c.aiSuggestion?.usedAI && (
+                                                <span style={styles.aiTag}>AI Assisted</span>
+                                            )}
+                                        </div>
                                     </td>
                                     <td style={styles.td}>{c.assignedTo || "—"}</td>
                                     <td style={styles.td}>
@@ -208,6 +242,36 @@ export default function AdminComplaints() {
         </div>
     );
 }
+
+const getPriorityStyles = (priority) => {
+    switch (priority) {
+        case "Low":
+            return {
+                background: "rgba(34,197,94,0.15)",
+                color: "#15803d",
+            };
+        case "Medium":
+            return {
+                background: "rgba(245,158,11,0.16)",
+                color: "#b45309",
+            };
+        case "High":
+            return {
+                background: "rgba(249,115,22,0.18)",
+                color: "#c2410c",
+            };
+        case "Critical":
+            return {
+                background: "rgba(239,68,68,0.16)",
+                color: "#b91c1c",
+            };
+        default:
+            return {
+                background: "rgba(15,23,42,0.08)",
+                color: "var(--ink-700)",
+            };
+    }
+};
 
 /* ---------------- STYLES ---------------- */
 
@@ -295,6 +359,12 @@ const styles = {
         borderBottom: "1px solid rgba(15,23,42,0.08)",
         fontSize: 14,
     },
+    typeCell: {
+        display: "flex",
+        alignItems: "center",
+        gap: 8,
+        flexWrap: "wrap",
+    },
 
     badge: {
         padding: "6px 14px",
@@ -304,6 +374,30 @@ const styles = {
         fontSize: 12,
         textTransform: "uppercase",
         letterSpacing: "0.08em",
+    },
+    statusCell: {
+        display: "flex",
+        alignItems: "center",
+        gap: 8,
+        flexWrap: "wrap",
+    },
+    aiTag: {
+        padding: "5px 10px",
+        borderRadius: 999,
+        background: "rgba(26,167,155,0.12)",
+        color: "var(--mint-700)",
+        fontWeight: 700,
+        fontSize: 11,
+        letterSpacing: "0.06em",
+        textTransform: "uppercase",
+    },
+    priorityChip: {
+        padding: "5px 10px",
+        borderRadius: 999,
+        fontWeight: 700,
+        fontSize: 11,
+        letterSpacing: "0.06em",
+        textTransform: "uppercase",
     },
 
     viewBtn: {

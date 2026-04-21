@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
 import api, { API_BASE_URL } from "../../utils/api";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 export default function ComplaintDetails() {
     const { id } = useParams();
+    const navigate = useNavigate();
     const [complaint, setComplaint] = useState(null);
     const [loading, setLoading] = useState(true);
 
@@ -53,6 +54,13 @@ export default function ComplaintDetails() {
             <div style={styles.container}>
                 <div style={styles.header}>
                     <div>
+                        <button
+                            type="button"
+                            onClick={() => navigate("/my-complaints")}
+                            style={styles.backBtn}
+                        >
+                            ← Back to My Cases
+                        </button>
                         <p style={styles.eyebrow}>Complaint Details</p>
                         <h2 style={styles.title}>{complaint.complaintType}</h2>
                         <p style={styles.subtitle}>ID: {complaint.complaintId}</p>
@@ -111,6 +119,25 @@ export default function ComplaintDetails() {
                         {complaint.solution || "No solution provided yet."}
                     </div>
                 </div>
+
+                {complaint.investigationUpdate?.status && (
+                    <div style={styles.card}>
+                        <h3 style={styles.sectionTitle}>Investigation Progress</h3>
+                        <div style={styles.progressHeader}>
+                            <span style={styles.progressPill}>
+                                {complaint.investigationUpdate.status}
+                            </span>
+                            {complaint.investigationUpdate.updatedAt && (
+                                <span style={styles.progressMeta}>
+                                    Updated {new Date(complaint.investigationUpdate.updatedAt).toLocaleString()}
+                                </span>
+                            )}
+                        </div>
+                        <div style={styles.progressNote}>
+                            {complaint.investigationUpdate.note || "No additional update shared yet."}
+                        </div>
+                    </div>
+                )}
             </div>
         </div>
     );
@@ -187,6 +214,16 @@ const styles = {
         background: "#fff",
         boxShadow: "var(--card-shadow)",
     },
+    backBtn: {
+        background: "transparent",
+        border: "none",
+        color: "var(--mint-600)",
+        fontWeight: 700,
+        cursor: "pointer",
+        marginBottom: 10,
+        padding: 0,
+        fontSize: 14,
+    },
     grid: {
         display: "grid",
         gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))",
@@ -232,6 +269,35 @@ const styles = {
         borderRadius: 12,
         border: "1px solid rgba(26, 167, 155, 0.2)",
         color: "var(--ink-900)",
+    },
+    progressHeader: {
+        marginTop: 12,
+        display: "flex",
+        justifyContent: "space-between",
+        alignItems: "center",
+        gap: 12,
+        flexWrap: "wrap",
+    },
+    progressPill: {
+        display: "inline-flex",
+        padding: "8px 14px",
+        borderRadius: 999,
+        background: "rgba(26,167,155,0.12)",
+        color: "var(--mint-700)",
+        fontWeight: 700,
+    },
+    progressMeta: {
+        color: "var(--ink-600)",
+        fontSize: 13,
+    },
+    progressNote: {
+        marginTop: 14,
+        background: "rgba(15,23,42,0.04)",
+        padding: 14,
+        borderRadius: 12,
+        border: "1px solid rgba(15,23,42,0.08)",
+        lineHeight: 1.6,
+        color: "var(--ink-700)",
     },
 
     fileLink: {

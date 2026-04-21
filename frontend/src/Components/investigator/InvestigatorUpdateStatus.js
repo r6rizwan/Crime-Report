@@ -13,6 +13,7 @@ export default function InvestigatorUpdateStatus() {
     const [saving, setSaving] = useState(false);
     const [error, setError] = useState("");
     const [toast, setToast] = useState("");
+    const [showResolveConfirm, setShowResolveConfirm] = useState(false);
 
     const showToast = (msg) => {
         setToast(msg);
@@ -58,12 +59,6 @@ export default function InvestigatorUpdateStatus() {
     };
 
     const resolveCase = async () => {
-        if (saving) return;
-        if (!solution.trim()) {
-            showToast("Solution is required to resolve the case");
-            return;
-        }
-
         setSaving(true);
         try {
             await api.put(
@@ -76,6 +71,15 @@ export default function InvestigatorUpdateStatus() {
         } finally {
             setSaving(false);
         }
+    };
+
+    const requestResolve = () => {
+        if (saving) return;
+        if (!solution.trim()) {
+            showToast("Please enter final solution / remarks before resolving the case");
+            return;
+        }
+        setShowResolveConfirm(true);
     };
 
     if (loading) return <p style={styles.center}>Loading…</p>;
@@ -122,7 +126,7 @@ export default function InvestigatorUpdateStatus() {
                                 to={`/investigator/case-files/${complaint._id}`}
                                 style={styles.caseFilesBtn}
                             >
-                                Case Files & Notes
+                                Open Investigation Workspace
                             </Link>
                         </div>
                     </div>
@@ -141,6 +145,69 @@ export default function InvestigatorUpdateStatus() {
                             label="Filed On"
                             value={new Date(complaint.createdAt).toLocaleString()}
                         />
+
+                        {complaint.aiSuggestion?.usedAI && (
+                            <div style={styles.aiPanel}>
+                                <div style={styles.aiHeader}>
+                                    <div>
+                                        <p style={styles.aiEyebrow}>AI Triage</p>
+                                        <h4 style={styles.aiTitle}>Triage summary for this case</h4>
+                                    </div>
+                                    <span style={styles.aiBadge}>AI Assisted</span>
+                                </div>
+
+                                <div style={styles.aiGrid}>
+                                    <Info
+                                        label="Suggested Category"
+                                        value={complaint.aiSuggestion.suggestedCategory || "Not available"}
+                                    />
+                                    <div style={styles.aiPriorityCard}>
+                                        <span style={styles.label}>Suggested Priority</span>
+                                        <span
+                                            style={{
+                                                ...styles.priorityPill,
+                                                ...getPriorityStyles(complaint.aiSuggestion.suggestedPriority),
+                                            }}
+                                        >
+                                            {complaint.aiSuggestion.suggestedPriority || "Not available"}
+                                        </span>
+                                    </div>
+                                    <Info
+                                        label="User Response"
+                                        value={formatAIFeedback(complaint.aiSuggestion.userAccepted)}
+                                    />
+                                </div>
+
+                                <div style={{ marginTop: 8 }}>
+                                    <div style={styles.label}>AI Reasoning</div>
+                                    <div style={styles.description}>
+                                        {complaint.aiSuggestion.reasoning || "No reasoning available."}
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                        {complaint.investigationUpdate?.status && (
+                            <div style={styles.progressPanel}>
+                                <div style={styles.aiHeader}>
+                                    <div>
+                                        <p style={styles.aiEyebrow}>Investigation Progress</p>
+                                        <h4 style={styles.aiTitle}>Latest public case update</h4>
+                                    </div>
+                                    <span style={styles.progressPill}>
+                                        {complaint.investigationUpdate.status}
+                                    </span>
+                                </div>
+                                <div style={styles.description}>
+                                    {complaint.investigationUpdate.note || "No additional update shared yet."}
+                                </div>
+                                {complaint.investigationUpdate.updatedAt && (
+                                    <p style={styles.progressMeta}>
+                                        Updated {new Date(complaint.investigationUpdate.updatedAt).toLocaleString()}
+                                    </p>
+                                )}
+                            </div>
+                        )}
 
                         <div style={{ marginTop: 8 }}>
                             <div style={styles.label}>Description</div>
@@ -191,8 +258,12 @@ export default function InvestigatorUpdateStatus() {
                                 placeholder="Enter investigation findings and final solution"
                             />
 
+                            <p style={styles.helperText}>
+                                Add final solution / remarks before resolving this case.
+                            </p>
+
                             <button
-                                onClick={resolveCase}
+                                onClick={requestResolve}
                                 disabled={saving}
                                 style={styles.primaryBtn}
                             >
@@ -211,6 +282,33 @@ export default function InvestigatorUpdateStatus() {
                 </div>
 
             </div>
+
+            {showResolveConfirm && (
+                <div style={styles.modalOverlay}>
+                    <div style={styles.modal}>
+                        <h3 style={styles.modalTitle}>Resolve Case?</h3>
+                        <p style={styles.modalText}>
+                            This will mark the case as resolved and send it to admin for final review and closure.
+                        </p>
+                        <div style={styles.modalActions}>
+                            <button
+                                style={styles.secondaryBtn}
+                                onClick={() => setShowResolveConfirm(false)}
+                                disabled={saving}
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                style={styles.primaryBtnInline}
+                                onClick={resolveCase}
+                                disabled={saving}
+                            >
+                                {saving ? "Resolving…" : "Confirm Resolve"}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }
@@ -229,6 +327,42 @@ const Info = ({ label, value }) => (
         <strong>{label}:</strong> {value}
     </p>
 );
+
+const formatAIFeedback = (value) => {
+    if (value === true) return "Accepted by user";
+    if (value === false) return "Rejected by user";
+    return "No response yet";
+};
+
+const getPriorityStyles = (priority) => {
+    switch (priority) {
+        case "Low":
+            return {
+                background: "rgba(34,197,94,0.15)",
+                color: "#15803d",
+            };
+        case "Medium":
+            return {
+                background: "rgba(245,158,11,0.16)",
+                color: "#b45309",
+            };
+        case "High":
+            return {
+                background: "rgba(249,115,22,0.18)",
+                color: "#c2410c",
+            };
+        case "Critical":
+            return {
+                background: "rgba(239,68,68,0.16)",
+                color: "#b91c1c",
+            };
+        default:
+            return {
+                background: "rgba(15,23,42,0.08)",
+                color: "var(--ink-700)",
+            };
+    }
+};
 
 /* ---------------- Helpers ---------------- */
 
@@ -347,6 +481,89 @@ const styles = {
         fontWeight: 700,
         marginBottom: 8,
     },
+    aiPanel: {
+        marginTop: 14,
+        padding: 18,
+        borderRadius: 16,
+        background: "linear-gradient(180deg, #f8fcfb 0%, #f3f7ff 100%)",
+        border: "1px solid rgba(26,167,155,0.18)",
+        boxShadow: "0 12px 28px rgba(15,23,42,0.05)",
+    },
+    aiHeader: {
+        display: "flex",
+        justifyContent: "space-between",
+        alignItems: "flex-start",
+        gap: 12,
+        flexWrap: "wrap",
+    },
+    aiEyebrow: {
+        margin: 0,
+        fontSize: 11,
+        textTransform: "uppercase",
+        letterSpacing: "0.24em",
+        color: "var(--mint-600)",
+        fontWeight: 700,
+    },
+    aiTitle: {
+        margin: "8px 0 0",
+        fontSize: 18,
+        fontWeight: 700,
+        color: "var(--ink-900)",
+    },
+    aiBadge: {
+        padding: "8px 10px",
+        borderRadius: 999,
+        background: "rgba(26,167,155,0.12)",
+        color: "var(--mint-700)",
+        fontSize: 12,
+        fontWeight: 700,
+    },
+    aiGrid: {
+        display: "grid",
+        gridTemplateColumns: "repeat(auto-fit, minmax(190px, 1fr))",
+        gap: 12,
+        marginTop: 16,
+    },
+    progressPanel: {
+        marginTop: 14,
+        padding: 18,
+        borderRadius: 16,
+        background: "rgba(15,23,42,0.03)",
+        border: "1px solid rgba(15,23,42,0.08)",
+    },
+    progressPill: {
+        display: "inline-flex",
+        padding: "8px 12px",
+        borderRadius: 999,
+        background: "rgba(26,167,155,0.12)",
+        color: "var(--mint-700)",
+        fontWeight: 700,
+        fontSize: 12,
+    },
+    progressMeta: {
+        margin: "10px 0 0",
+        color: "var(--ink-600)",
+        fontSize: 13,
+    },
+    aiPriorityCard: {
+        display: "flex",
+        flexDirection: "column",
+        gap: 8,
+        padding: "12px 14px",
+        borderRadius: 12,
+        background: "rgba(255,255,255,0.7)",
+        border: "1px solid rgba(15,23,42,0.06)",
+    },
+    priorityPill: {
+        display: "inline-flex",
+        alignSelf: "flex-start",
+        padding: "7px 12px",
+        borderRadius: 999,
+        fontSize: 12,
+        fontWeight: 700,
+        textTransform: "uppercase",
+        letterSpacing: "0.08em",
+    },
 
     label: {
         fontWeight: 600,
@@ -382,6 +599,11 @@ const styles = {
         marginBottom: 20,
         resize: "vertical",
     },
+    helperText: {
+        margin: "-6px 0 16px",
+        color: "var(--ink-600)",
+        fontSize: 13,
+    },
 
     primaryBtn: {
         background: "var(--mint-500)",
@@ -392,6 +614,24 @@ const styles = {
         fontWeight: 700,
         cursor: "pointer",
         width: "100%",
+    },
+    primaryBtnInline: {
+        background: "var(--mint-500)",
+        color: "#fff",
+        border: "none",
+        padding: "12px 18px",
+        borderRadius: 12,
+        fontWeight: 700,
+        cursor: "pointer",
+    },
+    secondaryBtn: {
+        background: "rgba(15,23,42,0.08)",
+        color: "var(--ink-900)",
+        border: "1px solid rgba(15,23,42,0.12)",
+        padding: "12px 18px",
+        borderRadius: 12,
+        fontWeight: 600,
+        cursor: "pointer",
     },
 
     readOnly: {
@@ -422,5 +662,39 @@ const styles = {
         padding: 12,
         borderRadius: 12,
         fontWeight: 600,
+    },
+    modalOverlay: {
+        position: "fixed",
+        inset: 0,
+        background: "rgba(11,18,32,0.45)",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        zIndex: 2000,
+        padding: 20,
+    },
+    modal: {
+        width: "100%",
+        maxWidth: 420,
+        background: "#fff",
+        borderRadius: 18,
+        padding: 24,
+        boxShadow: "0 24px 60px rgba(11,18,32,0.22)",
+    },
+    modalTitle: {
+        margin: 0,
+        fontSize: 22,
+        fontWeight: 700,
+    },
+    modalText: {
+        margin: "10px 0 0",
+        color: "var(--ink-600)",
+        lineHeight: 1.6,
+    },
+    modalActions: {
+        display: "flex",
+        justifyContent: "flex-end",
+        gap: 10,
+        marginTop: 18,
     },
 };

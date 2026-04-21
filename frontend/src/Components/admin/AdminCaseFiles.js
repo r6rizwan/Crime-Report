@@ -43,7 +43,12 @@ export default function AdminCaseFiles() {
                 ← Back
             </button>
 
-            <h2 style={styles.heading}>Case Files (Admin View)</h2>
+            <p style={styles.eyebrow}>Investigation Workspace</p>
+            <h2 style={styles.heading}>Internal Notes & Evidence</h2>
+            <p style={styles.helper}>
+                This section is for admin review of the investigator’s internal notes and uploaded evidence.
+                Public progress updates are shown on the complaint details screen.
+            </p>
 
             <div style={styles.card}>
                 <p style={styles.meta}>
@@ -55,13 +60,13 @@ export default function AdminCaseFiles() {
                     {new Date(caseFile.updatedAt).toLocaleString()}
                 </p>
 
-                <h3 style={styles.subTitle}>Investigation Notes</h3>
+                <h3 style={styles.subTitle}>Internal Notes</h3>
                 <div style={styles.notesBox}>
                     {caseFile.notes || "No notes added"}
                 </div>
 
                 <h3 style={{ ...styles.subTitle, marginTop: 20 }}>
-                    Uploaded Evidence
+                    Evidence Files
                 </h3>
 
                 {caseFile.files.length === 0 ? (
@@ -90,10 +95,23 @@ const styles = {
         maxWidth: 900,
         margin: "0 auto",
     },
+    eyebrow: {
+        fontSize: 12,
+        textTransform: "uppercase",
+        letterSpacing: "0.24em",
+        color: "var(--mint-600)",
+        fontWeight: 700,
+        marginBottom: 8,
+    },
     heading: {
         fontSize: 26,
         fontWeight: 700,
+        marginBottom: 8,
+    },
+    helper: {
+        color: "var(--ink-600)",
         marginBottom: 20,
+        lineHeight: 1.6,
     },
     subTitle: {
         fontSize: 18,

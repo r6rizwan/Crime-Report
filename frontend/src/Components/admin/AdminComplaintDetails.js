@@ -172,6 +172,69 @@ export default function AdminComplaintDetails() {
                         value={new Date(complaint.createdAt).toLocaleString()}
                     />
 
+                    {complaint.aiSuggestion?.usedAI && (
+                        <div style={styles.aiPanel}>
+                            <div style={styles.aiHeader}>
+                                <div>
+                                    <p style={styles.aiEyebrow}>AI Triage</p>
+                                    <h4 style={styles.aiTitle}>AI-assisted review summary</h4>
+                                </div>
+                                <span style={styles.aiBadge}>AI Assisted</span>
+                            </div>
+
+                            <div style={styles.aiGrid}>
+                                <InfoRow
+                                    label="Suggested Category"
+                                    value={complaint.aiSuggestion.suggestedCategory || "Not available"}
+                                />
+                                <div style={styles.aiPriorityCard}>
+                                    <span style={styles.key}>Suggested Priority</span>
+                                    <span
+                                        style={{
+                                            ...styles.priorityPill,
+                                            ...getPriorityStyles(complaint.aiSuggestion.suggestedPriority),
+                                        }}
+                                    >
+                                        {complaint.aiSuggestion.suggestedPriority || "Not available"}
+                                    </span>
+                                </div>
+                                <InfoRow
+                                    label="User Response"
+                                    value={formatAIFeedback(complaint.aiSuggestion.userAccepted)}
+                                />
+                            </div>
+
+                            <div style={{ marginTop: 12 }}>
+                                <div style={styles.key}>AI Reasoning</div>
+                                <div style={styles.desc}>
+                                    {complaint.aiSuggestion.reasoning || "No reasoning available."}
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {complaint.investigationUpdate?.status && (
+                        <div style={styles.progressPanel}>
+                            <div style={styles.aiHeader}>
+                                <div>
+                                    <p style={styles.aiEyebrow}>Investigation Progress</p>
+                                    <h4 style={styles.aiTitle}>Latest public case update</h4>
+                                </div>
+                                <span style={styles.progressPill}>
+                                    {complaint.investigationUpdate.status}
+                                </span>
+                            </div>
+                            <div style={styles.desc}>
+                                {complaint.investigationUpdate.note || "No additional update shared yet."}
+                            </div>
+                            {complaint.investigationUpdate.updatedAt && (
+                                <p style={styles.progressMeta}>
+                                    Updated {new Date(complaint.investigationUpdate.updatedAt).toLocaleString()}
+                                </p>
+                            )}
+                        </div>
+                    )}
+
                     <div style={{ marginTop: 12 }}>
                         <div style={styles.key}>Description</div>
                         <div style={styles.desc}>{complaint.description}</div>
@@ -353,6 +416,42 @@ const InfoRow = ({ label, value }) => (
     </div>
 );
 
+const formatAIFeedback = (value) => {
+    if (value === true) return "Accepted by user";
+    if (value === false) return "Rejected by user";
+    return "No response yet";
+};
+
+const getPriorityStyles = (priority) => {
+    switch (priority) {
+        case "Low":
+            return {
+                background: "rgba(34,197,94,0.15)",
+                color: "#15803d",
+            };
+        case "Medium":
+            return {
+                background: "rgba(245,158,11,0.16)",
+                color: "#b45309",
+            };
+        case "High":
+            return {
+                background: "rgba(249,115,22,0.18)",
+                color: "#c2410c",
+            };
+        case "Critical":
+            return {
+                background: "rgba(239,68,68,0.16)",
+                color: "#b91c1c",
+            };
+        default:
+            return {
+                background: "rgba(15,23,42,0.08)",
+                color: "var(--ink-700)",
+            };
+    }
+};
+
 const TimelineItem = ({ label, date }) => (
     <div style={styles.timelineRow}>
         <span style={styles.timelineLabel}>{label}</span>
@@ -441,6 +540,89 @@ const styles = {
         boxShadow: "var(--card-shadow)",
     },
     cardTitle: { fontSize: 20, fontWeight: 700, marginBottom: 18 },
+    aiPanel: {
+        marginTop: 16,
+        padding: 18,
+        borderRadius: 16,
+        background: "linear-gradient(180deg, #f8fcfb 0%, #f3f7ff 100%)",
+        border: "1px solid rgba(26,167,155,0.18)",
+        boxShadow: "0 12px 28px rgba(15,23,42,0.05)",
+    },
+    aiHeader: {
+        display: "flex",
+        justifyContent: "space-between",
+        alignItems: "flex-start",
+        gap: 12,
+        flexWrap: "wrap",
+    },
+    aiEyebrow: {
+        margin: 0,
+        fontSize: 11,
+        textTransform: "uppercase",
+        letterSpacing: "0.24em",
+        color: "var(--mint-600)",
+        fontWeight: 700,
+    },
+    aiTitle: {
+        margin: "8px 0 0",
+        fontSize: 18,
+        fontWeight: 700,
+        color: "var(--ink-900)",
+    },
+    aiBadge: {
+        padding: "8px 10px",
+        borderRadius: 999,
+        background: "rgba(26,167,155,0.12)",
+        color: "var(--mint-700)",
+        fontSize: 12,
+        fontWeight: 700,
+    },
+    aiGrid: {
+        display: "grid",
+        gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
+        gap: 12,
+        marginTop: 16,
+    },
+    progressPanel: {
+        marginTop: 16,
+        padding: 18,
+        borderRadius: 16,
+        background: "rgba(15,23,42,0.03)",
+        border: "1px solid rgba(15,23,42,0.08)",
+    },
+    progressPill: {
+        display: "inline-flex",
+        padding: "8px 12px",
+        borderRadius: 999,
+        background: "rgba(26,167,155,0.12)",
+        color: "var(--mint-700)",
+        fontWeight: 700,
+        fontSize: 12,
+    },
+    progressMeta: {
+        margin: "10px 0 0",
+        color: "var(--ink-600)",
+        fontSize: 13,
+    },
+    aiPriorityCard: {
+        display: "flex",
+        flexDirection: "column",
+        gap: 8,
+        padding: "12px 14px",
+        borderRadius: 12,
+        background: "rgba(255,255,255,0.7)",
+        border: "1px solid rgba(15,23,42,0.06)",
+    },
+    priorityPill: {
+        display: "inline-flex",
+        alignSelf: "flex-start",
+        padding: "7px 12px",
+        borderRadius: 999,
+        fontSize: 12,
+        fontWeight: 700,
+        textTransform: "uppercase",
+        letterSpacing: "0.08em",
+    },
     row: { display: "flex", justifyContent: "space-between", marginBottom: 12 },
     key: { fontWeight: 600, color: "var(--ink-600)" },
     value: { color: "var(--ink-900)", fontWeight: 600 },

@@ -2,6 +2,13 @@ import React, { useEffect, useState } from "react";
 import api from "../../utils/api";
 import { useNavigate } from "react-router-dom";
 
+const PRIORITY_ORDER = {
+    Critical: 4,
+    High: 3,
+    Medium: 2,
+    Low: 1,
+};
+
 export default function InvestigatorAssignedComplaints() {
     const [complaints, setComplaints] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -36,10 +43,20 @@ export default function InvestigatorAssignedComplaints() {
     }
 
     // Group complaints
-    const assigned = complaints.filter(c => c.status === "Assigned");
-    const open = complaints.filter(c => c.status === "Open");
-    const resolved = complaints.filter(c => c.status === "Resolved");
-    const closed = complaints.filter(c => c.status === "Closed");
+    const sortByPriorityThenDate = (items) =>
+        [...items].sort((a, b) => {
+            const priorityDiff =
+                (PRIORITY_ORDER[b.aiSuggestion?.suggestedPriority] || 0) -
+                (PRIORITY_ORDER[a.aiSuggestion?.suggestedPriority] || 0);
+
+            if (priorityDiff !== 0) return priorityDiff;
+            return new Date(b.createdAt) - new Date(a.createdAt);
+        });
+
+    const assigned = sortByPriorityThenDate(complaints.filter(c => c.status === "Assigned"));
+    const open = sortByPriorityThenDate(complaints.filter(c => c.status === "Open"));
+    const resolved = sortByPriorityThenDate(complaints.filter(c => c.status === "Resolved"));
+    const closed = sortByPriorityThenDate(complaints.filter(c => c.status === "Closed"));
 
     return (
         <div style={styles.page}>
@@ -103,11 +120,26 @@ const Section = ({ title, items, emptyText, actionLabel, onAction, readOnly }) =
             items.map((item) => (
                 <div key={item._id} style={styles.card}>
                     <div>
-                        <strong>{item.complaintType}</strong>
+                        <div style={styles.titleRow}>
+                            <strong>{item.complaintType}</strong>
+                            {item.aiSuggestion?.suggestedPriority && (
+                                <span
+                                    style={{
+                                        ...styles.priorityChip,
+                                        ...getPriorityStyles(item.aiSuggestion.suggestedPriority),
+                                    }}
+                                >
+                                    {item.aiSuggestion.suggestedPriority}
+                                </span>
+                            )}
+                        </div>
                         <p style={styles.meta}>
                             ID: {item.complaintId} • Filed on{" "}
                             {new Date(item.createdAt).toLocaleDateString()}
                         </p>
+                        {item.aiSuggestion?.usedAI && (
+                            <span style={styles.aiTag}>AI Assisted</span>
+                        )}
                     </div>
 
                     <div style={styles.cardRight}>
@@ -149,6 +181,36 @@ const getStatusColor = (status) => {
             return "rgba(34, 197, 94, 0.2)";
         default:
             return "rgba(100, 116, 139, 0.2)";
+    }
+};
+
+const getPriorityStyles = (priority) => {
+    switch (priority) {
+        case "Low":
+            return {
+                background: "rgba(34,197,94,0.15)",
+                color: "#15803d",
+            };
+        case "Medium":
+            return {
+                background: "rgba(245,158,11,0.16)",
+                color: "#b45309",
+            };
+        case "High":
+            return {
+                background: "rgba(249,115,22,0.18)",
+                color: "#c2410c",
+            };
+        case "Critical":
+            return {
+                background: "rgba(239,68,68,0.16)",
+                color: "#b91c1c",
+            };
+        default:
+            return {
+                background: "rgba(15,23,42,0.08)",
+                color: "var(--ink-700)",
+            };
     }
 };
 
@@ -229,11 +291,38 @@ const styles = {
         marginBottom: 14,
         boxShadow: "var(--card-shadow)",
     },
+    titleRow: {
+        display: "flex",
+        alignItems: "center",
+        gap: 8,
+        flexWrap: "wrap",
+    },
 
     meta: {
         color: "var(--ink-600)",
         fontSize: 13,
         marginTop: 4,
+    },
+    aiTag: {
+        display: "inline-flex",
+        marginTop: 10,
+        padding: "5px 10px",
+        borderRadius: 999,
+        background: "rgba(26,167,155,0.12)",
+        color: "var(--mint-700)",
+        fontWeight: 700,
+        fontSize: 11,
+        textTransform: "uppercase",
+        letterSpacing: "0.06em",
+    },
+    priorityChip: {
+        display: "inline-flex",
+        padding: "5px 10px",
+        borderRadius: 999,
+        fontWeight: 700,
+        fontSize: 11,
+        textTransform: "uppercase",
+        letterSpacing: "0.06em",
     },
 
     cardRight: {

@@ -2,6 +2,17 @@ import React, { useState } from "react";
 import api from "../../utils/api";
 
 export default function FileComplaint() {
+    const complaintTypes = [
+        "Theft",
+        "Assault",
+        "Fraud",
+        "Vandalism",
+        "Harassment",
+        "Cybercrime",
+        "Missing Person",
+        "Other",
+    ];
+
     const [form, setForm] = useState({
         complaintType: "",
         description: "",
@@ -11,6 +22,10 @@ export default function FileComplaint() {
     const [message, setMessage] = useState("");
     const [error, setError] = useState("");
     const [submitting, setSubmitting] = useState(false);
+    const [triageLoading, setTriageLoading] = useState(false);
+    const [triageError, setTriageError] = useState("");
+    const [aiSuggestion, setAiSuggestion] = useState(null);
+    const [aiFeedback, setAiFeedback] = useState(null);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -19,6 +34,12 @@ export default function FileComplaint() {
             ...prev,
             [name]: value,
         }));
+
+        if (name === "description") {
+            setAiSuggestion(null);
+            setAiFeedback(null);
+            setTriageError("");
+        }
     };
 
     const handleFileChange = (e) => {
@@ -26,6 +47,44 @@ export default function FileComplaint() {
             ...prev,
             file: e.target.files[0],
         }));
+    };
+
+    const handleGetAITriage = async () => {
+        if (triageLoading) return;
+
+        const description = form.description.trim();
+        if (description.length < 10) {
+            setTriageError("Please enter at least 10 characters to get an AI suggestion.");
+            return;
+        }
+
+        try {
+            setTriageLoading(true);
+            setTriageError("");
+            setAiFeedback(null);
+
+            const res = await api.post("/api/complaint/triage", { description });
+            setAiSuggestion(res.data);
+        } catch (err) {
+            setAiSuggestion(null);
+            setTriageError(err.response?.data?.error || "Unable to fetch AI suggestion right now.");
+        } finally {
+            setTriageLoading(false);
+        }
+    };
+
+    const handleAcceptSuggestion = () => {
+        if (!aiSuggestion) return;
+
+        setForm((prev) => ({
+            ...prev,
+            complaintType: aiSuggestion.suggestedCategory,
+        }));
+        setAiFeedback(true);
+    };
+
+    const handleRejectSuggestion = () => {
+        setAiFeedback(false);
     };
 
     const handleSubmit = async (e) => {
@@ -47,6 +106,9 @@ export default function FileComplaint() {
             formData.append("complaintType", form.complaintType);
             formData.append("description", form.description);
             formData.append("email", email);
+            if (aiFeedback !== null) {
+                formData.append("aiUserAccepted", String(aiFeedback));
+            }
 
             if (form.file) {
                 formData.append("file", form.file);
@@ -58,6 +120,9 @@ export default function FileComplaint() {
 
             setMessage("Complaint submitted successfully!", res);
             setForm({ complaintType: "", description: "", file: null });
+            setAiSuggestion(null);
+            setAiFeedback(null);
+            setTriageError("");
 
         } catch (err) {
             setError(err.response?.data?.error || "Something went wrong.");
@@ -103,11 +168,11 @@ export default function FileComplaint() {
                                 required
                             >
                                 <option value="">Select Complaint Type</option>
-                                <option value="Cyber Crime">Cyber Crime</option>
-                                <option value="Harassment">Harassment</option>
-                                <option value="Fraud">Fraud</option>
-                                <option value="Theft">Theft</option>
-                                <option value="Other">Other</option>
+                                {complaintTypes.map((type) => (
+                                    <option key={type} value={type}>
+                                        {type}
+                                    </option>
+                                ))}
                             </select>
                         </div>
 
@@ -121,6 +186,88 @@ export default function FileComplaint() {
                                 style={{ ...styles.input, minHeight: 140 }}
                                 required
                             />
+                            <div style={styles.aiActionRow}>
+                                <button
+                                    type="button"
+                                    style={styles.aiBtn}
+                                    onClick={handleGetAITriage}
+                                    disabled={triageLoading || form.description.trim().length < 10}
+                                >
+                                    {triageLoading ? "Analyzing..." : "Get AI Suggestion"}
+                                </button>
+                                <span style={styles.aiHelper}>
+                                    CivilEye can suggest a likely category and urgency based on your description.
+                                </span>
+                            </div>
+                            {triageError && <p style={styles.aiError}>{triageError}</p>}
+                            {aiSuggestion && (
+                                <div style={styles.aiCard}>
+                                    <div style={styles.aiHeader}>
+                                        <div>
+                                            <p style={styles.aiEyebrow}>AI Suggestion</p>
+                                            <h3 style={styles.aiTitle}>Review this guidance before submitting</h3>
+                                        </div>
+                                        <span style={styles.aiBadge}>AI Assisted</span>
+                                    </div>
+
+                                    <p style={styles.aiIntro}>
+                                        This is a recommendation to help you choose the right category and urgency.
+                                        It is not a final decision, and you can keep your own selection if it feels
+                                        more accurate.
+                                    </p>
+
+                                    <div style={styles.aiGrid}>
+                                        <div style={styles.aiItem}>
+                                            <span style={styles.aiLabel}>Suggested Category</span>
+                                            <strong style={styles.aiValue}>
+                                                {aiSuggestion.suggestedCategory}
+                                            </strong>
+                                        </div>
+                                        <div style={styles.aiItem}>
+                                            <span style={styles.aiLabel}>Suggested Priority</span>
+                                            <strong style={styles.aiValue}>
+                                                {aiSuggestion.suggestedPriority}
+                                            </strong>
+                                        </div>
+                                    </div>
+
+                                    <p style={styles.aiReasoning}>{aiSuggestion.reasoning}</p>
+
+                                    <div style={styles.aiDecisionRow}>
+                                        <button
+                                            type="button"
+                                            style={{
+                                                ...styles.aiDecisionBtn,
+                                                ...(aiFeedback === true ? styles.aiDecisionBtnActive : {}),
+                                            }}
+                                            onClick={handleAcceptSuggestion}
+                                        >
+                                            Use Suggestion
+                                        </button>
+                                        <button
+                                            type="button"
+                                            style={{
+                                                ...styles.aiDecisionBtn,
+                                                ...(aiFeedback === false ? styles.aiDecisionBtnActiveMuted : {}),
+                                            }}
+                                            onClick={handleRejectSuggestion}
+                                        >
+                                            Keep My Selection
+                                        </button>
+                                    </div>
+
+                                    {aiFeedback === true && (
+                                        <p style={styles.aiStatus}>
+                                            Suggested category applied. You can still change it before submitting.
+                                        </p>
+                                    )}
+                                    {aiFeedback === false && (
+                                        <p style={styles.aiStatusMuted}>
+                                            Your own complaint type selection will be used instead of the suggestion.
+                                        </p>
+                                    )}
+                                </div>
+                            )}
                         </div>
 
                         <div style={styles.field}>
@@ -272,6 +419,141 @@ const styles = {
         margin: 0,
         color: "var(--ink-600)",
         fontSize: 12,
+    },
+    aiActionRow: {
+        display: "flex",
+        alignItems: "center",
+        gap: 12,
+        flexWrap: "wrap",
+        marginTop: 4,
+    },
+    aiBtn: {
+        padding: "10px 14px",
+        background: "#0f172a",
+        color: "#fff",
+        border: "none",
+        borderRadius: 10,
+        fontSize: 14,
+        fontWeight: 600,
+        cursor: "pointer",
+    },
+    aiHelper: {
+        color: "var(--ink-600)",
+        fontSize: 12,
+    },
+    aiError: {
+        margin: 0,
+        color: "#dc2626",
+        fontSize: 13,
+        fontWeight: 600,
+    },
+    aiCard: {
+        marginTop: 10,
+        padding: 18,
+        borderRadius: 18,
+        background: "linear-gradient(180deg, #f8fcfb 0%, #f2f7ff 100%)",
+        border: "1px solid rgba(26,167,155,0.18)",
+        boxShadow: "0 14px 30px rgba(15,23,42,0.06)",
+    },
+    aiHeader: {
+        display: "flex",
+        justifyContent: "space-between",
+        alignItems: "flex-start",
+        gap: 12,
+        flexWrap: "wrap",
+    },
+    aiEyebrow: {
+        margin: 0,
+        fontSize: 11,
+        textTransform: "uppercase",
+        letterSpacing: "0.24em",
+        color: "var(--mint-600)",
+        fontWeight: 700,
+    },
+    aiTitle: {
+        margin: "8px 0 0",
+        fontSize: 20,
+        fontWeight: 700,
+        color: "var(--ink-900)",
+    },
+    aiBadge: {
+        padding: "8px 10px",
+        borderRadius: 999,
+        background: "rgba(26,167,155,0.12)",
+        color: "var(--mint-700)",
+        fontSize: 12,
+        fontWeight: 700,
+    },
+    aiIntro: {
+        margin: "14px 0 0",
+        color: "var(--ink-600)",
+        lineHeight: 1.6,
+        fontSize: 13,
+    },
+    aiGrid: {
+        display: "grid",
+        gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))",
+        gap: 12,
+        marginTop: 16,
+    },
+    aiItem: {
+        padding: "12px 14px",
+        borderRadius: 14,
+        background: "rgba(255,255,255,0.82)",
+        border: "1px solid rgba(15,23,42,0.08)",
+    },
+    aiLabel: {
+        display: "block",
+        fontSize: 12,
+        color: "var(--ink-600)",
+        marginBottom: 6,
+    },
+    aiValue: {
+        color: "var(--ink-900)",
+        fontSize: 15,
+    },
+    aiReasoning: {
+        margin: "14px 0 0",
+        color: "var(--ink-700)",
+        lineHeight: 1.6,
+        fontSize: 14,
+    },
+    aiDecisionRow: {
+        display: "flex",
+        gap: 10,
+        flexWrap: "wrap",
+        marginTop: 16,
+    },
+    aiDecisionBtn: {
+        padding: "10px 14px",
+        borderRadius: 10,
+        border: "1px solid rgba(15,23,42,0.12)",
+        background: "#fff",
+        color: "var(--ink-900)",
+        fontWeight: 600,
+        cursor: "pointer",
+    },
+    aiDecisionBtnActive: {
+        background: "rgba(26,167,155,0.14)",
+        border: "1px solid rgba(26,167,155,0.32)",
+        color: "var(--mint-700)",
+    },
+    aiDecisionBtnActiveMuted: {
+        background: "rgba(15,23,42,0.08)",
+        border: "1px solid rgba(15,23,42,0.18)",
+        color: "var(--ink-900)",
+    },
+    aiStatus: {
+        margin: "12px 0 0",
+        color: "var(--mint-700)",
+        fontSize: 13,
+        fontWeight: 600,
+    },
+    aiStatusMuted: {
+        margin: "12px 0 0",
+        color: "var(--ink-600)",
+        fontSize: 13,
+        fontWeight: 600,
     },
 
     success: {

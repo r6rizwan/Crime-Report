@@ -7,7 +7,7 @@ import Complaint from "../../models/Complaint.js";
 export const createOrUpdateCaseFile = async (req, res) => {
     try {
         const { complaintId } = req.params;
-        const { notes } = req.body;
+        const { notes, publicStatus, publicUpdate } = req.body;
         const investigatorEmail = req.user?.email || req.body.investigatorEmail;
 
         // ensure complaint exists
@@ -27,6 +27,15 @@ export const createOrUpdateCaseFile = async (req, res) => {
             uploadedAt: new Date()
         }));
 
+        const hasNotes = Boolean((notes || "").trim());
+        const hasPublicStatus = Boolean((publicStatus || "").trim());
+        const hasPublicUpdate = Boolean((publicUpdate || "").trim());
+
+        if (!hasNotes && uploadedFiles.length === 0 && !hasPublicStatus && !hasPublicUpdate) {
+            return res.status(400).json({
+                error: "Add admin notes, public progress, or upload files before saving"
+            });
+        }
 
         let caseFile = await CaseFile.findOne({ complaintId });
 
@@ -34,13 +43,26 @@ export const createOrUpdateCaseFile = async (req, res) => {
             caseFile = await CaseFile.create({
                 complaintId,
                 investigatorEmail,
-                notes,
+                notes: notes || "",
                 files: uploadedFiles
             });
         } else {
-            caseFile.notes = notes || caseFile.notes;
+            caseFile.notes = notes ?? caseFile.notes;
             caseFile.files.push(...uploadedFiles);
             await caseFile.save();
+        }
+
+        if (hasPublicStatus || hasPublicUpdate) {
+            complaint.investigationUpdate = {
+                status: hasPublicStatus
+                    ? publicStatus.trim()
+                    : complaint.investigationUpdate?.status || null,
+                note: hasPublicUpdate
+                    ? publicUpdate.trim()
+                    : complaint.investigationUpdate?.note || null,
+                updatedAt: new Date(),
+            };
+            await complaint.save();
         }
 
         res.json({

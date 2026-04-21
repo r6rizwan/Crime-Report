@@ -4,6 +4,8 @@ import { authenticateToken, requireRole, requireSelfEmailOrRole } from "../../mi
 
 import {
     createComplaint,
+    triageComplaint,
+    updateAIFeedback,
     getAllComplaints,
     getUserComplaints,
     getComplaintById,
@@ -20,6 +22,8 @@ import {
 const router = express.Router();
 
 /* ---------------- CREATE ---------------- */
+
+router.post("/triage", authenticateToken, requireRole(["User"]), triageComplaint);
 
 // User files complaint
 router.post("/", authenticateToken, requireRole(["User"]), upload.single("file"), createComplaint);
@@ -71,5 +75,8 @@ router.put("/:id/resolve", authenticateToken, requireRole(["Investigator"]), inv
 
 // Admin closes complaint (FINAL)
 router.put("/:id/close", authenticateToken, requireRole(["Admin"]), adminCloseComplaint);
+
+// User records whether AI suggestion was accepted
+router.patch("/:id/ai-feedback", authenticateToken, requireRole(["User"]), updateAIFeedback);
 
 export default router;

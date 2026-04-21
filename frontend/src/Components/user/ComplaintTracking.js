@@ -120,6 +120,27 @@ export default function ComplaintTracking() {
                             </p>
                         </div>
 
+                        {result.investigationUpdate?.status && (
+                            <div style={styles.progressCard}>
+                                <div style={styles.progressHeader}>
+                                    <div>
+                                        <p style={styles.progressEyebrow}>Investigation Update</p>
+                                        <span style={styles.progressPill}>
+                                            {result.investigationUpdate.status}
+                                        </span>
+                                    </div>
+                                    {result.investigationUpdate.updatedAt && (
+                                        <span style={styles.progressMeta}>
+                                            {new Date(result.investigationUpdate.updatedAt).toLocaleString()}
+                                        </span>
+                                    )}
+                                </div>
+                                <p style={styles.progressText}>
+                                    {result.investigationUpdate.note || "No additional public update shared yet."}
+                                </p>
+                            </div>
+                        )}
+
                         <div style={styles.timelineSection}>
                             <p style={styles.timelineHeading}>Complaint Progress</p>
 
@@ -316,6 +337,45 @@ const styles = {
         padding: 14,
         borderRadius: 12,
         border: "1px solid rgba(15,23,42,0.08)",
+    },
+    progressCard: {
+        marginTop: 18,
+        padding: 18,
+        borderRadius: 16,
+        background: "linear-gradient(180deg, #f8fcfb 0%, #f3f7ff 100%)",
+        border: "1px solid rgba(26,167,155,0.18)",
+    },
+    progressHeader: {
+        display: "flex",
+        justifyContent: "space-between",
+        alignItems: "flex-start",
+        gap: 12,
+        flexWrap: "wrap",
+    },
+    progressEyebrow: {
+        margin: "0 0 8px",
+        fontSize: 11,
+        textTransform: "uppercase",
+        letterSpacing: "0.24em",
+        color: "var(--mint-600)",
+        fontWeight: 700,
+    },
+    progressPill: {
+        display: "inline-flex",
+        padding: "8px 14px",
+        borderRadius: 999,
+        background: "rgba(26,167,155,0.12)",
+        color: "var(--mint-700)",
+        fontWeight: 700,
+    },
+    progressMeta: {
+        color: "var(--ink-600)",
+        fontSize: 13,
+    },
+    progressText: {
+        margin: "14px 0 0",
+        color: "var(--ink-700)",
+        lineHeight: 1.6,
     },
     timelineSection: {
         marginTop: 30,
